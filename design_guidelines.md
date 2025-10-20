@@ -23,9 +23,10 @@
 - Border: 0 0% 20% (dividers, card borders)
 
 ### Brand & Accent Colors
-- Primary Gradient: Pink-to-blue (Instagram-style)
-  - Gradient Start: 330 80% 60% (vibrant pink)
-  - Gradient End: 220 85% 55% (electric blue)
+- Primary Brand Color: Red #ef4444 (HSL: 0 84% 60%)
+  - Used for primary action buttons, CTAs, and brand accents
+  - Gradient Start: 0 84% 60% (red)
+  - Gradient End: 0 84% 60% (red - solid color, not gradient)
 - Action Blue: 220 85% 55% (links, interactive elements)
 - Success Green: 140 65% 50% (verified badges, positive actions)
 - Warning Red: 0 75% 60% (fake news voting, delete actions)
@@ -86,7 +87,7 @@ Use Tailwind units: **2, 3, 4, 6, 8, 12, 16** for consistent rhythm
 - Shadow: No shadows (flat design)
 
 ### Buttons & CTAs
-- Primary: Pink-to-blue gradient (`bg-gradient-to-r from-pink-500 to-blue-500`)
+- Primary: Red solid color (`bg-gradient-primary` which uses #ef4444)
 - Height: h-11 or h-12 (44-48px for mobile touch targets)
 - Border Radius: rounded-full for primary CTAs, rounded-lg for secondary
 - Text: text-sm font-semibold text-white
@@ -115,8 +116,8 @@ Use Tailwind units: **2, 3, 4, 6, 8, 12, 16** for consistent rhythm
 
 ### Interaction Patterns
 - Like/Comment/Share: Icon + count, text-xs text-gray-400
-- Follow Button: Gradient when not following, outlined when following
-- Join/RSVP: Gradient primary button
+- Follow Button: Red background when not following, outlined when following
+- Join/RSVP: Red primary button (bg-gradient-primary)
 - Vote (News): Dual buttons - green (True) / red (FAKE) with vote counts
 
 ## Feature-Specific Components
@@ -134,7 +135,7 @@ Use Tailwind units: **2, 3, 4, 6, 8, 12, 16** for consistent rhythm
 
 ### Groups
 - Group Card: Square thumbnail, name, member count, privacy indicator
-- Chat Interface: WhatsApp-style bubbles (sender on right with gradient bg)
+- Chat Interface: WhatsApp-style bubbles (sender on right with red bg)
 - Message Input: Fixed bottom with rounded-full input field
 
 ### News
@@ -151,7 +152,7 @@ Use Tailwind units: **2, 3, 4, 6, 8, 12, 16** for consistent rhythm
 - Profile Photos: User-uploaded, circular crop
 - Event/Activity Images: 16:9 landscape, rounded corners
 - News Thumbnails: Square or 4:3 aspect ratio
-- Group Icons: Square, can be auto-generated with gradient + initials
+- Group Icons: Square, can be auto-generated with red background + initials
 
 ## Accessibility & Interactions
 - Touch Targets: Minimum 44x44px for all interactive elements
