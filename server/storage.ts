@@ -8,9 +8,13 @@ import {
   type Notification, type InsertNotification,
   type EventGuest, type InsertEventGuest,
   type EventComment, type InsertEventComment,
-  type GroupMember, type InsertGroupMember
+  type GroupMember, type InsertGroupMember,
+  users, activities, events, groups, news, messages, notifications,
+  eventGuests, eventComments, groupMembers
 } from "@shared/schema";
 import { randomUUID } from "crypto";
+import { db } from "./db";
+import { eq, and, desc, or } from "drizzle-orm";
 
 export interface IStorage {
   // Users
@@ -78,6 +82,277 @@ export interface IStorage {
   getUserGroups(userId: string): Promise<GroupMember[]>;
   createGroupMember(member: InsertGroupMember): Promise<GroupMember>;
   deleteGroupMember(groupId: string, userId: string): Promise<boolean>;
+}
+
+export class DatabaseStorage implements IStorage {
+  // User methods
+  async getUser(id: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db.insert(users).values(insertUser).returning();
+    return user;
+  }
+
+  async updateUser(id: string, updates: Partial<InsertUser>): Promise<User | undefined> {
+    const [user] = await db.update(users).set(updates).where(eq(users.id, id)).returning();
+    return user || undefined;
+  }
+
+  // Activity methods
+  async getActivities(limit = 50): Promise<Activity[]> {
+    return await db.select().from(activities).orderBy(desc(activities.createdAt)).limit(limit);
+  }
+
+  async getActivity(id: string): Promise<Activity | undefined> {
+    const [activity] = await db.select().from(activities).where(eq(activities.id, id));
+    return activity || undefined;
+  }
+
+  async createActivity(insertActivity: InsertActivity): Promise<Activity> {
+    const [activity] = await db.insert(activities).values(insertActivity).returning();
+    return activity;
+  }
+
+  async updateActivity(id: string, updates: Partial<InsertActivity>): Promise<Activity | undefined> {
+    const [activity] = await db.update(activities).set(updates).where(eq(activities.id, id)).returning();
+    return activity || undefined;
+  }
+
+  async deleteActivity(id: string): Promise<boolean> {
+    const result = await db.delete(activities).where(eq(activities.id, id));
+    return result.rowCount !== null && result.rowCount > 0;
+  }
+
+  async likeActivity(id: string, increment: boolean): Promise<boolean> {
+    const activity = await this.getActivity(id);
+    if (!activity) return false;
+    
+    const newCount = (activity.likesCount || 0) + (increment ? 1 : -1);
+    await db.update(activities).set({ likesCount: newCount }).where(eq(activities.id, id));
+    return true;
+  }
+
+  // Event methods
+  async getEvents(limit = 50): Promise<Event[]> {
+    return await db.select().from(events).orderBy(desc(events.createdAt)).limit(limit);
+  }
+
+  async getEvent(id: string): Promise<Event | undefined> {
+    const [event] = await db.select().from(events).where(eq(events.id, id));
+    return event || undefined;
+  }
+
+  async createEvent(insertEvent: InsertEvent): Promise<Event> {
+    const [event] = await db.insert(events).values(insertEvent).returning();
+    return event;
+  }
+
+  async updateEvent(id: string, updates: Partial<InsertEvent>): Promise<Event | undefined> {
+    const [event] = await db.update(events).set(updates).where(eq(events.id, id)).returning();
+    return event || undefined;
+  }
+
+  async deleteEvent(id: string): Promise<boolean> {
+    const result = await db.delete(events).where(eq(events.id, id));
+    return result.rowCount !== null && result.rowCount > 0;
+  }
+
+  // Group methods
+  async getGroups(limit = 50): Promise<Group[]> {
+    return await db.select().from(groups).orderBy(desc(groups.membersCount)).limit(limit);
+  }
+
+  async getGroup(id: string): Promise<Group | undefined> {
+    const [group] = await db.select().from(groups).where(eq(groups.id, id));
+    return group || undefined;
+  }
+
+  async createGroup(insertGroup: InsertGroup): Promise<Group> {
+    const [group] = await db.insert(groups).values(insertGroup).returning();
+    return group;
+  }
+
+  async updateGroup(id: string, updates: Partial<InsertGroup>): Promise<Group | undefined> {
+    const [group] = await db.update(groups).set(updates).where(eq(groups.id, id)).returning();
+    return group || undefined;
+  }
+
+  async deleteGroup(id: string): Promise<boolean> {
+    const result = await db.delete(groups).where(eq(groups.id, id));
+    return result.rowCount !== null && result.rowCount > 0;
+  }
+
+  // News methods
+  async getNews(limit = 50): Promise<News[]> {
+    return await db.select().from(news).orderBy(desc(news.publishedAt)).limit(limit);
+  }
+
+  async getNewsItem(id: string): Promise<News | undefined> {
+    const [newsItem] = await db.select().from(news).where(eq(news.id, id));
+    return newsItem || undefined;
+  }
+
+  async createNews(insertNews: InsertNews): Promise<News> {
+    const [newsItem] = await db.insert(news).values(insertNews).returning();
+    return newsItem;
+  }
+
+  async updateNews(id: string, updates: Partial<InsertNews>): Promise<News | undefined> {
+    const [newsItem] = await db.update(news).set(updates).where(eq(news.id, id)).returning();
+    return newsItem || undefined;
+  }
+
+  async deleteNews(id: string): Promise<boolean> {
+    const result = await db.delete(news).where(eq(news.id, id));
+    return result.rowCount !== null && result.rowCount > 0;
+  }
+
+  async voteNews(id: string, voteType: 'true' | 'fake', increment: boolean): Promise<boolean> {
+    const newsItem = await this.getNewsItem(id);
+    if (!newsItem) return false;
+    
+    if (voteType === 'true') {
+      const newCount = (newsItem.trueVotes || 0) + (increment ? 1 : -1);
+      await db.update(news).set({ trueVotes: newCount }).where(eq(news.id, id));
+    } else {
+      const newCount = (newsItem.fakeVotes || 0) + (increment ? 1 : -1);
+      await db.update(news).set({ fakeVotes: newCount }).where(eq(news.id, id));
+    }
+    return true;
+  }
+
+  async likeNews(id: string, increment: boolean): Promise<boolean> {
+    const newsItem = await this.getNewsItem(id);
+    if (!newsItem) return false;
+    
+    const newCount = (newsItem.likesCount || 0) + (increment ? 1 : -1);
+    await db.update(news).set({ likesCount: newCount }).where(eq(news.id, id));
+    return true;
+  }
+
+  // Message methods
+  async getMessages(groupId?: string, userId?: string): Promise<Message[]> {
+    if (groupId) {
+      return await db.select().from(messages).where(eq(messages.groupId, groupId)).orderBy(messages.createdAt);
+    }
+    if (userId) {
+      return await db.select().from(messages)
+        .where(or(eq(messages.recipientId, userId), eq(messages.senderId, userId)))
+        .orderBy(messages.createdAt);
+    }
+    return await db.select().from(messages).orderBy(messages.createdAt);
+  }
+
+  async getMessage(id: string): Promise<Message | undefined> {
+    const [message] = await db.select().from(messages).where(eq(messages.id, id));
+    return message || undefined;
+  }
+
+  async createMessage(insertMessage: InsertMessage): Promise<Message> {
+    const [message] = await db.insert(messages).values(insertMessage).returning();
+    return message;
+  }
+
+  async deleteMessage(id: string): Promise<boolean> {
+    const result = await db.delete(messages).where(eq(messages.id, id));
+    return result.rowCount !== null && result.rowCount > 0;
+  }
+
+  // Notification methods
+  async getNotifications(userId: string, type?: string): Promise<Notification[]> {
+    if (type) {
+      return await db.select().from(notifications)
+        .where(and(eq(notifications.userId, userId), eq(notifications.type, type)))
+        .orderBy(desc(notifications.createdAt));
+    }
+    return await db.select().from(notifications)
+      .where(eq(notifications.userId, userId))
+      .orderBy(desc(notifications.createdAt));
+  }
+
+  async getNotification(id: string): Promise<Notification | undefined> {
+    const [notification] = await db.select().from(notifications).where(eq(notifications.id, id));
+    return notification || undefined;
+  }
+
+  async createNotification(insertNotification: InsertNotification): Promise<Notification> {
+    const [notification] = await db.insert(notifications).values(insertNotification).returning();
+    return notification;
+  }
+
+  async markNotificationAsRead(id: string): Promise<boolean> {
+    const result = await db.update(notifications).set({ isRead: true }).where(eq(notifications.id, id));
+    return result.rowCount !== null && result.rowCount > 0;
+  }
+
+  async deleteNotification(id: string): Promise<boolean> {
+    const result = await db.delete(notifications).where(eq(notifications.id, id));
+    return result.rowCount !== null && result.rowCount > 0;
+  }
+
+  // Event Guest methods
+  async getEventGuests(eventId: string): Promise<EventGuest[]> {
+    return await db.select().from(eventGuests).where(eq(eventGuests.eventId, eventId));
+  }
+
+  async createEventGuest(insertGuest: InsertEventGuest): Promise<EventGuest> {
+    const [guest] = await db.insert(eventGuests).values(insertGuest).returning();
+    return guest;
+  }
+
+  async updateEventGuestStatus(eventId: string, userId: string, status: string): Promise<boolean> {
+    const result = await db.update(eventGuests)
+      .set({ status })
+      .where(and(eq(eventGuests.eventId, eventId), eq(eventGuests.userId, userId)));
+    return result.rowCount !== null && result.rowCount > 0;
+  }
+
+  // Event Comment methods
+  async getEventComments(eventId: string): Promise<EventComment[]> {
+    return await db.select().from(eventComments)
+      .where(eq(eventComments.eventId, eventId))
+      .orderBy(desc(eventComments.createdAt));
+  }
+
+  async createEventComment(insertComment: InsertEventComment): Promise<EventComment> {
+    const [comment] = await db.insert(eventComments).values(insertComment).returning();
+    return comment;
+  }
+
+  async deleteEventComment(id: string): Promise<boolean> {
+    const result = await db.delete(eventComments).where(eq(eventComments.id, id));
+    return result.rowCount !== null && result.rowCount > 0;
+  }
+
+  // Group Member methods
+  async getGroupMembers(groupId: string): Promise<GroupMember[]> {
+    return await db.select().from(groupMembers).where(eq(groupMembers.groupId, groupId));
+  }
+
+  async getUserGroups(userId: string): Promise<GroupMember[]> {
+    return await db.select().from(groupMembers)
+      .where(eq(groupMembers.userId, userId))
+      .orderBy(desc(groupMembers.joinedAt));
+  }
+
+  async createGroupMember(insertMember: InsertGroupMember): Promise<GroupMember> {
+    const [member] = await db.insert(groupMembers).values(insertMember).returning();
+    return member;
+  }
+
+  async deleteGroupMember(groupId: string, userId: string): Promise<boolean> {
+    const result = await db.delete(groupMembers)
+      .where(and(eq(groupMembers.groupId, groupId), eq(groupMembers.userId, userId)));
+    return result.rowCount !== null && result.rowCount > 0;
+  }
 }
 
 export class MemStorage implements IStorage {
@@ -736,4 +1011,8 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+// Use DatabaseStorage for production with PostgreSQL
+export const storage = new DatabaseStorage();
+
+// Keep MemStorage available for testing/development if needed
+// export const storage = new MemStorage();
