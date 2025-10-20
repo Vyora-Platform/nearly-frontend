@@ -2,6 +2,7 @@ import { Calendar, MapPin, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Link } from "wouter";
 
 interface EventCardProps {
   id: string;
@@ -21,6 +22,7 @@ interface EventCardProps {
 }
 
 export default function EventCard({
+  id,
   title,
   imageUrl,
   host,
@@ -32,7 +34,7 @@ export default function EventCard({
   categories,
 }: EventCardProps) {
   return (
-    <div className="bg-card rounded-xl overflow-hidden border border-card-border">
+    <div className="bg-card rounded-xl overflow-hidden border border-card-border" data-testid={`card-event-${id}`}>
       <div className="relative">
         <img
           src={imageUrl}
@@ -94,14 +96,16 @@ export default function EventCard({
         </div>
 
         <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="flex-1 h-9"
-            data-testid="button-view-details"
-          >
-            View Details
-          </Button>
+          <Link href={`/event/${id}`}>
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex-1 h-9"
+              data-testid="button-view-details"
+            >
+              View Details
+            </Button>
+          </Link>
           <Button
             variant="default"
             size="sm"
