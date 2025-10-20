@@ -7,59 +7,57 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState } from "react";
-
-// TODO: remove mock data
-const mockEvents = [
-  {
-    id: "1",
-    title: "TechSparks 2024",
-    imageUrl: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800",
-    host: {
-      name: "TechHub",
-      username: "@techub",
-      avatar: "https://api.dicebear.com/7.x/initials/svg?seed=TH",
-    },
-    date: "Fri, 15 Dec • 10:00 AM",
-    location: "Bangalore International Centre",
-    attendeesCount: 125,
-    entryType: "FREE",
-    categories: ["TECH", "STARTUP"],
-  },
-  {
-    id: "2",
-    title: "Rang Barse - Holi Festival",
-    imageUrl: "https://images.unsplash.com/photo-1583338506904-91cfd5c67a9b?w=800",
-    host: {
-      name: "Delhi Events",
-      username: "@delhievents",
-      avatar: "https://api.dicebear.com/7.x/initials/svg?seed=DE",
-    },
-    date: "Mon, 25 Mar • 11:00 AM",
-    location: "Jawaharlal Nehru Stadium, Delhi",
-    attendeesCount: 500,
-    entryType: "PAID",
-    price: 500,
-    categories: ["FESTIVAL"],
-  },
-  {
-    id: "3",
-    title: "KalaKriti Art Fair",
-    imageUrl: "https://images.unsplash.com/photo-1547826039-bfc35e0f1ea8?w=800",
-    host: {
-      name: "Mumbai Art",
-      username: "@mumbaiart",
-      avatar: "https://api.dicebear.com/7.x/initials/svg?seed=MA",
-    },
-    date: "Sat, 20 Jan • 12:00 PM",
-    location: "Mumbai Art Gallery",
-    attendeesCount: 42,
-    entryType: "SPONSORED",
-    categories: ["ART"],
-  },
-];
+import { useQuery } from "@tanstack/react-query";
+import { api } from "@/lib/api";
+import { format } from "date-fns";
 
 export default function Events() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
+
+  const { data: events = [], isLoading } = useQuery({
+    queryKey: ["/api/events"],
+    queryFn: api.getEvents,
+  });
+
+  const { data: users = [] } = useQuery({
+    queryKey: ["/api/users"],
+    queryFn: async () => {
+      const userIds = Array.from(new Set(events.map(e => e.userId)));
+      return Promise.all(userIds.map(id => api.getUser(id).catch(() => null)));
+    },
+    enabled: events.length > 0,
+  });
+
+  const getUserById = (userId: string) => {
+    const user = users.find(u => u?.id === userId);
+    return user || { 
+      id: userId, 
+      name: "Unknown User", 
+      username: "@user",
+      avatarUrl: `https://api.dicebear.com/7.x/initials/svg?seed=${userId}` 
+    };
+  };
+
+  const filteredEvents = events.filter(event => {
+    const matchesSearch = searchQuery === "" || 
+      event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      event.location.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    return matchesSearch;
+  });
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background pb-20">
+        <TopBar title="Events" showActions={false} />
+        <div className="flex items-center justify-center h-96">
+          <p className="text-muted-foreground">Loading events...</p>
+        </div>
+        <BottomNav />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -88,6 +86,7 @@ export default function Events() {
 
           <CategoryPills
             categories={["All", "College", "Sports", "Startups"]}
+            onSelect={setSelectedCategory}
           />
 
           <Tabs defaultValue="upcoming" className="w-full">
@@ -104,9 +103,36 @@ export default function Events() {
             </TabsList>
 
             <TabsContent value="upcoming" className="mt-4 space-y-4">
-              {mockEvents.map((event) => (
-                <EventCard key={event.id} {...event} />
-              ))}
+              {filteredEvents.length === 0 ? (
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground">
+                    No events found. Create one to get started!
+                  </p>
+                </div>
+              ) : (
+                filteredEvents.map((event) => {
+                  const user = getUserById(event.userId);
+                  return (
+                    <EventCard
+                      key={event.id}
+                      id={event.id}
+                      title={event.title}
+                      imageUrl={event.imageUrl || "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800"}
+                      host={{
+                        name: user.name || "Unknown",
+                        username: user.username || "@user",
+                        avatar: user.avatarUrl || undefined,
+                      }}
+                      date={format(new Date(event.startDate), "EEE, d MMM • h:mm a")}
+                      location={event.location}
+                      attendeesCount={event.attendeesCount || 0}
+                      entryType={event.entryType}
+                      price={event.price || undefined}
+                      categories={event.category || []}
+                    />
+                  );
+                })
+              )}
             </TabsContent>
 
             <TabsContent value="saved" className="mt-4">

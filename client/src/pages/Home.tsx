@@ -6,69 +6,69 @@ import { Plus, Image as ImageIcon, Video, MapPin } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-
-// TODO: remove mock data
-const mockActivities = [
-  {
-    id: "1",
-    author: {
-      name: "Rahul Kanpur",
-      username: "@rahul_kanpur",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Rahul",
-    },
-    title: "Going to watch Jawan at PVR Mall",
-    description: "Excited to announce a movie meetup for the new Shah Rukh Khan movie, 'Jawan'! Let's catch the first day first show together. It's going to be an amazing experience watching it with fellow fans. Anyone who's a fan of SRK is welcome to join!",
-    imageUrl: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=800",
-    location: "PVR Mall, Kanpur, Uttar Pradesh",
-    startDate: "Tomorrow, 7:00 PM - 10:00 PM",
-    cost: "Paid Entry",
-    category: "Movies",
-    likesCount: 23,
-    commentsCount: 5,
-    participantsCount: 6,
-    maxParticipants: 10,
-    timeAgo: "2h ago",
-  },
-  {
-    id: "2",
-    author: {
-      name: "Priya Sharma",
-      username: "@priya_sharma",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Priya",
-    },
-    title: "Cricket match at IIT Kanpur ground tomorrow!",
-    description: "Need players 🏏",
-    location: "IIT Kanpur",
-    startDate: "Tomorrow, 4:00 PM",
-    cost: "Free",
-    category: "Sports",
-    likesCount: 15,
-    commentsCount: 8,
-    participantsCount: 12,
-    maxParticipants: 22,
-    timeAgo: "5h ago",
-  },
-  {
-    id: "3",
-    author: {
-      name: "Amit Singh",
-      username: "@amit_singh",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Amit",
-    },
-    title: "Looking for a study partner in Kakadeo for UPSC prep. Serious aspirants only!",
-    location: "Kakadeo",
-    startDate: "12 attendees (1 spot left)",
-    cost: "Sponsored",
-    likesCount: 42,
-    commentsCount: 11,
-    participantsCount: 12,
-    maxParticipants: 13,
-    timeAgo: "1d ago",
-  },
-];
+import { useQuery } from "@tanstack/react-query";
+import { api } from "@/lib/api";
+import { format } from "date-fns";
 
 export default function Home() {
   const [postText, setPostText] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
+
+  const { data: activities = [], isLoading } = useQuery({
+    queryKey: ["/api/activities"],
+    queryFn: api.getActivities,
+  });
+
+  const { data: users = [] } = useQuery({
+    queryKey: ["/api/users"],
+    queryFn: async () => {
+      // Get unique user IDs from activities
+      const userIds = Array.from(new Set(activities.map(a => a.userId)));
+      // Fetch all users (in real app, would batch this)
+      return Promise.all(userIds.map(id => api.getUser(id).catch(() => null)));
+    },
+    enabled: activities.length > 0,
+  });
+
+  const getUserById = (userId: string) => {
+    const user = users.find(u => u?.id === userId);
+    return user || { 
+      id: userId, 
+      name: "Unknown User", 
+      username: "@user",
+      avatarUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${userId}` 
+    };
+  };
+
+  const getTimeAgo = (date: Date | null) => {
+    if (!date) return "Just now";
+    const now = new Date();
+    const diffMs = now.getTime() - new Date(date).getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return "Just now";
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    return `${diffDays}d ago`;
+  };
+
+  const filteredActivities = selectedCategory === "All" 
+    ? activities 
+    : activities.filter(a => a.category === selectedCategory);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background pb-20">
+        <TopBar />
+        <div className="flex items-center justify-center h-96">
+          <p className="text-muted-foreground">Loading activities...</p>
+        </div>
+        <BottomNav />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -122,13 +122,45 @@ export default function Home() {
         <div className="p-4 border-b border-border">
           <CategoryPills
             categories={["All", "Movies", "Sports", "Food"]}
+            onSelect={setSelectedCategory}
           />
         </div>
 
         <div>
-          {mockActivities.map((activity) => (
-            <ActivityCard key={activity.id} {...activity} />
-          ))}
+          {filteredActivities.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">
+                No activities yet. Create one to get started!
+              </p>
+            </div>
+          ) : (
+            filteredActivities.map((activity) => {
+              const user = getUserById(activity.userId);
+              return (
+                <ActivityCard
+                  key={activity.id}
+                  id={activity.id}
+                  author={{
+                    name: user.name || "Unknown",
+                    username: user.username || "@user",
+                    avatar: user.avatarUrl || undefined,
+                  }}
+                  title={activity.title}
+                  description={activity.description || undefined}
+                  imageUrl={activity.imageUrl || undefined}
+                  location={activity.location || undefined}
+                  startDate={activity.startDate ? format(new Date(activity.startDate), "MMM d, h:mm a") : undefined}
+                  cost={activity.cost || undefined}
+                  category={activity.category || undefined}
+                  likesCount={activity.likesCount || 0}
+                  commentsCount={activity.commentsCount || 0}
+                  participantsCount={activity.participantsCount || 0}
+                  maxParticipants={activity.maxParticipants || undefined}
+                  timeAgo={getTimeAgo(activity.createdAt)}
+                />
+              );
+            })
+          )}
         </div>
       </div>
 

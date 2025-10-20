@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Heart, MessageCircle, Share2, MoreVertical, MapPin, Calendar, DollarSign, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
+import { api } from "@/lib/api";
+import { queryClient } from "@/lib/queryClient";
 
 interface ActivityCardProps {
   id: string;
@@ -27,6 +29,7 @@ interface ActivityCardProps {
 }
 
 export default function ActivityCard({
+  id,
   author,
   title,
   description,
@@ -46,9 +49,19 @@ export default function ActivityCard({
   const [likes, setLikes] = useState(likesCount);
   const [following, setFollowing] = useState(isFollowing);
 
-  const handleLike = () => {
-    setLiked(!liked);
-    setLikes(liked ? likes - 1 : likes + 1);
+  const handleLike = async () => {
+    const newLiked = !liked;
+    setLiked(newLiked);
+    setLikes(newLiked ? likes + 1 : likes - 1);
+    
+    try {
+      await api.likeActivity(id, newLiked);
+      queryClient.invalidateQueries({ queryKey: ["/api/activities"] });
+    } catch (error) {
+      setLiked(!newLiked);
+      setLikes(newLiked ? likes - 1 : likes + 1);
+      console.error("Failed to like activity:", error);
+    }
   };
 
   const handleFollow = () => {

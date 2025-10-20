@@ -4,17 +4,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Settings, MessageCircle } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-// TODO: remove mock data
-const mockUser = {
-  username: "@rahul_kanpur",
-  name: "Rahul Kanpur",
-  bio: "Product Designer | Foodie | Traveler 📍Delhi\nTrying to capture the beauty of my city, one click at a time. ✨",
-  avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=RahulKanpur",
-  postsCount: 120,
-  followersCount: 1200,
-  followingCount: 300,
-};
+import { useQuery } from "@tanstack/react-query";
+import { api } from "@/lib/api";
 
 const mockPosts = [
   {
@@ -55,6 +46,22 @@ const mockPosts = [
 ];
 
 export default function Profile() {
+  const { data: user, isLoading } = useQuery({
+    queryKey: ["/api/users/username", "rahul_kanpur"],
+    queryFn: () => api.getUserByUsername("rahul_kanpur"),
+  });
+
+  if (isLoading || !user) {
+    return (
+      <div className="min-h-screen bg-background pb-20">
+        <div className="flex items-center justify-center h-96">
+          <p className="text-muted-foreground">Loading profile...</p>
+        </div>
+        <BottomNav />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background pb-20">
       <div className="max-w-md mx-auto">
@@ -62,7 +69,7 @@ export default function Profile() {
           <button data-testid="button-back">
             <span className="text-2xl">←</span>
           </button>
-          <h2 className="text-lg font-semibold">{mockUser.username}</h2>
+          <h2 className="text-lg font-semibold">@{user.username}</h2>
           <button data-testid="button-settings">
             <Settings className="w-6 h-6" />
           </button>
@@ -72,8 +79,8 @@ export default function Profile() {
           <div className="flex items-start gap-4 mb-4">
             <div className="relative">
               <Avatar className="w-20 h-20">
-                <AvatarImage src={mockUser.avatar} />
-                <AvatarFallback className="text-2xl">{mockUser.name[0]}</AvatarFallback>
+                <AvatarImage src={user.avatarUrl || undefined} />
+                <AvatarFallback className="text-2xl">{user.name[0]}</AvatarFallback>
               </Avatar>
               <button
                 className="absolute bottom-0 right-0 w-6 h-6 rounded-full bg-gradient-primary text-white flex items-center justify-center text-lg"
@@ -84,10 +91,10 @@ export default function Profile() {
             </div>
             <div className="flex-1">
               <h1 className="text-2xl font-bold text-foreground mb-1">
-                {mockUser.name}
+                {user.name}
               </h1>
               <p className="text-sm text-muted-foreground whitespace-pre-line mb-3">
-                {mockUser.bio}
+                {user.bio}
               </p>
             </div>
           </div>
@@ -119,19 +126,19 @@ export default function Profile() {
 
           <div className="grid grid-cols-3 gap-4 mb-6">
             <div className="bg-card rounded-lg p-4 text-center">
-              <p className="text-2xl font-bold text-foreground">{mockUser.postsCount}</p>
+              <p className="text-2xl font-bold text-foreground">{user.postsCount || 0}</p>
               <p className="text-xs text-muted-foreground">Posts</p>
             </div>
             <div className="bg-card rounded-lg p-4 text-center">
               <p className="text-2xl font-bold text-foreground">
-                {mockUser.followersCount >= 1000
-                  ? `${(mockUser.followersCount / 1000).toFixed(1)}k`
-                  : mockUser.followersCount}
+                {(user.followersCount || 0) >= 1000
+                  ? `${((user.followersCount || 0) / 1000).toFixed(1)}k`
+                  : user.followersCount || 0}
               </p>
               <p className="text-xs text-muted-foreground">Followers</p>
             </div>
             <div className="bg-card rounded-lg p-4 text-center">
-              <p className="text-2xl font-bold text-foreground">{mockUser.followingCount}</p>
+              <p className="text-2xl font-bold text-foreground">{user.followingCount || 0}</p>
               <p className="text-xs text-muted-foreground">Following</p>
             </div>
           </div>

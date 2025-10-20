@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Heart, MessageCircle, Share2, ThumbsUp, ThumbsDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
+import { api } from "@/lib/api";
+import { queryClient } from "@/lib/queryClient";
 
 interface NewsCardProps {
   id: string;
@@ -23,6 +25,7 @@ interface NewsCardProps {
 }
 
 export default function NewsCard({
+  id,
   author,
   headline,
   description,
@@ -43,17 +46,64 @@ export default function NewsCard({
   const truePercentage = totalVotes > 0 ? (votes.true / totalVotes) * 100 : 0;
   const fakePercentage = totalVotes > 0 ? (votes.fake / totalVotes) * 100 : 0;
 
-  const handleVote = (vote: "true" | "fake") => {
+  const handleVote = async (vote: "true" | "fake") => {
+    const previousVote = userVote;
+    const previousVotes = { ...votes };
+
     if (userVote === vote) {
       setUserVote(null);
       setVotes({ ...votes, [vote]: votes[vote] - 1 });
+      try {
+        await api.voteNews(id, vote, false);
+        queryClient.invalidateQueries({ queryKey: ["/api/news"] });
+      } catch (error) {
+        setUserVote(previousVote);
+        setVotes(previousVotes);
+        console.error("Failed to remove vote:", error);
+      }
     } else {
       if (userVote) {
-        setVotes({ ...votes, [userVote]: votes[userVote] - 1, [vote]: votes[vote] + 1 });
+        setVotes({ 
+          ...votes, 
+          [userVote]: votes[userVote] - 1, 
+          [vote]: votes[vote] + 1 
+        });
+        try {
+          await api.voteNews(id, userVote, false);
+          await api.voteNews(id, vote, true);
+          queryClient.invalidateQueries({ queryKey: ["/api/news"] });
+        } catch (error) {
+          setUserVote(previousVote);
+          setVotes(previousVotes);
+          console.error("Failed to change vote:", error);
+        }
       } else {
         setVotes({ ...votes, [vote]: votes[vote] + 1 });
+        try {
+          await api.voteNews(id, vote, true);
+          queryClient.invalidateQueries({ queryKey: ["/api/news"] });
+        } catch (error) {
+          setUserVote(previousVote);
+          setVotes(previousVotes);
+          console.error("Failed to vote:", error);
+        }
       }
       setUserVote(vote);
+    }
+  };
+
+  const handleLike = async () => {
+    const newLiked = !liked;
+    setLiked(newLiked);
+    setLikes(newLiked ? likes + 1 : likes - 1);
+    
+    try {
+      await api.likeNews(id, newLiked);
+      queryClient.invalidateQueries({ queryKey: ["/api/news"] });
+    } catch (error) {
+      setLiked(!newLiked);
+      setLikes(newLiked ? likes - 1 : likes + 1);
+      console.error("Failed to like news:", error);
     }
   };
 
@@ -138,10 +188,7 @@ export default function NewsCard({
 
         <div className="flex items-center gap-4 text-muted-foreground">
           <button
-            onClick={() => {
-              setLiked(!liked);
-              setLikes(liked ? likes - 1 : likes + 1);
-            }}
+            onClick={handleLike}
             className="flex items-center gap-1 hover-elevate active-elevate-2"
             data-testid="button-like-news"
           >

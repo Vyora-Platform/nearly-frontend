@@ -6,47 +6,72 @@ import CategoryPills from "@/components/CategoryPills";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-
-// TODO: remove mock data
-const mockNews = [
-  {
-    id: "1",
-    author: {
-      name: "@localreporter",
-      location: "Hauz Khas, Delhi",
-      avatar: "https://api.dicebear.com/7.x/initials/svg?seed=LR",
-    },
-    headline: "Road closed near IIT Gate",
-    description: "A brief summary of the news item about a temporary road closure affecting local traffic.",
-    imageUrl: "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=800",
-    category: "Local",
-    trueVotes: 210,
-    fakeVotes: 105,
-    likesCount: 120,
-    commentsCount: 88,
-    timeAgo: "5m ago",
-  },
-  {
-    id: "2",
-    author: {
-      name: "@foodieKanpur",
-      location: "Swaroop Nagar, Kanpur",
-      avatar: "https://api.dicebear.com/7.x/initials/svg?seed=FK",
-    },
-    headline: "New café opening in Swaroop Nagar",
-    description: "Exciting news for coffee lovers! A brand new cafe is opening its doors this weekend.",
-    imageUrl: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=800",
-    category: "Local",
-    trueVotes: 560,
-    fakeVotes: 12,
-    likesCount: 973,
-    commentsCount: 102,
-    timeAgo: "2h ago",
-  },
-];
+import { useQuery } from "@tanstack/react-query";
+import { api } from "@/lib/api";
 
 export default function News() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All News");
+
+  const { data: news = [], isLoading } = useQuery({
+    queryKey: ["/api/news"],
+    queryFn: api.getNews,
+  });
+
+  const { data: users = [] } = useQuery({
+    queryKey: ["/api/users"],
+    queryFn: async () => {
+      const userIds = Array.from(new Set(news.map(n => n.userId)));
+      return Promise.all(userIds.map(id => api.getUser(id).catch(() => null)));
+    },
+    enabled: news.length > 0,
+  });
+
+  const getUserById = (userId: string) => {
+    const user = users.find(u => u?.id === userId);
+    return user || { 
+      id: userId, 
+      name: "@unknown", 
+      username: "@user",
+      location: "Unknown",
+      avatarUrl: `https://api.dicebear.com/7.x/initials/svg?seed=${userId}` 
+    };
+  };
+
+  const getTimeAgo = (date: Date | null) => {
+    if (!date) return "Just now";
+    const now = new Date();
+    const diffMs = now.getTime() - new Date(date).getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return "Just now";
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    return `${diffDays}d ago`;
+  };
+
+  const filteredNews = news.filter(item => {
+    const matchesSearch = searchQuery === "" || 
+      item.headline.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = selectedCategory === "All News" || 
+      item.category === selectedCategory;
+    
+    return matchesSearch && matchesCategory;
+  });
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background pb-20">
+        <TopBar title="News" showActions={false} />
+        <div className="flex items-center justify-center h-96">
+          <p className="text-muted-foreground">Loading news...</p>
+        </div>
+        <BottomNav />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -75,12 +100,41 @@ export default function News() {
 
           <CategoryPills
             categories={["All News", "Local", "National", "SPORT"]}
+            onSelect={setSelectedCategory}
           />
 
           <div className="space-y-4">
-            {mockNews.map((news) => (
-              <NewsCard key={news.id} {...news} />
-            ))}
+            {filteredNews.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground">
+                  No news items found. Create one to get started!
+                </p>
+              </div>
+            ) : (
+              filteredNews.map((newsItem) => {
+                const user = getUserById(newsItem.userId);
+                return (
+                  <NewsCard
+                    key={newsItem.id}
+                    id={newsItem.id}
+                    author={{
+                      name: user.username || "@user",
+                      location: newsItem.location || user.location || "Unknown",
+                      avatar: user.avatarUrl || undefined,
+                    }}
+                    headline={newsItem.headline}
+                    description={newsItem.description || ""}
+                    imageUrl={newsItem.imageUrl || undefined}
+                    category={newsItem.category}
+                    trueVotes={newsItem.trueVotes || 0}
+                    fakeVotes={newsItem.fakeVotes || 0}
+                    likesCount={newsItem.likesCount || 0}
+                    commentsCount={newsItem.commentsCount || 0}
+                    timeAgo={getTimeAgo(newsItem.publishedAt)}
+                  />
+                );
+              })
+            )}
           </div>
         </div>
       </div>

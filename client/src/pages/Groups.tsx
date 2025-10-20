@@ -7,45 +7,36 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState } from "react";
-
-// TODO: remove mock data
-const mockGroups = [
-  {
-    id: "1",
-    name: "Kanpur Startups",
-    imageUrl: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400",
-    category: "Startups",
-    membersCount: 1200,
-    groupType: "Public" as const,
-  },
-  {
-    id: "2",
-    name: "Delhi Foodies",
-    imageUrl: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400",
-    category: "Foodies",
-    membersCount: 875,
-    groupType: "Private" as const,
-  },
-  {
-    id: "3",
-    name: "Bangalore Tech Hub",
-    imageUrl: "https://images.unsplash.com/photo-1531482615713-2afd69097998?w=400",
-    category: "Tech",
-    membersCount: 5600,
-    groupType: "Public" as const,
-  },
-  {
-    id: "4",
-    name: "Mumbai Movie Club",
-    imageUrl: "https://images.unsplash.com/photo-1574267432644-f347f1c40326?w=400",
-    category: "Movies",
-    membersCount: 2100,
-    groupType: "Public" as const,
-  },
-];
+import { useQuery } from "@tanstack/react-query";
+import { api } from "@/lib/api";
 
 export default function Groups() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("Tech");
+
+  const { data: groups = [], isLoading } = useQuery({
+    queryKey: ["/api/groups"],
+    queryFn: api.getGroups,
+  });
+
+  const filteredGroups = groups.filter(group => {
+    const matchesSearch = searchQuery === "" || 
+      group.name.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    return matchesSearch;
+  });
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background pb-20">
+        <TopBar title="Groups" showActions={false} />
+        <div className="flex items-center justify-center h-96">
+          <p className="text-muted-foreground">Loading groups...</p>
+        </div>
+        <BottomNav />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -74,6 +65,7 @@ export default function Groups() {
 
           <CategoryPills
             categories={["Tech", "Startups", "Fitness", "Gaming"]}
+            onSelect={setSelectedCategory}
           />
 
           <Tabs defaultValue="all" className="w-full">
@@ -87,9 +79,25 @@ export default function Groups() {
             </TabsList>
 
             <TabsContent value="all" className="mt-4 space-y-4">
-              {mockGroups.map((group) => (
-                <GroupCard key={group.id} {...group} />
-              ))}
+              {filteredGroups.length === 0 ? (
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground">
+                    No groups found. Create one to get started!
+                  </p>
+                </div>
+              ) : (
+                filteredGroups.map((group) => (
+                  <GroupCard
+                    key={group.id}
+                    id={group.id}
+                    name={group.name}
+                    imageUrl={group.imageUrl || undefined}
+                    category={group.category || "General"}
+                    membersCount={group.membersCount || 0}
+                    groupType={group.groupType as "Public" | "Private" | "Invite-only"}
+                  />
+                ))
+              )}
             </TabsContent>
 
             <TabsContent value="my-groups" className="mt-4">
