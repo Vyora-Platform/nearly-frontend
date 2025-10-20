@@ -3,7 +3,12 @@ import {
   type Activity, type InsertActivity,
   type Event, type InsertEvent,
   type Group, type InsertGroup,
-  type News, type InsertNews
+  type News, type InsertNews,
+  type Message, type InsertMessage,
+  type Notification, type InsertNotification,
+  type EventGuest, type InsertEventGuest,
+  type EventComment, type InsertEventComment,
+  type GroupMember, type InsertGroupMember
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 
@@ -44,6 +49,35 @@ export interface IStorage {
   deleteNews(id: string): Promise<boolean>;
   voteNews(id: string, voteType: 'true' | 'fake', increment: boolean): Promise<boolean>;
   likeNews(id: string, increment: boolean): Promise<boolean>;
+  
+  // Messages
+  getMessages(groupId?: string, userId?: string): Promise<Message[]>;
+  getMessage(id: string): Promise<Message | undefined>;
+  createMessage(message: InsertMessage): Promise<Message>;
+  deleteMessage(id: string): Promise<boolean>;
+  
+  // Notifications
+  getNotifications(userId: string, type?: string): Promise<Notification[]>;
+  getNotification(id: string): Promise<Notification | undefined>;
+  createNotification(notification: InsertNotification): Promise<Notification>;
+  markNotificationAsRead(id: string): Promise<boolean>;
+  deleteNotification(id: string): Promise<boolean>;
+  
+  // Event Guests
+  getEventGuests(eventId: string): Promise<EventGuest[]>;
+  createEventGuest(guest: InsertEventGuest): Promise<EventGuest>;
+  updateEventGuestStatus(eventId: string, userId: string, status: string): Promise<boolean>;
+  
+  // Event Comments
+  getEventComments(eventId: string): Promise<EventComment[]>;
+  createEventComment(comment: InsertEventComment): Promise<EventComment>;
+  deleteEventComment(id: string): Promise<boolean>;
+  
+  // Group Members
+  getGroupMembers(groupId: string): Promise<GroupMember[]>;
+  getUserGroups(userId: string): Promise<GroupMember[]>;
+  createGroupMember(member: InsertGroupMember): Promise<GroupMember>;
+  deleteGroupMember(groupId: string, userId: string): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
@@ -52,6 +86,11 @@ export class MemStorage implements IStorage {
   private events: Map<string, Event>;
   private groups: Map<string, Group>;
   private news: Map<string, News>;
+  private messages: Map<string, Message>;
+  private notifications: Map<string, Notification>;
+  private eventGuests: Map<string, EventGuest>;
+  private eventComments: Map<string, EventComment>;
+  private groupMembers: Map<string, GroupMember>;
 
   constructor() {
     this.users = new Map();
@@ -59,6 +98,11 @@ export class MemStorage implements IStorage {
     this.events = new Map();
     this.groups = new Map();
     this.news = new Map();
+    this.messages = new Map();
+    this.notifications = new Map();
+    this.eventGuests = new Map();
+    this.eventComments = new Map();
+    this.groupMembers = new Map();
     this.seedData();
   }
 

@@ -67,7 +67,7 @@ export default function Profile() {
       <div className="max-w-md mx-auto">
         <div className="flex items-center justify-between p-4 border-b border-border">
           <button data-testid="button-back">
-            <span className="text-2xl">←</span>
+            <span className="text-2xl"></span>
           </button>
           <h2 className="text-lg font-semibold">@{user.username}</h2>
           <button data-testid="button-settings">
