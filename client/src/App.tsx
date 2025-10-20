@@ -8,14 +8,26 @@ import Events from "@/pages/Events";
 import Groups from "@/pages/Groups";
 import News from "@/pages/News";
 import Profile from "@/pages/Profile";
+import EventDetails from "@/pages/EventDetails";
+import GroupChat from "@/pages/GroupChat";
+import Notifications from "@/pages/Notifications";
+import DirectChat from "@/pages/DirectChat";
+import MyGroups from "@/pages/MyGroups";
+import Settings from "@/pages/Settings";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/events" component={Events} />
+      <Route path="/event/:id" component={EventDetails} />
       <Route path="/groups" component={Groups} />
+      <Route path="/my-groups" component={MyGroups} />
+      <Route path="/group/:id/chat" component={GroupChat} />
       <Route path="/news" component={News} />
+      <Route path="/notifications" component={Notifications} />
+      <Route path="/chat/:username" component={DirectChat} />
+      <Route path="/settings" component={Settings} />
       <Route path="/profile" component={Profile} />
     </Switch>
   );

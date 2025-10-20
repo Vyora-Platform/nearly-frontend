@@ -551,6 +551,189 @@ export class MemStorage implements IStorage {
     this.news.set(id, newsItem);
     return true;
   }
+
+  // Message methods
+  async getMessages(groupId?: string, userId?: string): Promise<Message[]> {
+    return Array.from(this.messages.values())
+      .filter(msg => {
+        if (groupId) return msg.groupId === groupId;
+        if (userId) return msg.recipientId === userId || msg.senderId === userId;
+        return true;
+      })
+      .sort((a, b) => {
+        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return dateA - dateB;
+      });
+  }
+
+  async getMessage(id: string): Promise<Message | undefined> {
+    return this.messages.get(id);
+  }
+
+  async createMessage(insertMessage: InsertMessage): Promise<Message> {
+    const id = randomUUID();
+    const message: Message = {
+      id,
+      senderId: insertMessage.senderId,
+      recipientId: insertMessage.recipientId ?? null,
+      groupId: insertMessage.groupId ?? null,
+      content: insertMessage.content,
+      imageUrl: insertMessage.imageUrl ?? null,
+      messageType: insertMessage.messageType,
+      createdAt: new Date(),
+    };
+    this.messages.set(id, message);
+    return message;
+  }
+
+  async deleteMessage(id: string): Promise<boolean> {
+    return this.messages.delete(id);
+  }
+
+  // Notification methods
+  async getNotifications(userId: string, type?: string): Promise<Notification[]> {
+    return Array.from(this.notifications.values())
+      .filter(notif => {
+        if (notif.userId !== userId) return false;
+        if (type && notif.type !== type) return false;
+        return true;
+      })
+      .sort((a, b) => {
+        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return dateB - dateA;
+      });
+  }
+
+  async getNotification(id: string): Promise<Notification | undefined> {
+    return this.notifications.get(id);
+  }
+
+  async createNotification(insertNotification: InsertNotification): Promise<Notification> {
+    const id = randomUUID();
+    const notification: Notification = {
+      id,
+      userId: insertNotification.userId,
+      type: insertNotification.type,
+      title: insertNotification.title,
+      description: insertNotification.description,
+      actionUrl: insertNotification.actionUrl ?? null,
+      relatedId: insertNotification.relatedId ?? null,
+      relatedUserIds: insertNotification.relatedUserIds ?? null,
+      isRead: false,
+      createdAt: new Date(),
+    };
+    this.notifications.set(id, notification);
+    return notification;
+  }
+
+  async markNotificationAsRead(id: string): Promise<boolean> {
+    const notification = this.notifications.get(id);
+    if (!notification) return false;
+    
+    notification.isRead = true;
+    this.notifications.set(id, notification);
+    return true;
+  }
+
+  async deleteNotification(id: string): Promise<boolean> {
+    return this.notifications.delete(id);
+  }
+
+  // Event Guest methods
+  async getEventGuests(eventId: string): Promise<EventGuest[]> {
+    return Array.from(this.eventGuests.values())
+      .filter(guest => guest.eventId === eventId);
+  }
+
+  async createEventGuest(insertGuest: InsertEventGuest): Promise<EventGuest> {
+    const id = randomUUID();
+    const guest: EventGuest = {
+      id,
+      eventId: insertGuest.eventId,
+      userId: insertGuest.userId,
+      status: insertGuest.status,
+      createdAt: new Date(),
+    };
+    this.eventGuests.set(id, guest);
+    return guest;
+  }
+
+  async updateEventGuestStatus(eventId: string, userId: string, status: string): Promise<boolean> {
+    const guest = Array.from(this.eventGuests.values())
+      .find(g => g.eventId === eventId && g.userId === userId);
+    if (!guest) return false;
+    
+    guest.status = status;
+    this.eventGuests.set(guest.id, guest);
+    return true;
+  }
+
+  // Event Comment methods
+  async getEventComments(eventId: string): Promise<EventComment[]> {
+    return Array.from(this.eventComments.values())
+      .filter(comment => comment.eventId === eventId)
+      .sort((a, b) => {
+        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return dateB - dateA;
+      });
+  }
+
+  async createEventComment(insertComment: InsertEventComment): Promise<EventComment> {
+    const id = randomUUID();
+    const comment: EventComment = {
+      id,
+      eventId: insertComment.eventId,
+      userId: insertComment.userId,
+      content: insertComment.content,
+      createdAt: new Date(),
+    };
+    this.eventComments.set(id, comment);
+    return comment;
+  }
+
+  async deleteEventComment(id: string): Promise<boolean> {
+    return this.eventComments.delete(id);
+  }
+
+  // Group Member methods
+  async getGroupMembers(groupId: string): Promise<GroupMember[]> {
+    return Array.from(this.groupMembers.values())
+      .filter(member => member.groupId === groupId);
+  }
+
+  async getUserGroups(userId: string): Promise<GroupMember[]> {
+    return Array.from(this.groupMembers.values())
+      .filter(member => member.userId === userId)
+      .sort((a, b) => {
+        const dateA = a.joinedAt ? new Date(a.joinedAt).getTime() : 0;
+        const dateB = b.joinedAt ? new Date(b.joinedAt).getTime() : 0;
+        return dateB - dateA;
+      });
+  }
+
+  async createGroupMember(insertMember: InsertGroupMember): Promise<GroupMember> {
+    const id = randomUUID();
+    const member: GroupMember = {
+      id,
+      groupId: insertMember.groupId,
+      userId: insertMember.userId,
+      role: insertMember.role ?? "member",
+      joinedAt: new Date(),
+    };
+    this.groupMembers.set(id, member);
+    return member;
+  }
+
+  async deleteGroupMember(groupId: string, userId: string): Promise<boolean> {
+    const member = Array.from(this.groupMembers.values())
+      .find(m => m.groupId === groupId && m.userId === userId);
+    if (!member) return false;
+    
+    return this.groupMembers.delete(member.id);
+  }
 }
 
 export const storage = new MemStorage();
