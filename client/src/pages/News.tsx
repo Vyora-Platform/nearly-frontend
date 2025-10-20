@@ -8,10 +8,13 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
+import { CreateNewsDialog } from "@/components/CreateNewsDialog";
 
 export default function News() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All News");
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const currentUserId = "current-user-id";
 
   const { data: news = [], isLoading } = useQuery({
     queryKey: ["/api/news"],
@@ -91,12 +94,19 @@ export default function News() {
               variant="default"
               size="sm"
               className="bg-gradient-primary text-white h-11 px-4 gap-2"
+              onClick={() => setCreateDialogOpen(true)}
               data-testid="button-create-news"
             >
               <Plus className="w-4 h-4" />
               Create News
             </Button>
           </div>
+
+          <CreateNewsDialog
+            open={createDialogOpen}
+            onOpenChange={setCreateDialogOpen}
+            userId={currentUserId}
+          />
 
           <CategoryPills
             categories={["All News", "Local", "National", "SPORT"]}

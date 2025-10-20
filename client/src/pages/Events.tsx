@@ -10,10 +10,13 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { format } from "date-fns";
+import { CreateEventDialog } from "@/components/CreateEventDialog";
 
 export default function Events() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const currentUserId = "current-user-id";
 
   const { data: events = [], isLoading } = useQuery({
     queryKey: ["/api/events"],
@@ -64,6 +67,12 @@ export default function Events() {
       <TopBar title="Events" showActions={false} />
 
       <div className="max-w-md mx-auto">
+        <CreateEventDialog
+          open={createDialogOpen}
+          onOpenChange={setCreateDialogOpen}
+          userId={currentUserId}
+        />
+
         <div className="p-4 space-y-4">
           <div className="flex items-center gap-3">
             <div className="flex-1">
@@ -77,6 +86,7 @@ export default function Events() {
               variant="default"
               size="sm"
               className="bg-gradient-primary text-white h-11 px-4 gap-2"
+              onClick={() => setCreateDialogOpen(true)}
               data-testid="button-create-event"
             >
               <Plus className="w-4 h-4" />

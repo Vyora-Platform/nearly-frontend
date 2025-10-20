@@ -9,10 +9,13 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { format } from "date-fns";
+import { CreateActivityDialog } from "@/components/CreateActivityDialog";
 
 export default function Home() {
   const [postText, setPostText] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const currentUserId = "current-user-id";
 
   const { data: activities = [], isLoading } = useQuery({
     queryKey: ["/api/activities"],
@@ -81,13 +84,13 @@ export default function Home() {
               <AvatarImage src="https://api.dicebear.com/7.x/avataaars/svg?seed=CurrentUser" />
               <AvatarFallback>You</AvatarFallback>
             </Avatar>
-            <Input
-              placeholder="What are you up to?"
-              value={postText}
-              onChange={(e) => setPostText(e.target.value)}
-              className="flex-1 bg-muted border-0"
+            <button
+              onClick={() => setCreateDialogOpen(true)}
+              className="flex-1 text-left px-4 py-2 bg-muted rounded-full text-muted-foreground"
               data-testid="input-post"
-            />
+            >
+              What are you up to?
+            </button>
           </div>
           <div className="flex items-center justify-between">
             <div className="flex gap-4">
@@ -111,6 +114,7 @@ export default function Home() {
               </button>
             </div>
             <button
+              onClick={() => setCreateDialogOpen(true)}
               className="text-primary font-semibold text-sm"
               data-testid="button-post"
             >
@@ -118,6 +122,12 @@ export default function Home() {
             </button>
           </div>
         </div>
+
+        <CreateActivityDialog
+          open={createDialogOpen}
+          onOpenChange={setCreateDialogOpen}
+          userId={currentUserId}
+        />
 
         <div className="p-4 border-b border-border">
           <CategoryPills
