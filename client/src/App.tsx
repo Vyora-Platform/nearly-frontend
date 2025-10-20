@@ -9,6 +9,7 @@ import Groups from "@/pages/Groups";
 import News from "@/pages/News";
 import Profile from "@/pages/Profile";
 import EventDetails from "@/pages/EventDetails";
+import ActivityDetails from "@/pages/ActivityDetails";
 import GroupChat from "@/pages/GroupChat";
 import Notifications from "@/pages/Notifications";
 import DirectChat from "@/pages/DirectChat";
@@ -21,6 +22,7 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/events" component={Events} />
       <Route path="/event/:id" component={EventDetails} />
+      <Route path="/activity/:id" component={ActivityDetails} />
       <Route path="/groups" component={Groups} />
       <Route path="/my-groups" component={MyGroups} />
       <Route path="/group/:id/chat" component={GroupChat} />

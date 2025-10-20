@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
 import { api } from "@/lib/api";
 import { queryClient } from "@/lib/queryClient";
+import { useLocation } from "wouter";
 
 interface ActivityCardProps {
   id: string;
@@ -45,6 +46,7 @@ export default function ActivityCard({
   timeAgo,
   isFollowing = false,
 }: ActivityCardProps) {
+  const [, setLocation] = useLocation();
   const [liked, setLiked] = useState(false);
   const [likes, setLikes] = useState(likesCount);
   const [following, setFollowing] = useState(isFollowing);
@@ -109,7 +111,7 @@ export default function ActivityCard({
       )}
 
       {imageUrl && (
-        <div className="w-full">
+        <div className="w-full cursor-pointer" onClick={() => setLocation(`/activity/${id}`)}>
           <img
             src={imageUrl}
             alt={title}
@@ -185,6 +187,7 @@ export default function ActivityCard({
             variant="default"
             size="sm"
             className="bg-gradient-primary text-white h-9"
+            onClick={() => setLocation(`/activity/${id}`)}
             data-testid="button-join"
           >
             Join
