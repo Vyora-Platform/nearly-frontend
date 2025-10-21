@@ -7,6 +7,7 @@ import Home from "@/pages/Home";
 import Events from "@/pages/Events";
 import CreateEvent from "@/pages/CreateEvent";
 import CreateGroup from "@/pages/CreateGroup";
+import CreateNews from "@/pages/CreateNews";
 import Groups from "@/pages/Groups";
 import News from "@/pages/News";
 import Profile from "@/pages/Profile";
@@ -31,6 +32,7 @@ function Router() {
       <Route path="/my-groups" component={MyGroups} />
       <Route path="/group/:id/chat" component={GroupChat} />
       <Route path="/news" component={News} />
+      <Route path="/create-news" component={CreateNews} />
       <Route path="/notifications" component={Notifications} />
       <Route path="/chat/:username" component={DirectChat} />
       <Route path="/settings" component={Settings} />
