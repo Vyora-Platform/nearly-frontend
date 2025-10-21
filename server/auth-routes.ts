@@ -26,7 +26,13 @@ export function registerAuthRoutes(app: Express) {
       if (err) {
         return res.status(500).json({ error: "Logout failed" });
       }
-      res.json({ success: true });
+      req.session.destroy((err) => {
+        if (err) {
+          return res.status(500).json({ error: "Session destruction failed" });
+        }
+        res.clearCookie("connect.sid");
+        res.json({ success: true });
+      });
     });
   });
 
