@@ -9,12 +9,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
-import { CreateGroupDialog } from "@/components/CreateGroupDialog";
+import { useLocation } from "wouter";
 
 export default function Groups() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Tech");
-  const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [, setLocation] = useLocation();
 
   const { data: groups = [], isLoading } = useQuery({
     queryKey: ["/api/groups"],
@@ -58,18 +58,13 @@ export default function Groups() {
               variant="default"
               size="sm"
               className="bg-gradient-primary text-white h-11 px-4 gap-2"
-              onClick={() => setCreateDialogOpen(true)}
+              onClick={() => setLocation("/create-group")}
               data-testid="button-create-group"
             >
               <Plus className="w-4 h-4" />
               Create Group
             </Button>
           </div>
-
-          <CreateGroupDialog
-            open={createDialogOpen}
-            onOpenChange={setCreateDialogOpen}
-          />
 
           <CategoryPills
             categories={["Tech", "Startups", "Fitness", "Gaming"]}

@@ -55,6 +55,7 @@ export const events = pgTable("events", {
 
 export const groups = pgTable("groups", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
   name: text("name").notNull(),
   description: text("description"),
   imageUrl: text("image_url"),
