@@ -50,14 +50,19 @@ export default function CreateNews() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
 
+  const getCurrentTime = () => {
+    const now = new Date();
+    return now.toTimeString().slice(0, 5);
+  };
+
   const form = useForm<CreateNewsFormValues>({
     resolver: zodResolver(createNewsFormSchema),
     defaultValues: {
       headline: "",
       description: "",
       imageUrl: "",
-      eventDate: undefined,
-      eventTime: "",
+      eventDate: new Date(),
+      eventTime: getCurrentTime(),
       location: "",
       category: "Local",
     },
