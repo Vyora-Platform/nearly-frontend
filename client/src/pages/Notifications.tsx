@@ -1,10 +1,9 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
-import { ArrowLeft, Settings, Calendar, Users, TrendingUp, Megaphone } from "lucide-react";
+import { ArrowLeft, Settings, Calendar, Users, TrendingUp, Megaphone, BarChart3, UserPlus } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 
 interface Notification {
   id: string;
@@ -26,11 +25,58 @@ export default function Notifications() {
     queryKey: ["/api/notifications", currentUserId],
   });
 
-  const filteredNotifications = notifications.filter((notif) => {
+  // Mock notifications for demo
+  const mockNotifications: Notification[] = [
+    {
+      id: "1",
+      type: "event_featured",
+      title: "New event near you: Startup Meetup @ IIT Kanpur",
+      description: "",
+      isRead: false,
+      createdAt: new Date(Date.now() - 600000), // 10 min ago
+    },
+    {
+      id: "2",
+      type: "group_invite",
+      title: "Kanpur Gamers",
+      description: "You have been invited to join 'Kanpur Gamers' group",
+      isRead: false,
+      createdAt: new Date(Date.now() - 1500000), // 25 min ago
+    },
+    {
+      id: "3",
+      type: "like",
+      title: "@rahul_kanpur",
+      description: "and 5 others liked your activity",
+      relatedUserIds: ["user1", "user2", "user3"],
+      isRead: false,
+      createdAt: new Date(Date.now() - 3600000), // 1h ago
+    },
+    {
+      id: "4",
+      type: "comment_poll",
+      title: "New comment on your poll: 'Which café is best?'",
+      description: "",
+      isRead: true,
+      createdAt: new Date(Date.now() - 7200000), // 2h ago
+    },
+    {
+      id: "5",
+      type: "news_alert",
+      title: "Local News Alert: Road closed near Moti Jheel",
+      description: "",
+      isRead: true,
+      createdAt: new Date(Date.now() - 18000000), // 5h ago
+    },
+  ];
+
+  const allNotifications = [...mockNotifications, ...notifications];
+
+  const filteredNotifications = allNotifications.filter((notif) => {
     if (activeTab === "all") return true;
-    if (activeTab === "activities") return notif.type === "activity";
-    if (activeTab === "events") return notif.type === "event";
-    if (activeTab === "groups") return notif.type === "group";
+    if (activeTab === "activities") return notif.type === "activity" || notif.type === "like";
+    if (activeTab === "events") return notif.type === "event" || notif.type === "event_featured";
+    if (activeTab === "groups") return notif.type === "group" || notif.type === "group_invite";
     return true;
   });
 
@@ -57,98 +103,166 @@ export default function Notifications() {
   const getNotificationIcon = (type: string) => {
     switch (type) {
       case "event":
+      case "event_featured":
         return <Calendar className="w-6 h-6" />;
       case "group":
-        return <Users className="w-6 h-6" />;
+      case "group_invite":
+        return <UserPlus className="w-6 h-6" />;
       case "activity":
         return <TrendingUp className="w-6 h-6" />;
-      case "news":
+      case "news_alert":
         return <Megaphone className="w-6 h-6" />;
+      case "comment_poll":
+        return <BarChart3 className="w-6 h-6" />;
+      case "like":
+        return null;
       default:
         return <TrendingUp className="w-6 h-6" />;
     }
   };
 
-  const NotificationCard = ({ notification }: { notification: Notification }) => {
-    const isEventOrFeatured = notification.type === "event" || notification.title.includes("New event");
+  const getTimeAgo = (date: Date) => {
+    const now = new Date();
+    const diffMs = now.getTime() - new Date(date).getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
 
-    if (isEventOrFeatured) {
+    if (diffMins < 1) return "Just now";
+    if (diffMins < 60) return `${diffMins} min ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    return `${Math.floor(diffHours / 24)}d ago`;
+  };
+
+  const NotificationCard = ({ notification }: { notification: Notification }) => {
+    // Featured event notification with gradient background
+    if (notification.type === "event_featured") {
       return (
-        <div
-          className="relative rounded-2xl p-4 bg-gradient-primary overflow-hidden"
-          data-testid={`notification-${notification.id}`}
-        >
-          <div className="flex items-start gap-3 mb-3">
-            <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center text-white flex-shrink-0">
-              {getNotificationIcon(notification.type)}
+        <div className="px-4 mb-4">
+          <div
+            className="relative rounded-2xl p-5 bg-gradient-primary overflow-hidden"
+            data-testid={`notification-${notification.id}`}
+          >
+            <div className="flex items-start gap-4 mb-3">
+              <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center text-white flex-shrink-0">
+                <Calendar className="w-6 h-6" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-base font-semibold text-white leading-snug">
+                  {notification.title}
+                </p>
+              </div>
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-white mb-1">
-                {notification.title}
-              </p>
-              <p className="text-xs text-white/90">
-                {notification.description}
-              </p>
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-white/70">{getTimeAgo(notification.createdAt)}</p>
+              <Button
+                variant="secondary"
+                size="sm"
+                className="bg-white text-foreground hover:bg-white/90 h-9 px-5 rounded-full"
+                data-testid={`button-view-event-${notification.id}`}
+              >
+                View Event
+              </Button>
             </div>
-          </div>
-          <div className="flex items-center justify-between">
-            <p className="text-xs text-white/70">10 min ago</p>
-            <Button
-              variant="secondary"
-              size="sm"
-              className="bg-white text-foreground hover:bg-white/90 h-8"
-              data-testid={`button-action-${notification.id}`}
-            >
-              View Event
-            </Button>
           </div>
         </div>
       );
     }
 
-    if (notification.type === "group") {
+    // Group invite notification
+    if (notification.type === "group_invite") {
       return (
-        <div className="flex items-start gap-3 p-4" data-testid={`notification-${notification.id}`}>
-          <div className="w-12 h-12 rounded-xl bg-gradient-primary flex items-center justify-center text-white flex-shrink-0">
-            {getNotificationIcon(notification.type)}
+        <div className="flex items-start gap-4 px-4 py-3" data-testid={`notification-${notification.id}`}>
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-white flex-shrink-0">
+            <UserPlus className="w-6 h-6" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm text-foreground mb-1">
+            <p className="text-sm text-foreground leading-snug">
               You have been invited to join{" "}
               <span className="font-semibold">'{notification.title}'</span> group
             </p>
-            <p className="text-xs text-muted-foreground mb-3">25 min ago</p>
-            <Button
-              className="bg-gradient-primary text-white border-none h-8 px-6"
-              data-testid={`button-join-${notification.id}`}
-            >
-              Join
-            </Button>
+            <p className="text-xs text-muted-foreground mt-1">{getTimeAgo(notification.createdAt)}</p>
+          </div>
+          <Button
+            className="bg-gradient-primary text-white border-none h-9 px-6 flex-shrink-0 rounded-full"
+            data-testid={`button-join-${notification.id}`}
+          >
+            Join
+          </Button>
+        </div>
+      );
+    }
+
+    // Likes notification with avatars
+    if (notification.type === "like") {
+      return (
+        <div className="flex items-start gap-4 px-4 py-3" data-testid={`notification-${notification.id}`}>
+          <div className="flex -space-x-2 flex-shrink-0">
+            {[1, 2, 3].map((i) => (
+              <Avatar key={i} className="w-10 h-10 border-2 border-background">
+                <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=user${i}`} />
+                <AvatarFallback>U{i}</AvatarFallback>
+              </Avatar>
+            ))}
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm text-foreground leading-snug">
+              <span className="font-semibold">{notification.title}</span> {notification.description}
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">{getTimeAgo(notification.createdAt)}</p>
+          </div>
+          <button className="flex-shrink-0 text-muted-foreground">
+            <span className="text-xl">›</span>
+          </button>
+        </div>
+      );
+    }
+
+    // Comment/Poll notification
+    if (notification.type === "comment_poll") {
+      return (
+        <div className="flex items-start gap-4 px-4 py-3" data-testid={`notification-${notification.id}`}>
+          <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500 flex-shrink-0">
+            <BarChart3 className="w-6 h-6" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm text-foreground leading-snug">
+              {notification.title}
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">{getTimeAgo(notification.createdAt)}</p>
           </div>
         </div>
       );
     }
 
+    // News alert notification
+    if (notification.type === "news_alert") {
+      return (
+        <div className="flex items-start gap-4 px-4 py-3" data-testid={`notification-${notification.id}`}>
+          <div className="w-12 h-12 rounded-xl bg-red-500/10 flex items-center justify-center text-red-500 flex-shrink-0">
+            <Megaphone className="w-6 h-6" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm text-foreground leading-snug">
+              {notification.title}
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">{getTimeAgo(notification.createdAt)}</p>
+          </div>
+        </div>
+      );
+    }
+
+    // Default notification
     return (
-      <div className="flex items-start gap-3 p-4" data-testid={`notification-${notification.id}`}>
-        <div className="flex -space-x-2 flex-shrink-0">
-          {notification.relatedUserIds?.slice(0, 3).map((userId, index) => (
-            <Avatar key={userId} className="w-10 h-10 border-2 border-background">
-              <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${userId}`} />
-              <AvatarFallback>{userId.slice(0, 2).toUpperCase()}</AvatarFallback>
-            </Avatar>
-          ))}
+      <div className="flex items-start gap-4 px-4 py-3" data-testid={`notification-${notification.id}`}>
+        <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center text-foreground flex-shrink-0">
+          {getNotificationIcon(notification.type)}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm text-foreground">
-            <span className="font-semibold">{notification.title}</span> and{" "}
-            {notification.relatedUserIds?.length || 5} others liked your activity
+          <p className="text-sm text-foreground leading-snug">
+            {notification.title}
           </p>
-          <p className="text-xs text-muted-foreground">1h ago</p>
+          <p className="text-xs text-muted-foreground mt-1">{getTimeAgo(notification.createdAt)}</p>
         </div>
-        <button className="flex-shrink-0">
-          <span className="text-muted-foreground">›</span>
-        </button>
       </div>
     );
   };
@@ -161,7 +275,7 @@ export default function Notifications() {
             <ArrowLeft className="w-6 h-6 text-foreground" />
           </button>
           <h1 className="text-lg font-bold text-foreground">Notifications</h1>
-          <button data-testid="button-settings">
+          <button onClick={() => setLocation("/settings")} data-testid="button-settings">
             <Settings className="w-6 h-6 text-foreground" />
           </button>
         </div>
@@ -171,7 +285,7 @@ export default function Notifications() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
+              className={`px-5 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
                 activeTab === tab.id
                   ? "bg-gradient-primary text-white"
                   : "bg-muted text-muted-foreground"
@@ -187,10 +301,10 @@ export default function Notifications() {
       <div className="pb-20">
         {todayNotifications.length > 0 && (
           <div className="mb-6">
-            <p className="text-xs font-semibold text-muted-foreground px-4 py-3 uppercase">
-              New Today
+            <p className="text-xs font-bold text-muted-foreground px-4 py-3 uppercase tracking-wide">
+              NEW TODAY
             </p>
-            <div className="space-y-1">
+            <div className="space-y-0">
               {todayNotifications.map((notification) => (
                 <NotificationCard key={notification.id} notification={notification} />
               ))}
@@ -200,10 +314,10 @@ export default function Notifications() {
 
         {yesterdayNotifications.length > 0 && (
           <div>
-            <p className="text-xs font-semibold text-muted-foreground px-4 py-3 uppercase">
-              Yesterday
+            <p className="text-xs font-bold text-muted-foreground px-4 py-3 uppercase tracking-wide">
+              YESTERDAY
             </p>
-            <div className="space-y-1">
+            <div className="space-y-0">
               {yesterdayNotifications.map((notification) => (
                 <NotificationCard key={notification.id} notification={notification} />
               ))}
