@@ -96,10 +96,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/activities", async (req, res) => {
     try {
+      console.log("Received activity data:", JSON.stringify(req.body, null, 2));
       const validated = insertActivitySchema.parse(req.body);
       const activity = await storage.createActivity(validated);
       res.status(201).json(activity);
     } catch (error) {
+      console.error("Activity validation error:", error);
       res.status(400).json({ error: "Invalid request data" });
     }
   });

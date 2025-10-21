@@ -32,7 +32,10 @@ const createActivityFormSchema = z.object({
   startTime: z.string().min(1, "Start time is required"),
   endDate: z.coerce.date().optional(),
   endTime: z.string().optional(),
-  maxParticipants: z.coerce.number().min(1).optional(),
+  maxParticipants: z.preprocess(
+    (val) => (val === "" || val === null || val === undefined ? undefined : Number(val)),
+    z.number().min(1).optional()
+  ),
   visibility: z.enum(["Public", "Private", "Invite Only"]),
   cost: z.enum(["Free", "Contribution"]),
 });
