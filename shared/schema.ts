@@ -5,6 +5,8 @@ import { z } from "zod";
 
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  googleId: text("google_id").unique(),
+  email: text("email").unique(),
   username: text("username").notNull().unique(),
   name: text("name").notNull(),
   bio: text("bio"),
@@ -14,6 +16,13 @@ export const users = pgTable("users", {
   followersCount: integer("followers_count").default(0),
   followingCount: integer("following_count").default(0),
   postsCount: integer("posts_count").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const sessions = pgTable("sessions", {
+  sid: varchar("sid").primaryKey(),
+  sess: text("sess").notNull(),
+  expire: timestamp("expire").notNull(),
 });
 
 export const activities = pgTable("activities", {
