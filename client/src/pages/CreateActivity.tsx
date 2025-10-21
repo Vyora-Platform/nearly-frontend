@@ -3,8 +3,8 @@ import { ArrowLeft, Calendar, Clock, MapPin, ImageIcon, X, Users } from "lucide-
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useMutation } from "@tanstack/react-query";
-import { useRef, useState } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useRef, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -21,6 +21,14 @@ import {
 } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { api } from "@/lib/api";
 
 const createActivityFormSchema = z.object({
   title: z.string().min(1, "Activity title is required"),
@@ -48,6 +56,12 @@ export default function CreateActivity() {
   const currentUserId = "current-user-id";
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
+  const [organizerType, setOrganizerType] = useState<"user" | "custom">("user");
+
+  const { data: currentUser } = useQuery({
+    queryKey: ["/api/users", currentUserId],
+    queryFn: () => api.getUser(currentUserId),
+  });
 
   const getCurrentTime = () => {
     const now = new Date();
@@ -58,7 +72,7 @@ export default function CreateActivity() {
     resolver: zodResolver(createActivityFormSchema),
     defaultValues: {
       title: "",
-      organizerName: "",
+      organizerName: currentUser?.name || "",
       description: "",
       imageUrl: "",
       location: "",
@@ -168,6 +182,22 @@ export default function CreateActivity() {
     });
   };
 
+  useEffect(() => {
+    if (currentUser && organizerType === "user") {
+      form.setValue("organizerName", currentUser.name);
+    }
+  }, [currentUser, form, organizerType]);
+
+  const handleOrganizerTypeChange = (value: string) => {
+    if (value === "user" && currentUser) {
+      setOrganizerType("user");
+      form.setValue("organizerName", currentUser.name);
+    } else if (value === "custom") {
+      setOrganizerType("custom");
+      form.setValue("organizerName", "");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background pb-6">
       <div className="sticky top-0 bg-background border-b border-border z-10">
@@ -210,26 +240,50 @@ export default function CreateActivity() {
             />
 
             {/* Organizer Name */}
-            <FormField
-              control={form.control}
-              name="organizerName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium text-foreground">
-                    Organizer Name
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Enter organizer name..."
-                      className="bg-muted border-none text-foreground placeholder:text-muted-foreground"
-                      data-testid="input-organizer-name"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
+            <div className="space-y-3">
+              <FormLabel className="text-sm font-medium text-foreground">
+                Organizer Name
+              </FormLabel>
+              <Select
+                value={organizerType}
+                onValueChange={handleOrganizerTypeChange}
+              >
+                <SelectTrigger 
+                  className="bg-muted border-none text-foreground"
+                  data-testid="select-organizer-type"
+                >
+                  <SelectValue placeholder="Select organizer" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="user">
+                    {currentUser?.name || "Your Name"}
+                  </SelectItem>
+                  <SelectItem value="custom">
+                    Custom Name
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+
+              {organizerType === "custom" && (
+                <FormField
+                  control={form.control}
+                  name="organizerName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter custom organizer name..."
+                          className="bg-muted border-none text-foreground placeholder:text-muted-foreground"
+                          data-testid="input-organizer-name"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               )}
-            />
+            </div>
 
             {/* Description */}
             <FormField
