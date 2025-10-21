@@ -73,6 +73,8 @@ export const news = pgTable("news", {
   description: text("description"),
   imageUrl: text("image_url"),
   location: text("location"),
+  eventDate: timestamp("event_date"),
+  eventTime: text("event_time"),
   category: text("category").notNull(),
   trueVotes: integer("true_votes").default(0),
   fakeVotes: integer("fake_votes").default(0),
