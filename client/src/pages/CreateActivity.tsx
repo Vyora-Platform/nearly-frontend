@@ -29,12 +29,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { api } from "@/lib/api";
+import { ACTIVITY_CATEGORIES } from "@shared/constants";
 
 const createActivityFormSchema = z.object({
   title: z.string().min(1, "Activity title is required"),
   organizerName: z.string().min(1, "Organizer name is required"),
   description: z.string().optional(),
   imageUrl: z.string().optional(),
+  category: z.string().optional(),
   location: z.string().min(1, "Location is required"),
   startDate: z.coerce.date(),
   startTime: z.string().min(1, "Start time is required"),
@@ -72,9 +74,10 @@ export default function CreateActivity() {
     resolver: zodResolver(createActivityFormSchema),
     defaultValues: {
       title: "",
-      organizerName: currentUser?.name || "",
+      organizerName: "Current User",
       description: "",
       imageUrl: "",
+      category: "",
       location: "",
       startDate: new Date(),
       startTime: getCurrentTime(),
@@ -114,6 +117,9 @@ export default function CreateActivity() {
       }
       if (data.imageUrl?.trim()) {
         activityData.imageUrl = data.imageUrl.trim();
+      }
+      if (data.category?.trim()) {
+        activityData.category = data.category.trim();
       }
       if (endDateTime) {
         activityData.endDate = endDateTime;
@@ -183,15 +189,15 @@ export default function CreateActivity() {
   };
 
   useEffect(() => {
-    if (currentUser && organizerType === "user") {
-      form.setValue("organizerName", currentUser.name);
+    if (organizerType === "user") {
+      form.setValue("organizerName", currentUser?.name || "Current User");
     }
   }, [currentUser, form, organizerType]);
 
   const handleOrganizerTypeChange = (value: string) => {
-    if (value === "user" && currentUser) {
+    if (value === "user") {
       setOrganizerType("user");
-      form.setValue("organizerName", currentUser.name);
+      form.setValue("organizerName", currentUser?.name || "Current User");
     } else if (value === "custom") {
       setOrganizerType("custom");
       form.setValue("organizerName", "");
@@ -302,6 +308,40 @@ export default function CreateActivity() {
                       {...field}
                     />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Category */}
+            <FormField
+              control={form.control}
+              name="category"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium text-foreground">
+                    Category (Optional)
+                  </FormLabel>
+                  <Select
+                    value={field.value}
+                    onValueChange={field.onChange}
+                  >
+                    <FormControl>
+                      <SelectTrigger 
+                        className="bg-muted border-none text-foreground"
+                        data-testid="select-category"
+                      >
+                        <SelectValue placeholder="Select a category" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="max-h-[300px]">
+                      {ACTIVITY_CATEGORIES.map((category) => (
+                        <SelectItem key={category} value={category}>
+                          {category}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

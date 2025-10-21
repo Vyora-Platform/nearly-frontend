@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { format } from "date-fns";
 import { useLocation } from "wouter";
+import { ACTIVITY_CATEGORIES } from "@shared/constants";
 
 export default function Home() {
   const [postText, setPostText] = useState("");
@@ -94,7 +95,7 @@ export default function Home() {
 
         <div className="p-4 border-b border-border">
           <CategoryPills
-            categories={["All", "Movies", "Sports", "Food"]}
+            categories={["All", ...ACTIVITY_CATEGORIES]}
             onSelect={setSelectedCategory}
           />
         </div>
