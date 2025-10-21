@@ -22,11 +22,20 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { ACTIVITY_CATEGORIES } from "@shared/constants";
 
 const createGroupFormSchema = z.object({
   name: z.string().min(1, "Group name is required"),
   description: z.string().optional(),
   groupType: z.enum(["Public", "Private", "Invite-only"]),
+  category: z.string().optional(),
   rules: z.string().optional(),
   imageUrl: z.string().optional(),
 });
@@ -46,6 +55,7 @@ export default function CreateGroup() {
       name: "",
       description: "",
       groupType: "Public",
+      category: "",
       rules: "",
       imageUrl: "",
     },
@@ -74,6 +84,9 @@ export default function CreateGroup() {
 
       if (data.description?.trim()) {
         groupData.description = data.description.trim();
+      }
+      if (data.category?.trim()) {
+        groupData.category = data.category.trim();
       }
       if (data.rules?.trim()) {
         groupData.rules = data.rules.trim();
@@ -218,6 +231,40 @@ export default function CreateGroup() {
                       className="bg-muted border-border min-h-24 resize-none"
                     />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Category */}
+            <FormField
+              control={form.control}
+              name="category"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-foreground font-medium">
+                    Category (Optional)
+                  </FormLabel>
+                  <Select
+                    value={field.value}
+                    onValueChange={field.onChange}
+                  >
+                    <FormControl>
+                      <SelectTrigger 
+                        className="bg-muted border-border"
+                        data-testid="select-category"
+                      >
+                        <SelectValue placeholder="Select a category" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="max-h-[300px]">
+                      {ACTIVITY_CATEGORIES.map((category) => (
+                        <SelectItem key={category} value={category}>
+                          {category}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

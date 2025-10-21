@@ -20,6 +20,14 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { ACTIVITY_CATEGORIES } from "@shared/constants";
 
 const createNewsFormSchema = z.object({
   headline: z.string().min(1, "Headline is required"),
@@ -32,16 +40,6 @@ const createNewsFormSchema = z.object({
 });
 
 type CreateNewsFormValues = z.infer<typeof createNewsFormSchema>;
-
-const categories = [
-  "Local",
-  "National",
-  "SPORT",
-  "CRIME",
-  "EDUCATIONAL",
-  "BOLLYWOOD",
-  "Alerts",
-];
 
 export default function CreateNews() {
   const [, setLocation] = useLocation();
@@ -64,7 +62,7 @@ export default function CreateNews() {
       eventDate: new Date(),
       eventTime: getCurrentTime(),
       location: "",
-      category: "Local",
+      category: ACTIVITY_CATEGORIES[0],
     },
   });
 
@@ -357,25 +355,26 @@ export default function CreateNews() {
                   <FormLabel className="text-sm font-medium text-foreground">
                     Category
                   </FormLabel>
-                  <FormControl>
-                    <div className="flex flex-wrap gap-2">
-                      {categories.map((cat) => (
-                        <Badge
-                          key={cat}
-                          variant={field.value === cat ? "default" : "outline"}
-                          className={`cursor-pointer transition-all ${
-                            field.value === cat
-                              ? "bg-gradient-primary text-white border-none"
-                              : "bg-muted text-foreground border-border hover-elevate"
-                          }`}
-                          onClick={() => field.onChange(cat)}
-                          data-testid={`badge-category-${cat.toLowerCase()}`}
-                        >
-                          {cat}
-                        </Badge>
+                  <Select
+                    value={field.value}
+                    onValueChange={field.onChange}
+                  >
+                    <FormControl>
+                      <SelectTrigger 
+                        className="bg-muted border-none text-foreground"
+                        data-testid="select-category"
+                      >
+                        <SelectValue placeholder="Select a category" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="max-h-[300px]">
+                      {ACTIVITY_CATEGORIES.map((category) => (
+                        <SelectItem key={category} value={category}>
+                          {category}
+                        </SelectItem>
                       ))}
-                    </div>
-                  </FormControl>
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

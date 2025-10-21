@@ -21,6 +21,14 @@ import {
 import { insertEventSchema } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { ACTIVITY_CATEGORIES } from "@shared/constants";
 
 interface Guest {
   id: string;
@@ -217,6 +225,35 @@ export default function CreateEvent() {
                       data-testid="input-description"
                     />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Category */}
+            <FormField
+              control={form.control}
+              name="category"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium">Category (Optional)</FormLabel>
+                  <Select
+                    value={field.value?.[0] || ""}
+                    onValueChange={(value) => field.onChange(value ? [value] : [])}
+                  >
+                    <FormControl>
+                      <SelectTrigger data-testid="select-category">
+                        <SelectValue placeholder="Select a category" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="max-h-[300px]">
+                      {ACTIVITY_CATEGORIES.map((category) => (
+                        <SelectItem key={category} value={category}>
+                          {category}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
