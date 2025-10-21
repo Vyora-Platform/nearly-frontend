@@ -90,15 +90,6 @@ export default function Home() {
               What are you up to?
             </button>
           </div>
-          <div className="flex items-center justify-end">
-            <button
-              onClick={() => setLocation("/create-activity")}
-              className="text-primary font-semibold text-sm"
-              data-testid="button-post"
-            >
-              Post
-            </button>
-          </div>
         </div>
 
         <div className="p-4 border-b border-border">
