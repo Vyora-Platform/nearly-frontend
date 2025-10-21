@@ -2,9 +2,7 @@ import TopBar from "@/components/TopBar";
 import BottomNav from "@/components/BottomNav";
 import ActivityCard from "@/components/ActivityCard";
 import CategoryPills from "@/components/CategoryPills";
-import { Plus, Image as ImageIcon, Video, MapPin } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
@@ -92,27 +90,7 @@ export default function Home() {
               What are you up to?
             </button>
           </div>
-          <div className="flex items-center justify-between">
-            <div className="flex gap-4">
-              <button
-                className="text-muted-foreground hover-elevate active-elevate-2"
-                data-testid="button-add-image"
-              >
-                <ImageIcon className="w-5 h-5" />
-              </button>
-              <button
-                className="text-muted-foreground hover-elevate active-elevate-2"
-                data-testid="button-add-video"
-              >
-                <Video className="w-5 h-5" />
-              </button>
-              <button
-                className="text-muted-foreground hover-elevate active-elevate-2"
-                data-testid="button-add-location"
-              >
-                <MapPin className="w-5 h-5" />
-              </button>
-            </div>
+          <div className="flex items-center justify-end">
             <button
               onClick={() => setLocation("/create-activity")}
               className="text-primary font-semibold text-sm"
