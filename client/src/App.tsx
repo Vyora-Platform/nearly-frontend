@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Home from "@/pages/Home";
 import Events from "@/pages/Events";
 import CreateEvent from "@/pages/CreateEvent";
+import CreateActivity from "@/pages/CreateActivity";
 import CreateGroup from "@/pages/CreateGroup";
 import CreateNews from "@/pages/CreateNews";
 import Groups from "@/pages/Groups";
@@ -25,6 +26,7 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/events" component={Events} />
       <Route path="/create-event" component={CreateEvent} />
+      <Route path="/create-activity" component={CreateActivity} />
       <Route path="/event/:id" component={EventDetails} />
       <Route path="/activity/:id" component={ActivityDetails} />
       <Route path="/groups" component={Groups} />
