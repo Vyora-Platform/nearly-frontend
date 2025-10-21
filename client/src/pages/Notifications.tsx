@@ -4,73 +4,84 @@ import { useLocation } from "wouter";
 import { ArrowLeft, Settings, Calendar, Users, TrendingUp, Megaphone, BarChart3, UserPlus } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-
-interface Notification {
-  id: string;
-  type: string;
-  title: string;
-  description: string;
-  actionUrl?: string | null;
-  relatedUserIds?: string[] | null;
-  isRead: boolean;
-  createdAt: Date;
-}
+import type { Notification } from "@shared/schema";
+import { api } from "@/lib/api";
 
 export default function Notifications() {
   const [, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState("all");
   const currentUserId = "current-user-id";
 
-  const { data: notifications = [] } = useQuery<Notification[]>({
+  const { data: notifications = [], isLoading } = useQuery<Notification[]>({
     queryKey: ["/api/notifications", currentUserId],
+    queryFn: () => api.getNotifications(currentUserId),
   });
 
-  // Mock notifications for demo
-  const mockNotifications: Notification[] = [
+  // Demo/seed notifications - only shown if no real notifications exist
+  const seedNotifications: Notification[] = notifications.length === 0 ? [
     {
-      id: "1",
+      id: "seed-1",
+      userId: currentUserId,
       type: "event_featured",
       title: "New event near you: Startup Meetup @ IIT Kanpur",
-      description: "",
+      description: "Join us for networking and learning",
+      actionUrl: "/event/demo",
+      relatedId: null,
+      relatedUserIds: null,
       isRead: false,
       createdAt: new Date(Date.now() - 600000), // 10 min ago
     },
     {
-      id: "2",
+      id: "seed-2",
+      userId: currentUserId,
       type: "group_invite",
       title: "Kanpur Gamers",
-      description: "You have been invited to join 'Kanpur Gamers' group",
+      description: "You have been invited to join group",
+      actionUrl: "/group/demo",
+      relatedId: null,
+      relatedUserIds: null,
       isRead: false,
       createdAt: new Date(Date.now() - 1500000), // 25 min ago
     },
     {
-      id: "3",
+      id: "seed-3",
+      userId: currentUserId,
       type: "like",
       title: "@rahul_kanpur",
       description: "and 5 others liked your activity",
+      actionUrl: "/activity/demo",
+      relatedId: null,
       relatedUserIds: ["user1", "user2", "user3"],
       isRead: false,
       createdAt: new Date(Date.now() - 3600000), // 1h ago
     },
     {
-      id: "4",
+      id: "seed-4",
+      userId: currentUserId,
       type: "comment_poll",
-      title: "New comment on your poll: 'Which café is best?'",
-      description: "",
+      title: "New comment on your poll",
+      description: "Which café is best?",
+      actionUrl: null,
+      relatedId: null,
+      relatedUserIds: null,
       isRead: true,
       createdAt: new Date(Date.now() - 7200000), // 2h ago
     },
     {
-      id: "5",
+      id: "seed-5",
+      userId: currentUserId,
       type: "news_alert",
-      title: "Local News Alert: Road closed near Moti Jheel",
-      description: "",
+      title: "Local News Alert",
+      description: "Road closed near Moti Jheel",
+      actionUrl: null,
+      relatedId: null,
+      relatedUserIds: null,
       isRead: true,
       createdAt: new Date(Date.now() - 18000000), // 5h ago
     },
-  ];
+  ] : [];
 
-  const allNotifications = [...mockNotifications, ...notifications];
+  const allNotifications = [...notifications, ...seedNotifications];
 
   const filteredNotifications = allNotifications.filter((notif) => {
     if (activeTab === "all") return true;
@@ -158,6 +169,7 @@ export default function Notifications() {
                 variant="secondary"
                 size="sm"
                 className="bg-white text-foreground hover:bg-white/90 h-9 px-5 rounded-full"
+                onClick={() => notification.actionUrl && setLocation(notification.actionUrl)}
                 data-testid={`button-view-event-${notification.id}`}
               >
                 View Event
@@ -184,6 +196,7 @@ export default function Notifications() {
           </div>
           <Button
             className="bg-gradient-primary text-white border-none h-9 px-6 flex-shrink-0 rounded-full"
+            onClick={() => notification.actionUrl && setLocation(notification.actionUrl)}
             data-testid={`button-join-${notification.id}`}
           >
             Join
@@ -194,13 +207,14 @@ export default function Notifications() {
 
     // Likes notification with avatars
     if (notification.type === "like") {
+      const userSeeds = notification.relatedUserIds || ["user1", "user2", "user3"];
       return (
         <div className="flex items-start gap-4 px-4 py-3" data-testid={`notification-${notification.id}`}>
           <div className="flex -space-x-2 flex-shrink-0">
-            {[1, 2, 3].map((i) => (
+            {userSeeds.slice(0, 3).map((userId, i) => (
               <Avatar key={i} className="w-10 h-10 border-2 border-background">
-                <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=user${i}`} />
-                <AvatarFallback>U{i}</AvatarFallback>
+                <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${userId}`} />
+                <AvatarFallback>{userId.slice(0, 2).toUpperCase()}</AvatarFallback>
               </Avatar>
             ))}
           </div>
@@ -210,7 +224,11 @@ export default function Notifications() {
             </p>
             <p className="text-xs text-muted-foreground mt-1">{getTimeAgo(notification.createdAt)}</p>
           </div>
-          <button className="flex-shrink-0 text-muted-foreground">
+          <button
+            className="flex-shrink-0 text-muted-foreground"
+            onClick={() => notification.actionUrl && setLocation(notification.actionUrl)}
+            data-testid={`button-view-${notification.id}`}
+          >
             <span className="text-xl">›</span>
           </button>
         </div>
@@ -228,6 +246,9 @@ export default function Notifications() {
             <p className="text-sm text-foreground leading-snug">
               {notification.title}
             </p>
+            {notification.description && (
+              <p className="text-sm text-muted-foreground">'{notification.description}'</p>
+            )}
             <p className="text-xs text-muted-foreground mt-1">{getTimeAgo(notification.createdAt)}</p>
           </div>
         </div>
@@ -245,6 +266,9 @@ export default function Notifications() {
             <p className="text-sm text-foreground leading-snug">
               {notification.title}
             </p>
+            {notification.description && (
+              <p className="text-sm text-muted-foreground">{notification.description}</p>
+            )}
             <p className="text-xs text-muted-foreground mt-1">{getTimeAgo(notification.createdAt)}</p>
           </div>
         </div>
@@ -261,11 +285,22 @@ export default function Notifications() {
           <p className="text-sm text-foreground leading-snug">
             {notification.title}
           </p>
+          {notification.description && (
+            <p className="text-sm text-muted-foreground">{notification.description}</p>
+          )}
           <p className="text-xs text-muted-foreground mt-1">{getTimeAgo(notification.createdAt)}</p>
         </div>
       </div>
     );
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <p className="text-muted-foreground">Loading notifications...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">

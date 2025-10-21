@@ -157,11 +157,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/events", async (req, res) => {
     try {
-      const validated = insertEventSchema.parse(req.body);
+      // Coerce string dates to Date objects before validation
+      const bodyWithDates = {
+        ...req.body,
+        startDate: req.body.startDate ? new Date(req.body.startDate) : undefined,
+        endDate: req.body.endDate ? new Date(req.body.endDate) : undefined,
+      };
+      const validated = insertEventSchema.parse(bodyWithDates);
       const event = await storage.createEvent(validated);
       res.status(201).json(event);
     } catch (error) {
-      res.status(400).json({ error: "Invalid request data" });
+      console.error("Event creation validation error:", error);
+      res.status(400).json({ error: "Invalid request data", details: error instanceof Error ? error.message : String(error) });
     }
   });
 
