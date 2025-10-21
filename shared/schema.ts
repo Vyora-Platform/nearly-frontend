@@ -20,6 +20,7 @@ export const activities = pgTable("activities", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   userId: varchar("user_id").notNull(),
   title: text("title").notNull(),
+  organizerName: text("organizer_name"),
   description: text("description"),
   imageUrl: text("image_url"),
   location: text("location"),
