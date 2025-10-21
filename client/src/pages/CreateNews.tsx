@@ -1,9 +1,10 @@
 import { useLocation } from "wouter";
-import { ArrowLeft, Calendar, Clock, MapPin, ImageIcon } from "lucide-react";
+import { ArrowLeft, Calendar, Clock, MapPin, ImageIcon, X } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
+import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -46,6 +47,8 @@ export default function CreateNews() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const currentUserId = "current-user-id";
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [imagePreview, setImagePreview] = useState<string>("");
 
   const form = useForm<CreateNewsFormValues>({
     resolver: zodResolver(createNewsFormSchema),
@@ -105,6 +108,36 @@ export default function CreateNews() {
 
   const handleSubmit = (data: CreateNewsFormValues) => {
     createNewsMutation.mutate(data);
+  };
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (!file.type.startsWith('image/')) {
+        toast({
+          title: "Invalid file",
+          description: "Please select an image file",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        setImagePreview(base64String);
+        form.setValue("imageUrl", base64String);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setImagePreview("");
+    form.setValue("imageUrl", "");
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   const handlePreview = () => {
@@ -187,21 +220,45 @@ export default function CreateNews() {
                     Upload Media (Optional)
                   </FormLabel>
                   <FormControl>
-                    <div className="border-2 border-dashed border-border rounded-lg p-8 bg-muted/30 hover-elevate">
-                      <button
-                        type="button"
-                        className="w-full flex flex-col items-center gap-3 text-muted-foreground"
-                        data-testid="button-upload-media"
-                      >
-                        <ImageIcon className="w-10 h-10" />
-                        <span className="text-sm">Tap to upload from Gallery</span>
-                      </button>
-                      <Input
-                        placeholder="Or paste image URL..."
-                        className="mt-4 bg-background border-border text-foreground"
-                        data-testid="input-image-url"
-                        {...field}
+                    <div className="space-y-3">
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleFileSelect}
+                        data-testid="input-file"
                       />
+                      
+                      {imagePreview ? (
+                        <div className="relative border-2 border-border rounded-lg overflow-hidden bg-muted/30">
+                          <img
+                            src={imagePreview}
+                            alt="Preview"
+                            className="w-full h-48 object-cover"
+                          />
+                          <button
+                            type="button"
+                            onClick={handleRemoveImage}
+                            className="absolute top-2 right-2 w-8 h-8 rounded-full bg-destructive text-white flex items-center justify-center hover:opacity-90"
+                            data-testid="button-remove-image"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => fileInputRef.current?.click()}
+                          className="w-full border-2 border-dashed border-border rounded-lg p-8 bg-muted/30 hover-elevate"
+                          data-testid="button-upload-media"
+                        >
+                          <div className="flex flex-col items-center gap-3 text-muted-foreground">
+                            <ImageIcon className="w-10 h-10" />
+                            <span className="text-sm">Tap to upload from Gallery</span>
+                          </div>
+                        </button>
+                      )}
                     </div>
                   </FormControl>
                   <FormMessage />
