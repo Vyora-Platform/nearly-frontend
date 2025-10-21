@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Home from "@/pages/Home";
 import Events from "@/pages/Events";
+import CreateEvent from "@/pages/CreateEvent";
 import Groups from "@/pages/Groups";
 import News from "@/pages/News";
 import Profile from "@/pages/Profile";
@@ -21,6 +22,7 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/events" component={Events} />
+      <Route path="/create-event" component={CreateEvent} />
       <Route path="/event/:id" component={EventDetails} />
       <Route path="/activity/:id" component={ActivityDetails} />
       <Route path="/groups" component={Groups} />
