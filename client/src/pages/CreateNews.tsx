@@ -81,7 +81,7 @@ export default function CreateNews() {
         newsData.imageUrl = data.imageUrl.trim();
       }
       if (data.eventDate) {
-        newsData.eventDate = data.eventDate;
+        newsData.eventDate = new Date(data.eventDate).toISOString();
       }
       if (data.eventTime?.trim()) {
         newsData.eventTime = data.eventTime.trim();

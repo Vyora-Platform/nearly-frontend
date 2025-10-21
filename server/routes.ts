@@ -25,6 +25,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/users/current", async (req, res) => {
+    try {
+      const user = await storage.getUser("current-user-id");
+      if (!user) {
+        return res.status(404).json({ error: "Current user not found" });
+      }
+      res.json(user);
+    } catch (error) {
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
   app.get("/api/users/:id", async (req, res) => {
     try {
       const user = await storage.getUser(req.params.id);
@@ -61,12 +73,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.patch("/api/users/:id", async (req, res) => {
     try {
-      const user = await storage.updateUser(req.params.id, req.body);
+      const validated = insertUserSchema.partial().parse(req.body);
+      const user = await storage.updateUser(req.params.id, validated);
       if (!user) {
         return res.status(404).json({ error: "User not found" });
       }
       res.json(user);
     } catch (error) {
+      if (error instanceof Error && error.name === "ZodError") {
+        return res.status(400).json({ error: "Invalid request data" });
+      }
       res.status(500).json({ error: "Internal server error" });
     }
   });
@@ -96,24 +112,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/activities", async (req, res) => {
     try {
-      console.log("Received activity data:", JSON.stringify(req.body, null, 2));
       const validated = insertActivitySchema.parse(req.body);
       const activity = await storage.createActivity(validated);
       res.status(201).json(activity);
     } catch (error) {
-      console.error("Activity validation error:", error);
       res.status(400).json({ error: "Invalid request data" });
     }
   });
 
   app.patch("/api/activities/:id", async (req, res) => {
     try {
-      const activity = await storage.updateActivity(req.params.id, req.body);
+      const validated = insertActivitySchema.partial().parse(req.body);
+      const activity = await storage.updateActivity(req.params.id, validated);
       if (!activity) {
         return res.status(404).json({ error: "Activity not found" });
       }
       res.json(activity);
     } catch (error) {
+      if (error instanceof Error && error.name === "ZodError") {
+        return res.status(400).json({ error: "Invalid request data" });
+      }
       res.status(500).json({ error: "Internal server error" });
     }
   });
@@ -178,19 +196,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const event = await storage.createEvent(validated);
       res.status(201).json(event);
     } catch (error) {
-      console.error("Event creation validation error:", error);
-      res.status(400).json({ error: "Invalid request data", details: error instanceof Error ? error.message : String(error) });
+      res.status(400).json({ error: "Invalid request data" });
     }
   });
 
   app.patch("/api/events/:id", async (req, res) => {
     try {
-      const event = await storage.updateEvent(req.params.id, req.body);
+      const validated = insertEventSchema.partial().parse(req.body);
+      const event = await storage.updateEvent(req.params.id, validated);
       if (!event) {
         return res.status(404).json({ error: "Event not found" });
       }
       res.json(event);
     } catch (error) {
+      if (error instanceof Error && error.name === "ZodError") {
+        return res.status(400).json({ error: "Invalid request data" });
+      }
       res.status(500).json({ error: "Internal server error" });
     }
   });
@@ -242,12 +263,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.patch("/api/groups/:id", async (req, res) => {
     try {
-      const group = await storage.updateGroup(req.params.id, req.body);
+      const validated = insertGroupSchema.partial().parse(req.body);
+      const group = await storage.updateGroup(req.params.id, validated);
       if (!group) {
         return res.status(404).json({ error: "Group not found" });
       }
       res.json(group);
     } catch (error) {
+      if (error instanceof Error && error.name === "ZodError") {
+        return res.status(400).json({ error: "Invalid request data" });
+      }
       res.status(500).json({ error: "Internal server error" });
     }
   });
@@ -299,12 +324,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.patch("/api/news/:id", async (req, res) => {
     try {
-      const newsItem = await storage.updateNews(req.params.id, req.body);
+      const validated = insertNewsSchema.partial().parse(req.body);
+      const newsItem = await storage.updateNews(req.params.id, validated);
       if (!newsItem) {
         return res.status(404).json({ error: "News not found" });
       }
       res.json(newsItem);
     } catch (error) {
+      if (error instanceof Error && error.name === "ZodError") {
+        return res.status(400).json({ error: "Invalid request data" });
+      }
       res.status(500).json({ error: "Internal server error" });
     }
   });

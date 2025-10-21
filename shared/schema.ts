@@ -49,7 +49,7 @@ export const events = pgTable("events", {
   visibility: text("visibility").notNull(),
   entryType: text("entry_type").notNull(),
   price: integer("price"),
-  category: text("category").array(),
+  category: text("category"),
   attendeesCount: integer("attendees_count").default(0),
   createdAt: timestamp("created_at").defaultNow(),
 });

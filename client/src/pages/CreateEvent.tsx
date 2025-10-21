@@ -79,7 +79,7 @@ export default function CreateEvent() {
       entryType: "FREE",
       price: null,
       imageUrl: null,
-      category: [],
+      category: "",
     },
   });
 
@@ -97,7 +97,6 @@ export default function CreateEvent() {
         entryType: data.entryType,
         visibility: data.visibility,
         startDate: startDateTime.toISOString(),
-        category: data.category || [],
       };
 
       // Only include optional fields if they have values
@@ -115,6 +114,9 @@ export default function CreateEvent() {
       }
       if (data.imageUrl) {
         eventData.imageUrl = data.imageUrl;
+      }
+      if (data.category?.trim()) {
+        eventData.category = data.category.trim();
       }
 
       return apiRequest("POST", "/api/events", eventData);

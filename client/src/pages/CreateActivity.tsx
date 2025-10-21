@@ -107,7 +107,7 @@ export default function CreateActivity() {
         title: data.title.trim(),
         organizerName: data.organizerName.trim(),
         location: data.location.trim(),
-        startDate: startDateTime,
+        startDate: startDateTime.toISOString(),
         visibility: data.visibility,
         cost: data.cost,
       };
@@ -122,7 +122,7 @@ export default function CreateActivity() {
         activityData.category = data.category.trim();
       }
       if (endDateTime) {
-        activityData.endDate = endDateTime;
+        activityData.endDate = endDateTime.toISOString();
       }
       if (data.maxParticipants && data.maxParticipants > 0) {
         activityData.maxParticipants = data.maxParticipants;
