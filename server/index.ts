@@ -1,40 +1,10 @@
 import express, { type Request, Response, NextFunction } from "express";
-import session from "express-session";
-import ConnectPgSimple from "connect-pg-simple";
-import { pool } from "./db";
 import { registerRoutes } from "./routes";
-import { registerAuthRoutes } from "./auth-routes";
-import { setupAuth } from "./auth";
 import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-
-// Session store using PostgreSQL
-const PgSession = ConnectPgSimple(session);
-
-app.use(
-  session({
-    store: new PgSession({
-      pool,
-      tableName: "sessions",
-      createTableIfMissing: true,
-    }),
-    secret: process.env.SESSION_SECRET || "your-secret-key-change-this",
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-    },
-  })
-);
-
-// Set up Passport authentication
-setupAuth(app);
 
 app.use((req, res, next) => {
   const start = Date.now();
@@ -67,9 +37,6 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  // Register auth routes
-  registerAuthRoutes(app);
-  
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
