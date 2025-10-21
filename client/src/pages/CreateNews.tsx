@@ -162,7 +162,7 @@ export default function CreateNews() {
           >
             <ArrowLeft className="w-6 h-6 text-foreground" />
           </button>
-          <h1 className="text-xl font-semibold bg-gradient-primary bg-clip-text text-transparent">
+          <h1 className="text-xl font-semibold text-foreground">
             Create News
           </h1>
         </div>
