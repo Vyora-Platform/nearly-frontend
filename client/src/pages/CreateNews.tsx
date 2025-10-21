@@ -53,8 +53,8 @@ export default function CreateNews() {
       headline: "",
       description: "",
       imageUrl: "",
-      eventDate: new Date(),
-      eventTime: new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }),
+      eventDate: undefined,
+      eventTime: "",
       location: "",
       category: "Local",
     },
@@ -226,8 +226,8 @@ export default function CreateNews() {
                           type="date"
                           className="bg-muted border-none text-foreground pl-10"
                           data-testid="input-date"
-                          value={field.value instanceof Date ? field.value.toISOString().split('T')[0] : ''}
-                          onChange={(e) => field.onChange(new Date(e.target.value))}
+                          value={field.value instanceof Date && !isNaN(field.value.getTime()) ? field.value.toISOString().split('T')[0] : ''}
+                          onChange={(e) => field.onChange(e.target.value ? new Date(e.target.value) : undefined)}
                         />
                       </div>
                     </FormControl>
