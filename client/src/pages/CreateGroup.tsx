@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import type { User } from "@shared/schema";
+import type { User, Group } from "@shared/schema";
 import {
   Form,
   FormControl,
@@ -64,8 +64,8 @@ export default function CreateGroup() {
   );
 
   const createGroupMutation = useMutation({
-    mutationFn: async (data: CreateGroupFormValues) => {
-      const groupData: any = {
+    mutationFn: async (data: CreateGroupFormValues): Promise<Group> => {
+      const groupData: Record<string, any> = {
         userId: currentUserId,
         name: data.name.trim(),
         groupType: data.groupType,
@@ -78,13 +78,13 @@ export default function CreateGroup() {
       if (data.rules?.trim()) {
         groupData.rules = data.rules.trim();
       }
-      if (data.imageUrl) {
-        groupData.imageUrl = data.imageUrl;
+      if (data.imageUrl?.trim()) {
+        groupData.imageUrl = data.imageUrl.trim();
       }
 
-      return apiRequest("POST", "/api/groups", groupData);
+      return apiRequest("POST", "/api/groups", groupData) as unknown as Promise<Group>;
     },
-    onSuccess: async (newGroup: any) => {
+    onSuccess: async (newGroup: Group) => {
       // Add creator as first member
       await apiRequest("POST", `/api/groups/${newGroup.id}/join`, {
         userId: currentUserId,

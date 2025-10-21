@@ -18,6 +18,7 @@ import { eq, and, desc, or } from "drizzle-orm";
 
 export interface IStorage {
   // Users
+  getUsers(): Promise<User[]>;
   getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
@@ -86,6 +87,10 @@ export interface IStorage {
 
 export class DatabaseStorage implements IStorage {
   // User methods
+  async getUsers(): Promise<User[]> {
+    return await db.select().from(users);
+  }
+
   async getUser(id: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
     return user || undefined;
@@ -508,6 +513,7 @@ export class MemStorage implements IStorage {
     // Seed groups
     const group1: Group = {
       id: randomUUID(),
+      userId: user1.id,
       name: "Kanpur Startups",
       description: "A community for startup enthusiasts in Kanpur",
       imageUrl: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400",
@@ -521,6 +527,7 @@ export class MemStorage implements IStorage {
 
     const group2: Group = {
       id: randomUUID(),
+      userId: user2.id,
       name: "Delhi Foodies",
       description: "For food lovers sharing restaurant recommendations",
       imageUrl: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400",
@@ -567,6 +574,10 @@ export class MemStorage implements IStorage {
   }
 
   // User methods
+  async getUsers(): Promise<User[]> {
+    return Array.from(this.users.values());
+  }
+
   async getUser(id: string): Promise<User | undefined> {
     return this.users.get(id);
   }
@@ -731,6 +742,7 @@ export class MemStorage implements IStorage {
     const id = randomUUID();
     const group: Group = {
       id,
+      userId: insertGroup.userId,
       name: insertGroup.name,
       description: insertGroup.description ?? null,
       imageUrl: insertGroup.imageUrl ?? null,
