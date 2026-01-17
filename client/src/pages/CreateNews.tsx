@@ -1,24 +1,9 @@
-import { useLocation } from "wouter";
-import { ArrowLeft, Calendar, Clock, MapPin, ImageIcon, X } from "lucide-react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { useMutation } from "@tanstack/react-query";
-import { useRef, useState } from "react";
+import { useState } from "react";
+import { ArrowLeft, Newspaper, X, Loader2, Tag, ImageIcon, Link } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
-import { apiRequest, queryClient } from "@/lib/queryClient";
-import type { News } from "@shared/schema";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,
@@ -27,381 +12,285 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ACTIVITY_CATEGORIES } from "@shared/constants";
+import { useLocation } from "wouter";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { api } from "@/lib/api";
+import { mediaApi } from "@/lib/gateway-api";
+import { useToast } from "@/hooks/use-toast";
 
-const createNewsFormSchema = z.object({
-  headline: z.string().min(1, "Headline is required"),
-  description: z.string().optional(),
-  imageUrl: z.string().optional(),
-  eventDate: z.coerce.date().optional(),
-  eventTime: z.string().optional(),
-  location: z.string().optional(),
-  category: z.string().min(1, "Category is required"),
-});
-
-type CreateNewsFormValues = z.infer<typeof createNewsFormSchema>;
+const NEWS_CATEGORIES = [
+  "Local",
+  "Community",
+  "Safety",
+  "Traffic",
+  "Weather",
+  "Events",
+  "Politics",
+  "Business",
+  "Sports",
+  "Education",
+  "Health",
+  "Environment",
+  "Technology",
+  "Entertainment",
+];
 
 export default function CreateNews() {
   const [, setLocation] = useLocation();
+  const [headline, setHeadline] = useState("");
+  const [description, setDescription] = useState("");
+  const [content, setContent] = useState("");
+  const [category, setCategory] = useState("");
+  const [sourceUrl, setSourceUrl] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const queryClient = useQueryClient();
   const { toast } = useToast();
-  const currentUserId = "current-user-id";
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [imagePreview, setImagePreview] = useState<string>("");
+  const currentUserId = localStorage.getItem('nearly_user_id') || '';
 
-  const getCurrentTime = () => {
-    const now = new Date();
-    return now.toTimeString().slice(0, 5);
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
   };
 
-  const form = useForm<CreateNewsFormValues>({
-    resolver: zodResolver(createNewsFormSchema),
-    defaultValues: {
-      headline: "",
-      description: "",
-      imageUrl: "",
-      eventDate: new Date(),
-      eventTime: getCurrentTime(),
-      location: "",
-      category: ACTIVITY_CATEGORIES[0],
-    },
-  });
-
   const createNewsMutation = useMutation({
-    mutationFn: async (data: CreateNewsFormValues): Promise<News> => {
-      const newsData: Record<string, any> = {
+    mutationFn: async (data: {
+      headline: string;
+      description?: string;
+      content?: string;
+      category: string;
+      imageUrl?: string;
+      sourceUrl?: string;
+    }) => {
+      return api.createNews({
         userId: currentUserId,
-        headline: data.headline.trim(),
-        category: data.category,
-      };
-
-      if (data.description?.trim()) {
-        newsData.description = data.description.trim();
-      }
-      if (data.imageUrl?.trim()) {
-        newsData.imageUrl = data.imageUrl.trim();
-      }
-      if (data.eventDate) {
-        newsData.eventDate = new Date(data.eventDate).toISOString();
-      }
-      if (data.eventTime?.trim()) {
-        newsData.eventTime = data.eventTime.trim();
-      }
-      if (data.location?.trim()) {
-        newsData.location = data.location.trim();
-      }
-
-      return apiRequest("POST", "/api/news", newsData) as unknown as Promise<News>;
+        ...data,
+      });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/news"] });
+      queryClient.invalidateQueries({ queryKey: ["news"] });
       toast({
-        title: "Success!",
-        description: "News published successfully",
+        title: "News shared!",
+        description: "Your news has been posted to the community.",
       });
-      setLocation("/news");
+      setLocation("/");
     },
     onError: () => {
       toast({
         title: "Error",
-        description: "Failed to publish news. Please try again.",
+        description: "Failed to create news. Please try again.",
         variant: "destructive",
       });
     },
   });
 
-  const handleSubmit = (data: CreateNewsFormValues) => {
-    createNewsMutation.mutate(data);
-  };
+  const handleSubmit = async () => {
+    if (!headline.trim()) {
+      toast({
+        title: "Missing headline",
+        description: "Please enter a headline for your news.",
+        variant: "destructive",
+      });
+      return;
+    }
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      if (!file.type.startsWith('image/')) {
-        toast({
-          title: "Invalid file",
-          description: "Please select an image file",
-          variant: "destructive",
-        });
-        return;
+    if (!category) {
+      toast({
+        title: "Missing category",
+        description: "Please select a category.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsUploading(true);
+
+    try {
+      let imageUrl: string | undefined;
+      
+      if (imageFile) {
+        try {
+          // userId is now extracted from JWT token on server
+          const uploadResult = await mediaApi.uploadFile(
+            imageFile,
+            "NEWS"
+          );
+          if (uploadResult.success && uploadResult.url) {
+            imageUrl = uploadResult.url;
+          }
+        } catch (error) {
+          console.error("Image upload failed:", error);
+        }
       }
 
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64String = reader.result as string;
-        setImagePreview(base64String);
-        form.setValue("imageUrl", base64String);
-      };
-      reader.readAsDataURL(file);
+      await createNewsMutation.mutateAsync({
+        headline: headline.trim(),
+        description: description.trim() || undefined,
+        content: content.trim() || undefined,
+        category,
+        imageUrl,
+        sourceUrl: sourceUrl.trim() || undefined,
+      });
+    } finally {
+      setIsUploading(false);
     }
-  };
-
-  const handleRemoveImage = () => {
-    setImagePreview("");
-    form.setValue("imageUrl", "");
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-  };
-
-  const handlePreview = () => {
-    toast({
-      title: "Preview",
-      description: "Preview functionality coming soon",
-    });
   };
 
   return (
-    <div className="min-h-screen bg-background pb-6">
-      <div className="sticky top-0 bg-background border-b border-border z-10">
-        <div className="max-w-md mx-auto flex items-center gap-3 p-4">
-          <button
-            onClick={() => setLocation("/news")}
-            data-testid="button-back"
-          >
-            <ArrowLeft className="w-6 h-6 text-foreground" />
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-border">
+        <div className="flex items-center justify-between p-4">
+          <button onClick={() => setLocation("/")} className="p-1">
+            <ArrowLeft className="w-6 h-6" />
           </button>
-          <h1 className="text-xl font-semibold text-foreground">
-            Create News
-          </h1>
+          <h1 className="text-lg font-semibold">Share News</h1>
+          <Button
+            onClick={handleSubmit}
+            disabled={createNewsMutation.isPending || isUploading}
+            className="bg-gradient-primary text-white"
+          >
+            {createNewsMutation.isPending || isUploading ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              "Post"
+            )}
+          </Button>
         </div>
       </div>
 
-      <div className="max-w-md mx-auto px-4 pt-6">
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-            {/* News Headline */}
-            <FormField
-              control={form.control}
-              name="headline"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium text-foreground">
-                    News Headline
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Enter a catchy headline..."
-                      className="bg-muted border-none text-foreground placeholder:text-muted-foreground"
-                      data-testid="input-headline"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+      <div className="max-w-md mx-auto p-4 space-y-6">
+        {/* News Icon */}
+        <div className="flex justify-center py-4">
+          <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+            <Newspaper className="w-8 h-8 text-primary" />
+          </div>
+        </div>
 
-            {/* News Description */}
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium text-foreground">
-                    News Description (Optional)
-                  </FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Share more details..."
-                      className="bg-muted border-none text-foreground placeholder:text-muted-foreground min-h-32 resize-none"
-                      data-testid="input-description"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        {/* Headline */}
+        <div>
+          <Label className="text-sm font-medium mb-2 block">Headline *</Label>
+          <Input
+            placeholder="What's the news?"
+            value={headline}
+            onChange={(e) => setHeadline(e.target.value)}
+            maxLength={200}
+            className="text-lg"
+          />
+          <div className="text-xs text-muted-foreground text-right mt-1">
+            {headline.length}/200
+          </div>
+        </div>
 
-            {/* Upload Media */}
-            <FormField
-              control={form.control}
-              name="imageUrl"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium text-foreground">
-                    Upload Media (Optional)
-                  </FormLabel>
-                  <FormControl>
-                    <div className="space-y-3">
-                      <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={handleFileSelect}
-                        data-testid="input-file"
-                      />
-                      
-                      {imagePreview ? (
-                        <div className="relative border-2 border-border rounded-lg overflow-hidden bg-muted/30">
-                          <img
-                            src={imagePreview}
-                            alt="Preview"
-                            className="w-full h-48 object-cover"
-                          />
-                          <button
-                            type="button"
-                            onClick={handleRemoveImage}
-                            className="absolute top-2 right-2 w-8 h-8 rounded-full bg-destructive text-white flex items-center justify-center hover:opacity-90"
-                            data-testid="button-remove-image"
-                          >
-                            <X className="w-4 h-4" />
-                          </button>
-                        </div>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => fileInputRef.current?.click()}
-                          className="w-full border-2 border-dashed border-border rounded-lg p-8 bg-muted/30 hover-elevate"
-                          data-testid="button-upload-media"
-                        >
-                          <div className="flex flex-col items-center gap-3 text-muted-foreground">
-                            <ImageIcon className="w-10 h-10" />
-                            <span className="text-sm">Tap to upload from Gallery</span>
-                          </div>
-                        </button>
-                      )}
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        {/* Description */}
+        <div>
+          <Label className="text-sm font-medium mb-2 block">Summary (optional)</Label>
+          <Textarea
+            placeholder="Brief summary of the news..."
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="min-h-[80px] resize-none"
+            maxLength={500}
+          />
+          <div className="text-xs text-muted-foreground text-right mt-1">
+            {description.length}/500
+          </div>
+        </div>
 
-            {/* Date and Time */}
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="eventDate"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium text-foreground">
-                      Date
-                    </FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
-                        <Input
-                          type="date"
-                          className="bg-muted border-none text-foreground pl-10"
-                          data-testid="input-date"
-                          value={field.value instanceof Date && !isNaN(field.value.getTime()) ? field.value.toISOString().split('T')[0] : ''}
-                          onChange={(e) => field.onChange(e.target.value ? new Date(e.target.value) : undefined)}
-                        />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+        {/* Content */}
+        <div>
+          <Label className="text-sm font-medium mb-2 block">Details (optional)</Label>
+          <Textarea
+            placeholder="Full news details..."
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            className="min-h-[150px] resize-none"
+            maxLength={5000}
+          />
+          <div className="text-xs text-muted-foreground text-right mt-1">
+            {content.length}/5000
+          </div>
+        </div>
+
+        {/* Category */}
+        <div>
+          <Label className="text-sm font-medium mb-2 block">Category *</Label>
+          <Select value={category} onValueChange={setCategory}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select news category" />
+            </SelectTrigger>
+            <SelectContent className="max-h-[300px]">
+              {NEWS_CATEGORIES.map((cat) => (
+                <SelectItem key={cat} value={cat}>
+                  {cat}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Image Upload */}
+        <div>
+          <Label className="text-sm font-medium mb-2 block">Image (optional)</Label>
+          {imagePreview ? (
+            <div className="relative">
+              <img 
+                src={imagePreview} 
+                alt="Preview" 
+                className="w-full h-48 object-cover rounded-xl"
               />
-
-              <FormField
-                control={form.control}
-                name="eventTime"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium text-foreground">
-                      Time
-                    </FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
-                        <Input
-                          type="time"
-                          className="bg-muted border-none text-foreground pl-10"
-                          data-testid="input-time"
-                          {...field}
-                        />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+              <button
+                onClick={() => {
+                  setImageFile(null);
+                  setImagePreview(null);
+                }}
+                className="absolute top-2 right-2 w-8 h-8 bg-black/50 rounded-full flex items-center justify-center"
+              >
+                <X className="w-4 h-4 text-white" />
+              </button>
+            </div>
+          ) : (
+            <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-border rounded-xl cursor-pointer hover:bg-muted/50 transition-colors">
+              <ImageIcon className="w-8 h-8 text-muted-foreground mb-2" />
+              <span className="text-sm text-muted-foreground">Add an image</span>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageSelect}
+                className="hidden"
               />
-            </div>
+            </label>
+          )}
+        </div>
 
-            {/* Enter Location */}
-            <FormField
-              control={form.control}
-              name="location"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium text-foreground">
-                    Enter Location
-                  </FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
-                      <Input
-                        placeholder="Search for a location..."
-                        className="bg-muted border-none text-foreground pl-10 placeholder:text-muted-foreground"
-                        data-testid="input-location"
-                        {...field}
-                      />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+        {/* Source URL */}
+        <div>
+          <Label className="text-sm font-medium mb-2 block">Source URL (optional)</Label>
+          <div className="relative">
+            <Link className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              placeholder="https://..."
+              value={sourceUrl}
+              onChange={(e) => setSourceUrl(e.target.value)}
+              className="pl-10"
             />
+          </div>
+        </div>
 
-            {/* Category */}
-            <FormField
-              control={form.control}
-              name="category"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium text-foreground">
-                    Category
-                  </FormLabel>
-                  <Select
-                    value={field.value}
-                    onValueChange={field.onChange}
-                  >
-                    <FormControl>
-                      <SelectTrigger 
-                        className="bg-muted border-none text-foreground"
-                        data-testid="select-category"
-                      >
-                        <SelectValue placeholder="Select a category" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent className="max-h-[300px]">
-                      {ACTIVITY_CATEGORIES.map((category) => (
-                        <SelectItem key={category} value={category}>
-                          {category}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Action Buttons */}
-            <div className="flex gap-3 pt-4">
-              <Button
-                type="button"
-                variant="secondary"
-                className="flex-1"
-                onClick={handlePreview}
-                data-testid="button-preview"
-              >
-                Preview
-              </Button>
-              <Button
-                type="submit"
-                className="flex-1 bg-gradient-primary text-white hover:opacity-90"
-                disabled={createNewsMutation.isPending}
-                data-testid="button-publish"
-              >
-                {createNewsMutation.isPending ? "Publishing..." : "Publish"}
-              </Button>
-            </div>
-          </form>
-        </Form>
+        {/* Guidelines */}
+        <div className="bg-muted/30 rounded-xl p-4 space-y-2">
+          <h3 className="text-sm font-medium">Community Guidelines</h3>
+          <ul className="text-xs text-muted-foreground space-y-1">
+            <li>• Share only accurate and verified news</li>
+            <li>• Include source when sharing external news</li>
+            <li>• Be respectful and avoid sensationalism</li>
+            <li>• Community can vote on news authenticity</li>
+          </ul>
+        </div>
       </div>
     </div>
   );

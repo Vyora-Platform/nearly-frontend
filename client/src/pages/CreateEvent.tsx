@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useLocation } from "wouter";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { z } from "zod";
-import { ChevronLeft, ImageIcon, User, X } from "lucide-react";
+import { ChevronLeft, ImageIcon, User, X, Loader2 } from "lucide-react";
+import { mediaApi } from "@/lib/gateway-api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -56,11 +57,62 @@ type CreateEventFormValues = z.infer<typeof createEventFormSchema>;
 export default function CreateEvent() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const currentUserId = "current-user-id";
+  const currentUserId = localStorage.getItem('nearly_user_id') || '';
 
   const [guests, setGuests] = useState<Guest[]>([]);
   const [guestName, setGuestName] = useState("");
   const [guestRole, setGuestRole] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Handle image upload
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Invalid file",
+        description: "Please select an image file",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsUploading(true);
+    try {
+      // Upload to S3 via media service
+      const result = await mediaApi.uploadFile(file, "EVENT");
+      if (result.success && result.url) {
+        setUploadedImageUrl(result.url);
+        form.setValue("imageUrl", result.url);
+        toast({
+          title: "Image uploaded!",
+          description: "Your event image has been uploaded",
+        });
+      } else {
+        throw new Error("Upload failed");
+      }
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast({
+        title: "Upload failed",
+        description: "Failed to upload image. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const removeImage = () => {
+    setUploadedImageUrl(null);
+    form.setValue("imageUrl", null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
 
   const form = useForm<CreateEventFormValues>({
     resolver: zodResolver(createEventFormSchema),
@@ -264,10 +316,48 @@ export default function CreateEvent() {
             {/* Add Photos/Videos */}
             <div className="space-y-2">
               <FormLabel className="text-sm font-medium">Add Photos/Videos (Optional)</FormLabel>
-              <div className="border-2 border-dashed border-border rounded-lg p-8 flex flex-col items-center justify-center gap-2 bg-muted/30">
-                <ImageIcon className="w-8 h-8 text-muted-foreground" />
-                <p className="text-sm text-muted-foreground">Tap to upload from gallery</p>
-              </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="hidden"
+              />
+              {uploadedImageUrl ? (
+                <div className="relative rounded-lg overflow-hidden">
+                  <img
+                    src={uploadedImageUrl}
+                    alt="Event preview"
+                    className="w-full h-48 object-cover"
+                  />
+                  <button
+                    type="button"
+                    onClick={removeImage}
+                    className="absolute top-2 right-2 w-8 h-8 bg-black/50 rounded-full flex items-center justify-center text-white hover:bg-black/70"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isUploading}
+                  className="w-full border-2 border-dashed border-border rounded-lg p-8 flex flex-col items-center justify-center gap-2 bg-muted/30 hover:bg-muted/50 transition-colors disabled:opacity-50"
+                >
+                  {isUploading ? (
+                    <>
+                      <Loader2 className="w-8 h-8 text-muted-foreground animate-spin" />
+                      <p className="text-sm text-muted-foreground">Uploading...</p>
+                    </>
+                  ) : (
+                    <>
+                      <ImageIcon className="w-8 h-8 text-muted-foreground" />
+                      <p className="text-sm text-muted-foreground">Tap to upload from gallery</p>
+                    </>
+                  )}
+                </button>
+              )}
             </div>
 
             {/* Location */}

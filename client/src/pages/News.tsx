@@ -14,20 +14,20 @@ export default function News() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All News");
   const [, setLocation] = useLocation();
-  const currentUserId = "current-user-id";
+  const currentUserId = localStorage.getItem('nearly_user_id') || '';
 
-  const { data: news = [], isLoading } = useQuery({
-    queryKey: ["/api/news"],
-    queryFn: api.getNews,
+  const { data: news = [], isLoading, error } = useQuery({
+    queryKey: ["news"],
+    queryFn: () => api.getNews(),
   });
 
   const { data: users = [] } = useQuery({
     queryKey: ["/api/users"],
     queryFn: async () => {
-      const userIds = Array.from(new Set(news.map(n => n.userId)));
+      const userIds = Array.from(new Set(news?.map(n => n.userId) || []));
       return Promise.all(userIds.map(id => api.getUser(id).catch(() => null)));
     },
-    enabled: news.length > 0,
+    enabled: news && news.length > 0,
   });
 
   const getUserById = (userId: string) => {
@@ -55,14 +55,16 @@ export default function News() {
     return `${diffDays}d ago`;
   };
 
-  const filteredNews = news.filter(item => {
-    const matchesSearch = searchQuery === "" || 
-      item.headline.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategory === "All News" || 
-      item.category === selectedCategory;
-    
-    return matchesSearch && matchesCategory;
-  });
+  const filteredNews = news && Array.isArray(news)
+    ? news.filter(item => {
+        const matchesSearch = searchQuery === "" ||
+          item.headline.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesCategory = selectedCategory === "All News" ||
+          item.category === selectedCategory;
+
+        return matchesSearch && matchesCategory;
+      })
+    : [];
 
   if (isLoading) {
     return (
@@ -70,6 +72,23 @@ export default function News() {
         <TopBar title="News" showActions={false} />
         <div className="flex items-center justify-center h-96">
           <p className="text-muted-foreground">Loading news...</p>
+        </div>
+        <BottomNav />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background pb-20">
+        <TopBar title="News" showActions={false} />
+        <div className="flex items-center justify-center h-96">
+          <div className="text-center">
+            <p className="text-muted-foreground mb-4">Failed to load news</p>
+            <p className="text-sm text-muted-foreground">
+              Please check your database connection and try again.
+            </p>
+          </div>
         </div>
         <BottomNav />
       </div>

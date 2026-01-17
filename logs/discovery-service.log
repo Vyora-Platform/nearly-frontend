@@ -1,0 +1,1493 @@
+[[1;33mWARNING[m] 
+[[1;33mWARNING[m] Some problems were encountered while building the effective settings
+[[1;33mWARNING[m] Unrecognised tag: 'updatePolicy' (position: START_TAG seen <settings>\n<updatePolicy>... @2:15)  @ /Users/aman/.m2/settings.xml, line 2, column 15
+[[1;33mWARNING[m] 
+[[1;34mINFO[m] Scanning for projects...
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--------------------< [0;36mcom.nearly:discovery-service[0;1m >--------------------[m
+[[1;34mINFO[m] [1mBuilding Discovery Service 1.0.0-SNAPSHOT[m
+[[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m>>> [0;32mspring-boot-maven-plugin:3.2.2:run[m [1m(default-cli)[0;1m > [0;1mtest-compile[m @ [36mdiscovery-service[0;1m >>>[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:3.3.1:resources[m [1m(default-resources)[m @ [36mdiscovery-service[0;1m ---[m
+[[1;34mINFO[m] Copying 1 resource from src/main/resources to target/classes
+[[1;34mINFO[m] Copying 0 resource from src/main/resources to target/classes
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.11.0:compile[m [1m(default-compile)[m @ [36mdiscovery-service[0;1m ---[m
+[[1;34mINFO[m] Nothing to compile - all classes are up to date
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:3.3.1:testResources[m [1m(default-testResources)[m @ [36mdiscovery-service[0;1m ---[m
+[[1;34mINFO[m] skip non existing resourceDirectory /Users/aman/Downloads/Nearly/microservices/discovery-service/src/test/resources
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.11.0:testCompile[m [1m(default-testCompile)[m @ [36mdiscovery-service[0;1m ---[m
+[[1;34mINFO[m] No sources to compile
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m<<< [0;32mspring-boot-maven-plugin:3.2.2:run[m [1m(default-cli)[0;1m < [0;1mtest-compile[m @ [36mdiscovery-service[0;1m <<<[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mspring-boot-maven-plugin:3.2.2:run[m [1m(default-cli)[m @ [36mdiscovery-service[0;1m ---[m
+[[1;34mINFO[m] Attaching agents: []
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::                (v3.2.2)
+
+2026-01-12T21:49:43.903+05:30  INFO 75424 --- [discovery-service] [           main] c.n.d.DiscoveryServiceApplication        : Starting DiscoveryServiceApplication using Java 21.0.7 with PID 75424 (/Users/aman/Downloads/Nearly/microservices/discovery-service/target/classes started by aman in /Users/aman/Downloads/Nearly/microservices/discovery-service)
+2026-01-12T21:49:43.903+05:30  INFO 75424 --- [discovery-service] [           main] c.n.d.DiscoveryServiceApplication        : No active profile set, falling back to 1 default profile: "default"
+2026-01-12T21:49:44.280+05:30  INFO 75424 --- [discovery-service] [           main] o.s.cloud.context.scope.GenericScope     : BeanFactory id=1d9b1ea9-cf6b-3f3a-bb48-98eb02222edb
+2026-01-12T21:49:44.297+05:30  WARN 75424 --- [discovery-service] [           main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.cloud.client.loadbalancer.LoadBalancerAutoConfiguration$LoadBalancerInterceptorConfig' of type [org.springframework.cloud.client.loadbalancer.LoadBalancerAutoConfiguration$LoadBalancerInterceptorConfig] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [lbRestClientPostProcessor] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2026-01-12T21:49:44.298+05:30  WARN 75424 --- [discovery-service] [           main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.cloud.loadbalancer.config.BlockingLoadBalancerClientAutoConfiguration' of type [org.springframework.cloud.loadbalancer.config.BlockingLoadBalancerClientAutoConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [lbRestClientPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2026-01-12T21:49:44.299+05:30  WARN 75424 --- [discovery-service] [           main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.cloud.loadbalancer.config.LoadBalancerAutoConfiguration' of type [org.springframework.cloud.loadbalancer.config.LoadBalancerAutoConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [lbRestClientPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2026-01-12T21:49:44.301+05:30  WARN 75424 --- [discovery-service] [           main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.cloud.commons.config.CommonsConfigAutoConfiguration' of type [org.springframework.cloud.commons.config.CommonsConfigAutoConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [lbRestClientPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2026-01-12T21:49:44.302+05:30  WARN 75424 --- [discovery-service] [           main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.cloud.client.loadbalancer.LoadBalancerDefaultMappingsProviderAutoConfiguration' of type [org.springframework.cloud.client.loadbalancer.LoadBalancerDefaultMappingsProviderAutoConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [lbRestClientPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2026-01-12T21:49:44.302+05:30  WARN 75424 --- [discovery-service] [           main] trationDelegate$BeanPostProcessorChecker : Bean 'loadBalancerClientsDefaultsMappingsProvider' of type [org.springframework.cloud.client.loadbalancer.LoadBalancerDefaultMappingsProviderAutoConfiguration$$Lambda/0x000000050134f850] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [lbRestClientPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2026-01-12T21:49:44.303+05:30  WARN 75424 --- [discovery-service] [           main] trationDelegate$BeanPostProcessorChecker : Bean 'defaultsBindHandlerAdvisor' of type [org.springframework.cloud.commons.config.DefaultsBindHandlerAdvisor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [lbRestClientPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2026-01-12T21:49:44.305+05:30  WARN 75424 --- [discovery-service] [           main] trationDelegate$BeanPostProcessorChecker : Bean 'spring.cloud.loadbalancer-org.springframework.cloud.client.loadbalancer.LoadBalancerClientsProperties' of type [org.springframework.cloud.client.loadbalancer.LoadBalancerClientsProperties] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [lbRestClientPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2026-01-12T21:49:44.308+05:30  WARN 75424 --- [discovery-service] [           main] trationDelegate$BeanPostProcessorChecker : Bean 'default.org.springframework.cloud.loadbalancer.config.LoadBalancerAutoConfiguration.LoadBalancerClientSpecification' of type [org.springframework.cloud.loadbalancer.annotation.LoadBalancerClientSpecification] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [lbRestClientPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2026-01-12T21:49:44.308+05:30  WARN 75424 --- [discovery-service] [           main] trationDelegate$BeanPostProcessorChecker : Bean 'default.org.springframework.cloud.loadbalancer.config.BlockingLoadBalancerClientAutoConfiguration.LoadBalancerClientSpecification' of type [org.springframework.cloud.loadbalancer.annotation.LoadBalancerClientSpecification] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [lbRestClientPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2026-01-12T21:49:44.308+05:30  WARN 75424 --- [discovery-service] [           main] trationDelegate$BeanPostProcessorChecker : Bean 'default.org.springframework.cloud.netflix.eureka.loadbalancer.LoadBalancerEurekaAutoConfiguration.LoadBalancerClientSpecification' of type [org.springframework.cloud.loadbalancer.annotation.LoadBalancerClientSpecification] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [lbRestClientPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2026-01-12T21:49:44.309+05:30  WARN 75424 --- [discovery-service] [           main] trationDelegate$BeanPostProcessorChecker : Bean 'loadBalancerClientFactory' of type [org.springframework.cloud.loadbalancer.support.LoadBalancerClientFactory] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [lbRestClientPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2026-01-12T21:49:44.309+05:30  WARN 75424 --- [discovery-service] [           main] trationDelegate$BeanPostProcessorChecker : Bean 'blockingLoadBalancerClient' of type [org.springframework.cloud.loadbalancer.blocking.client.BlockingLoadBalancerClient] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [lbRestClientPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2026-01-12T21:49:44.316+05:30  WARN 75424 --- [discovery-service] [           main] trationDelegate$BeanPostProcessorChecker : Bean 'loadBalancerServiceInstanceCookieTransformer' of type [org.springframework.cloud.loadbalancer.core.LoadBalancerServiceInstanceCookieTransformer] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [lbRestClientPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2026-01-12T21:49:44.316+05:30  WARN 75424 --- [discovery-service] [           main] trationDelegate$BeanPostProcessorChecker : Bean 'xForwarderHeadersTransformer' of type [org.springframework.cloud.loadbalancer.blocking.XForwardedHeadersTransformer] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [lbRestClientPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2026-01-12T21:49:44.316+05:30  WARN 75424 --- [discovery-service] [           main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.cloud.client.loadbalancer.LoadBalancerAutoConfiguration' of type [org.springframework.cloud.client.loadbalancer.LoadBalancerAutoConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [lbRestClientPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2026-01-12T21:49:44.317+05:30  WARN 75424 --- [discovery-service] [           main] trationDelegate$BeanPostProcessorChecker : Bean 'loadBalancerRequestFactory' of type [org.springframework.cloud.client.loadbalancer.LoadBalancerRequestFactory] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [lbRestClientPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2026-01-12T21:49:44.317+05:30  WARN 75424 --- [discovery-service] [           main] trationDelegate$BeanPostProcessorChecker : Bean 'loadBalancerInterceptor' of type [org.springframework.cloud.client.loadbalancer.LoadBalancerInterceptor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [lbRestClientPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2026-01-12T21:49:44.388+05:30  INFO 75424 --- [discovery-service] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 9000 (http)
+2026-01-12T21:49:44.392+05:30  INFO 75424 --- [discovery-service] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-01-12T21:49:44.393+05:30  INFO 75424 --- [discovery-service] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.18]
+2026-01-12T21:49:44.416+05:30  INFO 75424 --- [discovery-service] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-01-12T21:49:44.416+05:30  INFO 75424 --- [discovery-service] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 492 ms
+2026-01-12T21:49:44.735+05:30  INFO 75424 --- [discovery-service] [           main] c.n.d.provider.DiscoveryJerseyProvider   : Using JSON encoding codec LegacyJacksonJson
+2026-01-12T21:49:44.735+05:30  INFO 75424 --- [discovery-service] [           main] c.n.d.provider.DiscoveryJerseyProvider   : Using JSON decoding codec LegacyJacksonJson
+2026-01-12T21:49:44.794+05:30  INFO 75424 --- [discovery-service] [           main] c.n.d.provider.DiscoveryJerseyProvider   : Using XML encoding codec XStreamXml
+2026-01-12T21:49:44.794+05:30  INFO 75424 --- [discovery-service] [           main] c.n.d.provider.DiscoveryJerseyProvider   : Using XML decoding codec XStreamXml
+2026-01-12T21:49:45.021+05:30  WARN 75424 --- [discovery-service] [           main] iguration$LoadBalancerCaffeineWarnLogger : Spring Cloud LoadBalancer is currently working with the default cache. While this cache implementation is useful for development and tests, it's recommended to use Caffeine cache in production.You can switch to using Caffeine cache, by adding it and org.springframework.cache.caffeine.CaffeineCacheManager to the classpath.
+2026-01-12T21:49:45.027+05:30  INFO 75424 --- [discovery-service] [           main] o.s.c.n.eureka.InstanceInfoFactory       : Setting initial instance status as: STARTING
+2026-01-12T21:49:45.034+05:30  INFO 75424 --- [discovery-service] [           main] com.netflix.discovery.DiscoveryClient    : Initializing Eureka in region us-east-1
+2026-01-12T21:49:45.034+05:30  INFO 75424 --- [discovery-service] [           main] com.netflix.discovery.DiscoveryClient    : Client configured to neither register nor query for data.
+2026-01-12T21:49:45.036+05:30  INFO 75424 --- [discovery-service] [           main] com.netflix.discovery.DiscoveryClient    : Discovery Client initialized at timestamp 1768234785036 with initial instances count: 0
+2026-01-12T21:49:45.047+05:30  INFO 75424 --- [discovery-service] [           main] c.n.eureka.DefaultEurekaServerContext    : Initializing ...
+2026-01-12T21:49:45.047+05:30  INFO 75424 --- [discovery-service] [           main] c.n.eureka.cluster.PeerEurekaNodes       : Adding new peer nodes [http://localhost:8761/eureka/]
+2026-01-12T21:49:45.105+05:30  INFO 75424 --- [discovery-service] [           main] c.n.d.provider.DiscoveryJerseyProvider   : Using JSON encoding codec LegacyJacksonJson
+2026-01-12T21:49:45.105+05:30  INFO 75424 --- [discovery-service] [           main] c.n.d.provider.DiscoveryJerseyProvider   : Using JSON decoding codec LegacyJacksonJson
+2026-01-12T21:49:45.105+05:30  INFO 75424 --- [discovery-service] [           main] c.n.d.provider.DiscoveryJerseyProvider   : Using XML encoding codec XStreamXml
+2026-01-12T21:49:45.105+05:30  INFO 75424 --- [discovery-service] [           main] c.n.d.provider.DiscoveryJerseyProvider   : Using XML decoding codec XStreamXml
+2026-01-12T21:49:45.656+05:30  INFO 75424 --- [discovery-service] [           main] c.n.eureka.cluster.PeerEurekaNodes       : Replica node URL:  http://localhost:8761/eureka/
+2026-01-12T21:49:45.660+05:30  INFO 75424 --- [discovery-service] [           main] c.n.e.registry.AbstractInstanceRegistry  : Finished initializing remote region registries. All known remote regions: []
+2026-01-12T21:49:45.660+05:30  INFO 75424 --- [discovery-service] [           main] c.n.eureka.DefaultEurekaServerContext    : Initialized
+2026-01-12T21:49:45.666+05:30  INFO 75424 --- [discovery-service] [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 3 endpoint(s) beneath base path '/actuator'
+2026-01-12T21:49:45.694+05:30  INFO 75424 --- [discovery-service] [           main] o.s.c.n.e.s.EurekaServiceRegistry        : Registering application DISCOVERY-SERVICE with eureka with status UP
+2026-01-12T21:49:45.699+05:30  INFO 75424 --- [discovery-service] [       Thread-9] o.s.c.n.e.server.EurekaServerBootstrap   : isAws returned false
+2026-01-12T21:49:45.700+05:30  INFO 75424 --- [discovery-service] [       Thread-9] o.s.c.n.e.server.EurekaServerBootstrap   : Initialized server context
+2026-01-12T21:49:45.700+05:30  INFO 75424 --- [discovery-service] [       Thread-9] c.n.e.r.PeerAwareInstanceRegistryImpl    : Got 1 instances from neighboring DS node
+2026-01-12T21:49:45.700+05:30  INFO 75424 --- [discovery-service] [       Thread-9] c.n.e.r.PeerAwareInstanceRegistryImpl    : Renew threshold is: 1
+2026-01-12T21:49:45.700+05:30  INFO 75424 --- [discovery-service] [       Thread-9] c.n.e.r.PeerAwareInstanceRegistryImpl    : Changing status to UP
+2026-01-12T21:49:45.704+05:30  INFO 75424 --- [discovery-service] [       Thread-9] e.s.EurekaServerInitializerConfiguration : Started Eureka Server
+2026-01-12T21:49:45.714+05:30  INFO 75424 --- [discovery-service] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 9000 (http) with context path ''
+2026-01-12T21:49:45.715+05:30  INFO 75424 --- [discovery-service] [           main] .s.c.n.e.s.EurekaAutoServiceRegistration : Updating port to 9000
+2026-01-12T21:49:45.727+05:30  INFO 75424 --- [discovery-service] [           main] c.n.d.DiscoveryServiceApplication        : Started DiscoveryServiceApplication in 1.994 seconds (process running for 2.126)
+2026-01-12T21:49:46.764+05:30  INFO 75424 --- [discovery-service] [nio-9000-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-01-12T21:49:46.764+05:30  INFO 75424 --- [discovery-service] [nio-9000-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-01-12T21:49:46.765+05:30  INFO 75424 --- [discovery-service] [nio-9000-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2026-01-12T21:49:49.837+05:30  INFO 75424 --- [discovery-service] [nio-9000-exec-4] c.n.e.registry.AbstractInstanceRegistry  : Registered instance CONFIG-SERVICE/192.168.2.134:config-service:9001 with status UP (replication=false)
+2026-01-12T21:49:50.434+05:30 ERROR 75424 --- [discovery-service] [get_localhost-0] c.n.e.cluster.ReplicationTaskProcessor   : Network level connection to peer localhost; retrying after delay
+
+jakarta.ws.rs.ProcessingException: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:531) ~[jersey-apache-connector-3.1.5.jar:na]
+	at org.glassfish.jersey.client.ClientRuntime.invoke(ClientRuntime.java:300) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$invoke$0(JerseyInvocation.java:662) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.call(JerseyInvocation.java:697) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$runInScope$3(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:292) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:274) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:205) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:390) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.runInScope(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.invoke(JerseyInvocation.java:661) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.method(JerseyInvocation.java:439) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.post(JerseyInvocation.java:345) ~[jersey-client-3.1.5.jar:na]
+	at com.netflix.eureka.transport.Jersey3ReplicationClient.submitBatchUpdates(Jersey3ReplicationClient.java:116) ~[eureka-core-jersey3-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.cluster.ReplicationTaskProcessor.process(ReplicationTaskProcessor.java:80) ~[eureka-core-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.util.batcher.TaskExecutors$BatchWorkerRunnable.run(TaskExecutors.java:190) ~[eureka-core-2.0.1.jar:2.0.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+Caused by: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:159) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.PoolingHttpClientConnectionManager.connect(PoolingHttpClientConnectionManager.java:359) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.establishRoute(MainClientExec.java:381) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.execute(MainClientExec.java:237) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.ProtocolExec.execute(ProtocolExec.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RetryExec.execute(RetryExec.java:89) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RedirectExec.execute(RedirectExec.java:111) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.InternalHttpClient.doExecute(InternalHttpClient.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:72) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:483) ~[jersey-apache-connector-3.1.5.jar:na]
+	... 16 common frames omitted
+Caused by: java.net.ConnectException: Connection refused
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method) ~[na:na]
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:549) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592) ~[na:na]
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327) ~[na:na]
+	at java.base/java.net.Socket.connect(Socket.java:751) ~[na:na]
+	at org.apache.http.conn.socket.PlainConnectionSocketFactory.connectSocket(PlainConnectionSocketFactory.java:75) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:142) ~[httpclient-4.5.3.jar:4.5.3]
+	... 25 common frames omitted
+
+2026-01-12T21:49:56.190+05:30  INFO 75424 --- [discovery-service] [nio-9000-exec-6] c.n.e.registry.AbstractInstanceRegistry  : Registered instance API-GATEWAY/192.168.2.134:api-gateway:9002 with status UP (replication=false)
+2026-01-12T21:50:00.456+05:30 ERROR 75424 --- [discovery-service] [get_localhost-1] c.n.e.cluster.ReplicationTaskProcessor   : Network level connection to peer localhost; retrying after delay
+
+jakarta.ws.rs.ProcessingException: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:531) ~[jersey-apache-connector-3.1.5.jar:na]
+	at org.glassfish.jersey.client.ClientRuntime.invoke(ClientRuntime.java:300) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$invoke$0(JerseyInvocation.java:662) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.call(JerseyInvocation.java:697) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$runInScope$3(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:292) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:274) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:205) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:390) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.runInScope(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.invoke(JerseyInvocation.java:661) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.method(JerseyInvocation.java:439) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.post(JerseyInvocation.java:345) ~[jersey-client-3.1.5.jar:na]
+	at com.netflix.eureka.transport.Jersey3ReplicationClient.submitBatchUpdates(Jersey3ReplicationClient.java:116) ~[eureka-core-jersey3-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.cluster.ReplicationTaskProcessor.process(ReplicationTaskProcessor.java:80) ~[eureka-core-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.util.batcher.TaskExecutors$BatchWorkerRunnable.run(TaskExecutors.java:190) ~[eureka-core-2.0.1.jar:2.0.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+Caused by: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:159) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.PoolingHttpClientConnectionManager.connect(PoolingHttpClientConnectionManager.java:359) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.establishRoute(MainClientExec.java:381) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.execute(MainClientExec.java:237) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.ProtocolExec.execute(ProtocolExec.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RetryExec.execute(RetryExec.java:89) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RedirectExec.execute(RedirectExec.java:111) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.InternalHttpClient.doExecute(InternalHttpClient.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:72) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:483) ~[jersey-apache-connector-3.1.5.jar:na]
+	... 16 common frames omitted
+Caused by: java.net.ConnectException: Connection refused
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method) ~[na:na]
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:549) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592) ~[na:na]
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327) ~[na:na]
+	at java.base/java.net.Socket.connect(Socket.java:751) ~[na:na]
+	at org.apache.http.conn.socket.PlainConnectionSocketFactory.connectSocket(PlainConnectionSocketFactory.java:75) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:142) ~[httpclient-4.5.3.jar:4.5.3]
+	... 25 common frames omitted
+
+2026-01-12T21:50:10.513+05:30 ERROR 75424 --- [discovery-service] [et_localhost-16] c.n.e.cluster.ReplicationTaskProcessor   : Network level connection to peer localhost; retrying after delay
+
+jakarta.ws.rs.ProcessingException: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:531) ~[jersey-apache-connector-3.1.5.jar:na]
+	at org.glassfish.jersey.client.ClientRuntime.invoke(ClientRuntime.java:300) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$invoke$0(JerseyInvocation.java:662) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.call(JerseyInvocation.java:697) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$runInScope$3(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:292) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:274) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:205) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:390) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.runInScope(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.invoke(JerseyInvocation.java:661) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.method(JerseyInvocation.java:439) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.post(JerseyInvocation.java:345) ~[jersey-client-3.1.5.jar:na]
+	at com.netflix.eureka.transport.Jersey3ReplicationClient.submitBatchUpdates(Jersey3ReplicationClient.java:116) ~[eureka-core-jersey3-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.cluster.ReplicationTaskProcessor.process(ReplicationTaskProcessor.java:80) ~[eureka-core-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.util.batcher.TaskExecutors$BatchWorkerRunnable.run(TaskExecutors.java:190) ~[eureka-core-2.0.1.jar:2.0.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+Caused by: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:159) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.PoolingHttpClientConnectionManager.connect(PoolingHttpClientConnectionManager.java:359) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.establishRoute(MainClientExec.java:381) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.execute(MainClientExec.java:237) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.ProtocolExec.execute(ProtocolExec.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RetryExec.execute(RetryExec.java:89) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RedirectExec.execute(RedirectExec.java:111) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.InternalHttpClient.doExecute(InternalHttpClient.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:72) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:483) ~[jersey-apache-connector-3.1.5.jar:na]
+	... 16 common frames omitted
+Caused by: java.net.ConnectException: Connection refused
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method) ~[na:na]
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:549) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592) ~[na:na]
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327) ~[na:na]
+	at java.base/java.net.Socket.connect(Socket.java:751) ~[na:na]
+	at org.apache.http.conn.socket.PlainConnectionSocketFactory.connectSocket(PlainConnectionSocketFactory.java:75) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:142) ~[httpclient-4.5.3.jar:4.5.3]
+	... 25 common frames omitted
+
+2026-01-12T21:50:20.596+05:30 ERROR 75424 --- [discovery-service] [et_localhost-18] c.n.e.cluster.ReplicationTaskProcessor   : Network level connection to peer localhost; retrying after delay
+
+jakarta.ws.rs.ProcessingException: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:531) ~[jersey-apache-connector-3.1.5.jar:na]
+	at org.glassfish.jersey.client.ClientRuntime.invoke(ClientRuntime.java:300) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$invoke$0(JerseyInvocation.java:662) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.call(JerseyInvocation.java:697) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$runInScope$3(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:292) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:274) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:205) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:390) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.runInScope(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.invoke(JerseyInvocation.java:661) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.method(JerseyInvocation.java:439) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.post(JerseyInvocation.java:345) ~[jersey-client-3.1.5.jar:na]
+	at com.netflix.eureka.transport.Jersey3ReplicationClient.submitBatchUpdates(Jersey3ReplicationClient.java:116) ~[eureka-core-jersey3-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.cluster.ReplicationTaskProcessor.process(ReplicationTaskProcessor.java:80) ~[eureka-core-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.util.batcher.TaskExecutors$BatchWorkerRunnable.run(TaskExecutors.java:190) ~[eureka-core-2.0.1.jar:2.0.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+Caused by: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:159) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.PoolingHttpClientConnectionManager.connect(PoolingHttpClientConnectionManager.java:359) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.establishRoute(MainClientExec.java:381) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.execute(MainClientExec.java:237) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.ProtocolExec.execute(ProtocolExec.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RetryExec.execute(RetryExec.java:89) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RedirectExec.execute(RedirectExec.java:111) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.InternalHttpClient.doExecute(InternalHttpClient.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:72) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:483) ~[jersey-apache-connector-3.1.5.jar:na]
+	... 16 common frames omitted
+Caused by: java.net.ConnectException: Connection refused
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method) ~[na:na]
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:549) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592) ~[na:na]
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327) ~[na:na]
+	at java.base/java.net.Socket.connect(Socket.java:751) ~[na:na]
+	at org.apache.http.conn.socket.PlainConnectionSocketFactory.connectSocket(PlainConnectionSocketFactory.java:75) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:142) ~[httpclient-4.5.3.jar:4.5.3]
+	... 25 common frames omitted
+
+2026-01-12T21:50:30.632+05:30 ERROR 75424 --- [discovery-service] [get_localhost-2] c.n.e.cluster.ReplicationTaskProcessor   : Network level connection to peer localhost; retrying after delay
+
+jakarta.ws.rs.ProcessingException: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:531) ~[jersey-apache-connector-3.1.5.jar:na]
+	at org.glassfish.jersey.client.ClientRuntime.invoke(ClientRuntime.java:300) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$invoke$0(JerseyInvocation.java:662) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.call(JerseyInvocation.java:697) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$runInScope$3(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:292) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:274) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:205) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:390) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.runInScope(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.invoke(JerseyInvocation.java:661) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.method(JerseyInvocation.java:439) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.post(JerseyInvocation.java:345) ~[jersey-client-3.1.5.jar:na]
+	at com.netflix.eureka.transport.Jersey3ReplicationClient.submitBatchUpdates(Jersey3ReplicationClient.java:116) ~[eureka-core-jersey3-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.cluster.ReplicationTaskProcessor.process(ReplicationTaskProcessor.java:80) ~[eureka-core-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.util.batcher.TaskExecutors$BatchWorkerRunnable.run(TaskExecutors.java:190) ~[eureka-core-2.0.1.jar:2.0.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+Caused by: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:159) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.PoolingHttpClientConnectionManager.connect(PoolingHttpClientConnectionManager.java:359) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.establishRoute(MainClientExec.java:381) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.execute(MainClientExec.java:237) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.ProtocolExec.execute(ProtocolExec.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RetryExec.execute(RetryExec.java:89) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RedirectExec.execute(RedirectExec.java:111) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.InternalHttpClient.doExecute(InternalHttpClient.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:72) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:483) ~[jersey-apache-connector-3.1.5.jar:na]
+	... 16 common frames omitted
+Caused by: java.net.ConnectException: Connection refused
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method) ~[na:na]
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:549) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592) ~[na:na]
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327) ~[na:na]
+	at java.base/java.net.Socket.connect(Socket.java:751) ~[na:na]
+	at org.apache.http.conn.socket.PlainConnectionSocketFactory.connectSocket(PlainConnectionSocketFactory.java:75) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:142) ~[httpclient-4.5.3.jar:4.5.3]
+	... 25 common frames omitted
+
+2026-01-12T21:50:40.697+05:30 ERROR 75424 --- [discovery-service] [et_localhost-11] c.n.e.cluster.ReplicationTaskProcessor   : Network level connection to peer localhost; retrying after delay
+
+jakarta.ws.rs.ProcessingException: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:531) ~[jersey-apache-connector-3.1.5.jar:na]
+	at org.glassfish.jersey.client.ClientRuntime.invoke(ClientRuntime.java:300) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$invoke$0(JerseyInvocation.java:662) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.call(JerseyInvocation.java:697) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$runInScope$3(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:292) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:274) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:205) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:390) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.runInScope(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.invoke(JerseyInvocation.java:661) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.method(JerseyInvocation.java:439) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.post(JerseyInvocation.java:345) ~[jersey-client-3.1.5.jar:na]
+	at com.netflix.eureka.transport.Jersey3ReplicationClient.submitBatchUpdates(Jersey3ReplicationClient.java:116) ~[eureka-core-jersey3-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.cluster.ReplicationTaskProcessor.process(ReplicationTaskProcessor.java:80) ~[eureka-core-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.util.batcher.TaskExecutors$BatchWorkerRunnable.run(TaskExecutors.java:190) ~[eureka-core-2.0.1.jar:2.0.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+Caused by: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:159) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.PoolingHttpClientConnectionManager.connect(PoolingHttpClientConnectionManager.java:359) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.establishRoute(MainClientExec.java:381) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.execute(MainClientExec.java:237) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.ProtocolExec.execute(ProtocolExec.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RetryExec.execute(RetryExec.java:89) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RedirectExec.execute(RedirectExec.java:111) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.InternalHttpClient.doExecute(InternalHttpClient.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:72) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:483) ~[jersey-apache-connector-3.1.5.jar:na]
+	... 16 common frames omitted
+Caused by: java.net.ConnectException: Connection refused
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method) ~[na:na]
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:549) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592) ~[na:na]
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327) ~[na:na]
+	at java.base/java.net.Socket.connect(Socket.java:751) ~[na:na]
+	at org.apache.http.conn.socket.PlainConnectionSocketFactory.connectSocket(PlainConnectionSocketFactory.java:75) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:142) ~[httpclient-4.5.3.jar:4.5.3]
+	... 25 common frames omitted
+
+2026-01-12T21:50:45.709+05:30  INFO 75424 --- [discovery-service] [a-EvictionTimer] c.n.e.registry.AbstractInstanceRegistry  : Running the evict task with compensationTime 0ms
+2026-01-12T21:50:50.766+05:30 ERROR 75424 --- [discovery-service] [et_localhost-15] c.n.e.cluster.ReplicationTaskProcessor   : Network level connection to peer localhost; retrying after delay
+
+jakarta.ws.rs.ProcessingException: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:531) ~[jersey-apache-connector-3.1.5.jar:na]
+	at org.glassfish.jersey.client.ClientRuntime.invoke(ClientRuntime.java:300) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$invoke$0(JerseyInvocation.java:662) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.call(JerseyInvocation.java:697) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$runInScope$3(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:292) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:274) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:205) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:390) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.runInScope(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.invoke(JerseyInvocation.java:661) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.method(JerseyInvocation.java:439) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.post(JerseyInvocation.java:345) ~[jersey-client-3.1.5.jar:na]
+	at com.netflix.eureka.transport.Jersey3ReplicationClient.submitBatchUpdates(Jersey3ReplicationClient.java:116) ~[eureka-core-jersey3-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.cluster.ReplicationTaskProcessor.process(ReplicationTaskProcessor.java:80) ~[eureka-core-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.util.batcher.TaskExecutors$BatchWorkerRunnable.run(TaskExecutors.java:190) ~[eureka-core-2.0.1.jar:2.0.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+Caused by: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:159) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.PoolingHttpClientConnectionManager.connect(PoolingHttpClientConnectionManager.java:359) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.establishRoute(MainClientExec.java:381) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.execute(MainClientExec.java:237) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.ProtocolExec.execute(ProtocolExec.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RetryExec.execute(RetryExec.java:89) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RedirectExec.execute(RedirectExec.java:111) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.InternalHttpClient.doExecute(InternalHttpClient.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:72) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:483) ~[jersey-apache-connector-3.1.5.jar:na]
+	... 16 common frames omitted
+Caused by: java.net.ConnectException: Connection refused
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method) ~[na:na]
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:549) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592) ~[na:na]
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327) ~[na:na]
+	at java.base/java.net.Socket.connect(Socket.java:751) ~[na:na]
+	at org.apache.http.conn.socket.PlainConnectionSocketFactory.connectSocket(PlainConnectionSocketFactory.java:75) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:142) ~[httpclient-4.5.3.jar:4.5.3]
+	... 25 common frames omitted
+
+2026-01-12T21:51:00.784+05:30 ERROR 75424 --- [discovery-service] [et_localhost-16] c.n.e.cluster.ReplicationTaskProcessor   : Network level connection to peer localhost; retrying after delay
+
+jakarta.ws.rs.ProcessingException: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:531) ~[jersey-apache-connector-3.1.5.jar:na]
+	at org.glassfish.jersey.client.ClientRuntime.invoke(ClientRuntime.java:300) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$invoke$0(JerseyInvocation.java:662) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.call(JerseyInvocation.java:697) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$runInScope$3(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:292) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:274) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:205) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:390) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.runInScope(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.invoke(JerseyInvocation.java:661) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.method(JerseyInvocation.java:439) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.post(JerseyInvocation.java:345) ~[jersey-client-3.1.5.jar:na]
+	at com.netflix.eureka.transport.Jersey3ReplicationClient.submitBatchUpdates(Jersey3ReplicationClient.java:116) ~[eureka-core-jersey3-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.cluster.ReplicationTaskProcessor.process(ReplicationTaskProcessor.java:80) ~[eureka-core-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.util.batcher.TaskExecutors$BatchWorkerRunnable.run(TaskExecutors.java:190) ~[eureka-core-2.0.1.jar:2.0.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+Caused by: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:159) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.PoolingHttpClientConnectionManager.connect(PoolingHttpClientConnectionManager.java:359) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.establishRoute(MainClientExec.java:381) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.execute(MainClientExec.java:237) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.ProtocolExec.execute(ProtocolExec.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RetryExec.execute(RetryExec.java:89) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RedirectExec.execute(RedirectExec.java:111) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.InternalHttpClient.doExecute(InternalHttpClient.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:72) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:483) ~[jersey-apache-connector-3.1.5.jar:na]
+	... 16 common frames omitted
+Caused by: java.net.ConnectException: Connection refused
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method) ~[na:na]
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:549) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592) ~[na:na]
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327) ~[na:na]
+	at java.base/java.net.Socket.connect(Socket.java:751) ~[na:na]
+	at org.apache.http.conn.socket.PlainConnectionSocketFactory.connectSocket(PlainConnectionSocketFactory.java:75) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:142) ~[httpclient-4.5.3.jar:4.5.3]
+	... 25 common frames omitted
+
+2026-01-12T21:51:10.872+05:30 ERROR 75424 --- [discovery-service] [et_localhost-13] c.n.e.cluster.ReplicationTaskProcessor   : Network level connection to peer localhost; retrying after delay
+
+jakarta.ws.rs.ProcessingException: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:531) ~[jersey-apache-connector-3.1.5.jar:na]
+	at org.glassfish.jersey.client.ClientRuntime.invoke(ClientRuntime.java:300) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$invoke$0(JerseyInvocation.java:662) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.call(JerseyInvocation.java:697) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$runInScope$3(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:292) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:274) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:205) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:390) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.runInScope(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.invoke(JerseyInvocation.java:661) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.method(JerseyInvocation.java:439) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.post(JerseyInvocation.java:345) ~[jersey-client-3.1.5.jar:na]
+	at com.netflix.eureka.transport.Jersey3ReplicationClient.submitBatchUpdates(Jersey3ReplicationClient.java:116) ~[eureka-core-jersey3-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.cluster.ReplicationTaskProcessor.process(ReplicationTaskProcessor.java:80) ~[eureka-core-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.util.batcher.TaskExecutors$BatchWorkerRunnable.run(TaskExecutors.java:190) ~[eureka-core-2.0.1.jar:2.0.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+Caused by: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:159) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.PoolingHttpClientConnectionManager.connect(PoolingHttpClientConnectionManager.java:359) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.establishRoute(MainClientExec.java:381) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.execute(MainClientExec.java:237) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.ProtocolExec.execute(ProtocolExec.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RetryExec.execute(RetryExec.java:89) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RedirectExec.execute(RedirectExec.java:111) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.InternalHttpClient.doExecute(InternalHttpClient.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:72) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:483) ~[jersey-apache-connector-3.1.5.jar:na]
+	... 16 common frames omitted
+Caused by: java.net.ConnectException: Connection refused
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method) ~[na:na]
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:549) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592) ~[na:na]
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327) ~[na:na]
+	at java.base/java.net.Socket.connect(Socket.java:751) ~[na:na]
+	at org.apache.http.conn.socket.PlainConnectionSocketFactory.connectSocket(PlainConnectionSocketFactory.java:75) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:142) ~[httpclient-4.5.3.jar:4.5.3]
+	... 25 common frames omitted
+
+2026-01-12T21:51:20.880+05:30 ERROR 75424 --- [discovery-service] [get_localhost-6] c.n.e.cluster.ReplicationTaskProcessor   : Network level connection to peer localhost; retrying after delay
+
+jakarta.ws.rs.ProcessingException: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:531) ~[jersey-apache-connector-3.1.5.jar:na]
+	at org.glassfish.jersey.client.ClientRuntime.invoke(ClientRuntime.java:300) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$invoke$0(JerseyInvocation.java:662) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.call(JerseyInvocation.java:697) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$runInScope$3(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:292) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:274) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:205) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:390) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.runInScope(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.invoke(JerseyInvocation.java:661) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.method(JerseyInvocation.java:439) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.post(JerseyInvocation.java:345) ~[jersey-client-3.1.5.jar:na]
+	at com.netflix.eureka.transport.Jersey3ReplicationClient.submitBatchUpdates(Jersey3ReplicationClient.java:116) ~[eureka-core-jersey3-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.cluster.ReplicationTaskProcessor.process(ReplicationTaskProcessor.java:80) ~[eureka-core-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.util.batcher.TaskExecutors$BatchWorkerRunnable.run(TaskExecutors.java:190) ~[eureka-core-2.0.1.jar:2.0.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+Caused by: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:159) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.PoolingHttpClientConnectionManager.connect(PoolingHttpClientConnectionManager.java:359) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.establishRoute(MainClientExec.java:381) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.execute(MainClientExec.java:237) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.ProtocolExec.execute(ProtocolExec.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RetryExec.execute(RetryExec.java:89) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RedirectExec.execute(RedirectExec.java:111) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.InternalHttpClient.doExecute(InternalHttpClient.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:72) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:483) ~[jersey-apache-connector-3.1.5.jar:na]
+	... 16 common frames omitted
+Caused by: java.net.ConnectException: Connection refused
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method) ~[na:na]
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:542) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592) ~[na:na]
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327) ~[na:na]
+	at java.base/java.net.Socket.connect(Socket.java:751) ~[na:na]
+	at org.apache.http.conn.socket.PlainConnectionSocketFactory.connectSocket(PlainConnectionSocketFactory.java:75) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:142) ~[httpclient-4.5.3.jar:4.5.3]
+	... 25 common frames omitted
+
+2026-01-12T21:51:30.903+05:30 ERROR 75424 --- [discovery-service] [get_localhost-5] c.n.e.cluster.ReplicationTaskProcessor   : Network level connection to peer localhost; retrying after delay
+
+jakarta.ws.rs.ProcessingException: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:531) ~[jersey-apache-connector-3.1.5.jar:na]
+	at org.glassfish.jersey.client.ClientRuntime.invoke(ClientRuntime.java:300) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$invoke$0(JerseyInvocation.java:662) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.call(JerseyInvocation.java:697) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$runInScope$3(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:292) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:274) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:205) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:390) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.runInScope(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.invoke(JerseyInvocation.java:661) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.method(JerseyInvocation.java:439) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.post(JerseyInvocation.java:345) ~[jersey-client-3.1.5.jar:na]
+	at com.netflix.eureka.transport.Jersey3ReplicationClient.submitBatchUpdates(Jersey3ReplicationClient.java:116) ~[eureka-core-jersey3-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.cluster.ReplicationTaskProcessor.process(ReplicationTaskProcessor.java:80) ~[eureka-core-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.util.batcher.TaskExecutors$BatchWorkerRunnable.run(TaskExecutors.java:190) ~[eureka-core-2.0.1.jar:2.0.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+Caused by: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:159) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.PoolingHttpClientConnectionManager.connect(PoolingHttpClientConnectionManager.java:359) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.establishRoute(MainClientExec.java:381) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.execute(MainClientExec.java:237) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.ProtocolExec.execute(ProtocolExec.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RetryExec.execute(RetryExec.java:89) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RedirectExec.execute(RedirectExec.java:111) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.InternalHttpClient.doExecute(InternalHttpClient.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:72) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:483) ~[jersey-apache-connector-3.1.5.jar:na]
+	... 16 common frames omitted
+Caused by: java.net.ConnectException: Connection refused
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method) ~[na:na]
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:549) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592) ~[na:na]
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327) ~[na:na]
+	at java.base/java.net.Socket.connect(Socket.java:751) ~[na:na]
+	at org.apache.http.conn.socket.PlainConnectionSocketFactory.connectSocket(PlainConnectionSocketFactory.java:75) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:142) ~[httpclient-4.5.3.jar:4.5.3]
+	... 25 common frames omitted
+
+2026-01-12T21:51:40.938+05:30 ERROR 75424 --- [discovery-service] [get_localhost-2] c.n.e.cluster.ReplicationTaskProcessor   : Network level connection to peer localhost; retrying after delay
+
+jakarta.ws.rs.ProcessingException: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:531) ~[jersey-apache-connector-3.1.5.jar:na]
+	at org.glassfish.jersey.client.ClientRuntime.invoke(ClientRuntime.java:300) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$invoke$0(JerseyInvocation.java:662) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.call(JerseyInvocation.java:697) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$runInScope$3(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:292) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:274) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:205) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:390) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.runInScope(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.invoke(JerseyInvocation.java:661) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.method(JerseyInvocation.java:439) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.post(JerseyInvocation.java:345) ~[jersey-client-3.1.5.jar:na]
+	at com.netflix.eureka.transport.Jersey3ReplicationClient.submitBatchUpdates(Jersey3ReplicationClient.java:116) ~[eureka-core-jersey3-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.cluster.ReplicationTaskProcessor.process(ReplicationTaskProcessor.java:80) ~[eureka-core-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.util.batcher.TaskExecutors$BatchWorkerRunnable.run(TaskExecutors.java:190) ~[eureka-core-2.0.1.jar:2.0.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+Caused by: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:159) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.PoolingHttpClientConnectionManager.connect(PoolingHttpClientConnectionManager.java:359) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.establishRoute(MainClientExec.java:381) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.execute(MainClientExec.java:237) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.ProtocolExec.execute(ProtocolExec.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RetryExec.execute(RetryExec.java:89) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RedirectExec.execute(RedirectExec.java:111) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.InternalHttpClient.doExecute(InternalHttpClient.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:72) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:483) ~[jersey-apache-connector-3.1.5.jar:na]
+	... 16 common frames omitted
+Caused by: java.net.ConnectException: Connection refused
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method) ~[na:na]
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:549) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592) ~[na:na]
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327) ~[na:na]
+	at java.base/java.net.Socket.connect(Socket.java:751) ~[na:na]
+	at org.apache.http.conn.socket.PlainConnectionSocketFactory.connectSocket(PlainConnectionSocketFactory.java:75) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:142) ~[httpclient-4.5.3.jar:4.5.3]
+	... 25 common frames omitted
+
+2026-01-12T21:51:45.714+05:30  INFO 75424 --- [discovery-service] [a-EvictionTimer] c.n.e.registry.AbstractInstanceRegistry  : Running the evict task with compensationTime 4ms
+2026-01-12T21:51:50.951+05:30 ERROR 75424 --- [discovery-service] [get_localhost-4] c.n.e.cluster.ReplicationTaskProcessor   : Network level connection to peer localhost; retrying after delay
+
+jakarta.ws.rs.ProcessingException: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:531) ~[jersey-apache-connector-3.1.5.jar:na]
+	at org.glassfish.jersey.client.ClientRuntime.invoke(ClientRuntime.java:300) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$invoke$0(JerseyInvocation.java:662) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.call(JerseyInvocation.java:697) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$runInScope$3(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:292) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:274) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:205) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:390) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.runInScope(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.invoke(JerseyInvocation.java:661) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.method(JerseyInvocation.java:439) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.post(JerseyInvocation.java:345) ~[jersey-client-3.1.5.jar:na]
+	at com.netflix.eureka.transport.Jersey3ReplicationClient.submitBatchUpdates(Jersey3ReplicationClient.java:116) ~[eureka-core-jersey3-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.cluster.ReplicationTaskProcessor.process(ReplicationTaskProcessor.java:80) ~[eureka-core-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.util.batcher.TaskExecutors$BatchWorkerRunnable.run(TaskExecutors.java:190) ~[eureka-core-2.0.1.jar:2.0.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+Caused by: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:159) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.PoolingHttpClientConnectionManager.connect(PoolingHttpClientConnectionManager.java:359) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.establishRoute(MainClientExec.java:381) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.execute(MainClientExec.java:237) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.ProtocolExec.execute(ProtocolExec.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RetryExec.execute(RetryExec.java:89) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RedirectExec.execute(RedirectExec.java:111) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.InternalHttpClient.doExecute(InternalHttpClient.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:72) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:483) ~[jersey-apache-connector-3.1.5.jar:na]
+	... 16 common frames omitted
+Caused by: java.net.ConnectException: Connection refused
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method) ~[na:na]
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:549) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592) ~[na:na]
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327) ~[na:na]
+	at java.base/java.net.Socket.connect(Socket.java:751) ~[na:na]
+	at org.apache.http.conn.socket.PlainConnectionSocketFactory.connectSocket(PlainConnectionSocketFactory.java:75) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:142) ~[httpclient-4.5.3.jar:4.5.3]
+	... 25 common frames omitted
+
+2026-01-12T21:52:01.006+05:30 ERROR 75424 --- [discovery-service] [get_localhost-8] c.n.e.cluster.ReplicationTaskProcessor   : Network level connection to peer localhost; retrying after delay
+
+jakarta.ws.rs.ProcessingException: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:531) ~[jersey-apache-connector-3.1.5.jar:na]
+	at org.glassfish.jersey.client.ClientRuntime.invoke(ClientRuntime.java:300) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$invoke$0(JerseyInvocation.java:662) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.call(JerseyInvocation.java:697) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$runInScope$3(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:292) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:274) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:205) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:390) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.runInScope(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.invoke(JerseyInvocation.java:661) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.method(JerseyInvocation.java:439) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.post(JerseyInvocation.java:345) ~[jersey-client-3.1.5.jar:na]
+	at com.netflix.eureka.transport.Jersey3ReplicationClient.submitBatchUpdates(Jersey3ReplicationClient.java:116) ~[eureka-core-jersey3-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.cluster.ReplicationTaskProcessor.process(ReplicationTaskProcessor.java:80) ~[eureka-core-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.util.batcher.TaskExecutors$BatchWorkerRunnable.run(TaskExecutors.java:190) ~[eureka-core-2.0.1.jar:2.0.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+Caused by: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:159) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.PoolingHttpClientConnectionManager.connect(PoolingHttpClientConnectionManager.java:359) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.establishRoute(MainClientExec.java:381) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.execute(MainClientExec.java:237) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.ProtocolExec.execute(ProtocolExec.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RetryExec.execute(RetryExec.java:89) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RedirectExec.execute(RedirectExec.java:111) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.InternalHttpClient.doExecute(InternalHttpClient.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:72) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:483) ~[jersey-apache-connector-3.1.5.jar:na]
+	... 16 common frames omitted
+Caused by: java.net.ConnectException: Connection refused
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method) ~[na:na]
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:549) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592) ~[na:na]
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327) ~[na:na]
+	at java.base/java.net.Socket.connect(Socket.java:751) ~[na:na]
+	at org.apache.http.conn.socket.PlainConnectionSocketFactory.connectSocket(PlainConnectionSocketFactory.java:75) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:142) ~[httpclient-4.5.3.jar:4.5.3]
+	... 25 common frames omitted
+
+2026-01-12T21:52:11.047+05:30 ERROR 75424 --- [discovery-service] [et_localhost-12] c.n.e.cluster.ReplicationTaskProcessor   : Network level connection to peer localhost; retrying after delay
+
+jakarta.ws.rs.ProcessingException: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:531) ~[jersey-apache-connector-3.1.5.jar:na]
+	at org.glassfish.jersey.client.ClientRuntime.invoke(ClientRuntime.java:300) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$invoke$0(JerseyInvocation.java:662) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.call(JerseyInvocation.java:697) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$runInScope$3(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:292) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:274) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:205) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:390) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.runInScope(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.invoke(JerseyInvocation.java:661) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.method(JerseyInvocation.java:439) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.post(JerseyInvocation.java:345) ~[jersey-client-3.1.5.jar:na]
+	at com.netflix.eureka.transport.Jersey3ReplicationClient.submitBatchUpdates(Jersey3ReplicationClient.java:116) ~[eureka-core-jersey3-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.cluster.ReplicationTaskProcessor.process(ReplicationTaskProcessor.java:80) ~[eureka-core-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.util.batcher.TaskExecutors$BatchWorkerRunnable.run(TaskExecutors.java:190) ~[eureka-core-2.0.1.jar:2.0.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+Caused by: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:159) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.PoolingHttpClientConnectionManager.connect(PoolingHttpClientConnectionManager.java:359) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.establishRoute(MainClientExec.java:381) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.execute(MainClientExec.java:237) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.ProtocolExec.execute(ProtocolExec.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RetryExec.execute(RetryExec.java:89) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RedirectExec.execute(RedirectExec.java:111) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.InternalHttpClient.doExecute(InternalHttpClient.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:72) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:483) ~[jersey-apache-connector-3.1.5.jar:na]
+	... 16 common frames omitted
+Caused by: java.net.ConnectException: Connection refused
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method) ~[na:na]
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:549) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592) ~[na:na]
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327) ~[na:na]
+	at java.base/java.net.Socket.connect(Socket.java:751) ~[na:na]
+	at org.apache.http.conn.socket.PlainConnectionSocketFactory.connectSocket(PlainConnectionSocketFactory.java:75) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:142) ~[httpclient-4.5.3.jar:4.5.3]
+	... 25 common frames omitted
+
+2026-01-12T21:52:21.063+05:30 ERROR 75424 --- [discovery-service] [et_localhost-14] c.n.e.cluster.ReplicationTaskProcessor   : Network level connection to peer localhost; retrying after delay
+
+jakarta.ws.rs.ProcessingException: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:531) ~[jersey-apache-connector-3.1.5.jar:na]
+	at org.glassfish.jersey.client.ClientRuntime.invoke(ClientRuntime.java:300) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$invoke$0(JerseyInvocation.java:662) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.call(JerseyInvocation.java:697) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$runInScope$3(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:292) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:274) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:205) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:390) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.runInScope(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.invoke(JerseyInvocation.java:661) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.method(JerseyInvocation.java:439) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.post(JerseyInvocation.java:345) ~[jersey-client-3.1.5.jar:na]
+	at com.netflix.eureka.transport.Jersey3ReplicationClient.submitBatchUpdates(Jersey3ReplicationClient.java:116) ~[eureka-core-jersey3-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.cluster.ReplicationTaskProcessor.process(ReplicationTaskProcessor.java:80) ~[eureka-core-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.util.batcher.TaskExecutors$BatchWorkerRunnable.run(TaskExecutors.java:190) ~[eureka-core-2.0.1.jar:2.0.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+Caused by: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:159) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.PoolingHttpClientConnectionManager.connect(PoolingHttpClientConnectionManager.java:359) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.establishRoute(MainClientExec.java:381) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.execute(MainClientExec.java:237) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.ProtocolExec.execute(ProtocolExec.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RetryExec.execute(RetryExec.java:89) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RedirectExec.execute(RedirectExec.java:111) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.InternalHttpClient.doExecute(InternalHttpClient.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:72) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:483) ~[jersey-apache-connector-3.1.5.jar:na]
+	... 16 common frames omitted
+Caused by: java.net.ConnectException: Connection refused
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method) ~[na:na]
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:549) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592) ~[na:na]
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327) ~[na:na]
+	at java.base/java.net.Socket.connect(Socket.java:751) ~[na:na]
+	at org.apache.http.conn.socket.PlainConnectionSocketFactory.connectSocket(PlainConnectionSocketFactory.java:75) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:142) ~[httpclient-4.5.3.jar:4.5.3]
+	... 25 common frames omitted
+
+2026-01-12T21:52:31.102+05:30 ERROR 75424 --- [discovery-service] [et_localhost-13] c.n.e.cluster.ReplicationTaskProcessor   : Network level connection to peer localhost; retrying after delay
+
+jakarta.ws.rs.ProcessingException: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:531) ~[jersey-apache-connector-3.1.5.jar:na]
+	at org.glassfish.jersey.client.ClientRuntime.invoke(ClientRuntime.java:300) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$invoke$0(JerseyInvocation.java:662) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.call(JerseyInvocation.java:697) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$runInScope$3(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:292) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:274) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:205) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:390) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.runInScope(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.invoke(JerseyInvocation.java:661) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.method(JerseyInvocation.java:439) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.post(JerseyInvocation.java:345) ~[jersey-client-3.1.5.jar:na]
+	at com.netflix.eureka.transport.Jersey3ReplicationClient.submitBatchUpdates(Jersey3ReplicationClient.java:116) ~[eureka-core-jersey3-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.cluster.ReplicationTaskProcessor.process(ReplicationTaskProcessor.java:80) ~[eureka-core-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.util.batcher.TaskExecutors$BatchWorkerRunnable.run(TaskExecutors.java:190) ~[eureka-core-2.0.1.jar:2.0.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+Caused by: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:159) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.PoolingHttpClientConnectionManager.connect(PoolingHttpClientConnectionManager.java:359) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.establishRoute(MainClientExec.java:381) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.execute(MainClientExec.java:237) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.ProtocolExec.execute(ProtocolExec.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RetryExec.execute(RetryExec.java:89) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RedirectExec.execute(RedirectExec.java:111) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.InternalHttpClient.doExecute(InternalHttpClient.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:72) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:483) ~[jersey-apache-connector-3.1.5.jar:na]
+	... 16 common frames omitted
+Caused by: java.net.ConnectException: Connection refused
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method) ~[na:na]
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:549) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592) ~[na:na]
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327) ~[na:na]
+	at java.base/java.net.Socket.connect(Socket.java:751) ~[na:na]
+	at org.apache.http.conn.socket.PlainConnectionSocketFactory.connectSocket(PlainConnectionSocketFactory.java:75) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:142) ~[httpclient-4.5.3.jar:4.5.3]
+	... 25 common frames omitted
+
+2026-01-12T21:52:41.115+05:30 ERROR 75424 --- [discovery-service] [et_localhost-18] c.n.e.cluster.ReplicationTaskProcessor   : Network level connection to peer localhost; retrying after delay
+
+jakarta.ws.rs.ProcessingException: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:531) ~[jersey-apache-connector-3.1.5.jar:na]
+	at org.glassfish.jersey.client.ClientRuntime.invoke(ClientRuntime.java:300) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$invoke$0(JerseyInvocation.java:662) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.call(JerseyInvocation.java:697) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$runInScope$3(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:292) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:274) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:205) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:390) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.runInScope(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.invoke(JerseyInvocation.java:661) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.method(JerseyInvocation.java:439) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.post(JerseyInvocation.java:345) ~[jersey-client-3.1.5.jar:na]
+	at com.netflix.eureka.transport.Jersey3ReplicationClient.submitBatchUpdates(Jersey3ReplicationClient.java:116) ~[eureka-core-jersey3-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.cluster.ReplicationTaskProcessor.process(ReplicationTaskProcessor.java:80) ~[eureka-core-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.util.batcher.TaskExecutors$BatchWorkerRunnable.run(TaskExecutors.java:190) ~[eureka-core-2.0.1.jar:2.0.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+Caused by: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:159) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.PoolingHttpClientConnectionManager.connect(PoolingHttpClientConnectionManager.java:359) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.establishRoute(MainClientExec.java:381) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.execute(MainClientExec.java:237) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.ProtocolExec.execute(ProtocolExec.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RetryExec.execute(RetryExec.java:89) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RedirectExec.execute(RedirectExec.java:111) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.InternalHttpClient.doExecute(InternalHttpClient.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:72) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:483) ~[jersey-apache-connector-3.1.5.jar:na]
+	... 16 common frames omitted
+Caused by: java.net.ConnectException: Connection refused
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method) ~[na:na]
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:542) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592) ~[na:na]
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327) ~[na:na]
+	at java.base/java.net.Socket.connect(Socket.java:751) ~[na:na]
+	at org.apache.http.conn.socket.PlainConnectionSocketFactory.connectSocket(PlainConnectionSocketFactory.java:75) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:142) ~[httpclient-4.5.3.jar:4.5.3]
+	... 25 common frames omitted
+
+2026-01-12T21:52:45.849+05:30  INFO 75424 --- [discovery-service] [a-EvictionTimer] c.n.e.registry.AbstractInstanceRegistry  : Running the evict task with compensationTime 17ms
+2026-01-12T21:52:51.129+05:30 ERROR 75424 --- [discovery-service] [get_localhost-5] c.n.e.cluster.ReplicationTaskProcessor   : Network level connection to peer localhost; retrying after delay
+
+jakarta.ws.rs.ProcessingException: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:531) ~[jersey-apache-connector-3.1.5.jar:na]
+	at org.glassfish.jersey.client.ClientRuntime.invoke(ClientRuntime.java:300) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$invoke$0(JerseyInvocation.java:662) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.call(JerseyInvocation.java:697) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$runInScope$3(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:292) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:274) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:205) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:390) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.runInScope(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.invoke(JerseyInvocation.java:661) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.method(JerseyInvocation.java:439) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.post(JerseyInvocation.java:345) ~[jersey-client-3.1.5.jar:na]
+	at com.netflix.eureka.transport.Jersey3ReplicationClient.submitBatchUpdates(Jersey3ReplicationClient.java:116) ~[eureka-core-jersey3-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.cluster.ReplicationTaskProcessor.process(ReplicationTaskProcessor.java:80) ~[eureka-core-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.util.batcher.TaskExecutors$BatchWorkerRunnable.run(TaskExecutors.java:190) ~[eureka-core-2.0.1.jar:2.0.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+Caused by: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:159) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.PoolingHttpClientConnectionManager.connect(PoolingHttpClientConnectionManager.java:359) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.establishRoute(MainClientExec.java:381) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.execute(MainClientExec.java:237) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.ProtocolExec.execute(ProtocolExec.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RetryExec.execute(RetryExec.java:89) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RedirectExec.execute(RedirectExec.java:111) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.InternalHttpClient.doExecute(InternalHttpClient.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:72) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:483) ~[jersey-apache-connector-3.1.5.jar:na]
+	... 16 common frames omitted
+Caused by: java.net.ConnectException: Connection refused
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method) ~[na:na]
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:542) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592) ~[na:na]
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327) ~[na:na]
+	at java.base/java.net.Socket.connect(Socket.java:751) ~[na:na]
+	at org.apache.http.conn.socket.PlainConnectionSocketFactory.connectSocket(PlainConnectionSocketFactory.java:75) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:142) ~[httpclient-4.5.3.jar:4.5.3]
+	... 25 common frames omitted
+
+2026-01-12T21:53:01.203+05:30 ERROR 75424 --- [discovery-service] [get_localhost-0] c.n.e.cluster.ReplicationTaskProcessor   : Network level connection to peer localhost; retrying after delay
+
+jakarta.ws.rs.ProcessingException: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:531) ~[jersey-apache-connector-3.1.5.jar:na]
+	at org.glassfish.jersey.client.ClientRuntime.invoke(ClientRuntime.java:300) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$invoke$0(JerseyInvocation.java:662) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.call(JerseyInvocation.java:697) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$runInScope$3(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:292) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:274) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:205) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:390) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.runInScope(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.invoke(JerseyInvocation.java:661) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.method(JerseyInvocation.java:439) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.post(JerseyInvocation.java:345) ~[jersey-client-3.1.5.jar:na]
+	at com.netflix.eureka.transport.Jersey3ReplicationClient.submitBatchUpdates(Jersey3ReplicationClient.java:116) ~[eureka-core-jersey3-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.cluster.ReplicationTaskProcessor.process(ReplicationTaskProcessor.java:80) ~[eureka-core-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.util.batcher.TaskExecutors$BatchWorkerRunnable.run(TaskExecutors.java:190) ~[eureka-core-2.0.1.jar:2.0.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+Caused by: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:159) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.PoolingHttpClientConnectionManager.connect(PoolingHttpClientConnectionManager.java:359) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.establishRoute(MainClientExec.java:381) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.execute(MainClientExec.java:237) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.ProtocolExec.execute(ProtocolExec.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RetryExec.execute(RetryExec.java:89) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RedirectExec.execute(RedirectExec.java:111) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.InternalHttpClient.doExecute(InternalHttpClient.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:72) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:483) ~[jersey-apache-connector-3.1.5.jar:na]
+	... 16 common frames omitted
+Caused by: java.net.ConnectException: Connection refused
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method) ~[na:na]
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:549) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592) ~[na:na]
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327) ~[na:na]
+	at java.base/java.net.Socket.connect(Socket.java:751) ~[na:na]
+	at org.apache.http.conn.socket.PlainConnectionSocketFactory.connectSocket(PlainConnectionSocketFactory.java:75) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:142) ~[httpclient-4.5.3.jar:4.5.3]
+	... 25 common frames omitted
+
+2026-01-12T21:53:11.302+05:30 ERROR 75424 --- [discovery-service] [get_localhost-4] c.n.e.cluster.ReplicationTaskProcessor   : Network level connection to peer localhost; retrying after delay
+
+jakarta.ws.rs.ProcessingException: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:531) ~[jersey-apache-connector-3.1.5.jar:na]
+	at org.glassfish.jersey.client.ClientRuntime.invoke(ClientRuntime.java:300) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$invoke$0(JerseyInvocation.java:662) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.call(JerseyInvocation.java:697) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$runInScope$3(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:292) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:274) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:205) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:390) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.runInScope(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.invoke(JerseyInvocation.java:661) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.method(JerseyInvocation.java:439) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.post(JerseyInvocation.java:345) ~[jersey-client-3.1.5.jar:na]
+	at com.netflix.eureka.transport.Jersey3ReplicationClient.submitBatchUpdates(Jersey3ReplicationClient.java:116) ~[eureka-core-jersey3-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.cluster.ReplicationTaskProcessor.process(ReplicationTaskProcessor.java:80) ~[eureka-core-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.util.batcher.TaskExecutors$BatchWorkerRunnable.run(TaskExecutors.java:190) ~[eureka-core-2.0.1.jar:2.0.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+Caused by: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:159) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.PoolingHttpClientConnectionManager.connect(PoolingHttpClientConnectionManager.java:359) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.establishRoute(MainClientExec.java:381) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.execute(MainClientExec.java:237) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.ProtocolExec.execute(ProtocolExec.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RetryExec.execute(RetryExec.java:89) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RedirectExec.execute(RedirectExec.java:111) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.InternalHttpClient.doExecute(InternalHttpClient.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:72) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:483) ~[jersey-apache-connector-3.1.5.jar:na]
+	... 16 common frames omitted
+Caused by: java.net.ConnectException: Connection refused
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method) ~[na:na]
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:549) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592) ~[na:na]
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327) ~[na:na]
+	at java.base/java.net.Socket.connect(Socket.java:751) ~[na:na]
+	at org.apache.http.conn.socket.PlainConnectionSocketFactory.connectSocket(PlainConnectionSocketFactory.java:75) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:142) ~[httpclient-4.5.3.jar:4.5.3]
+	... 25 common frames omitted
+
+2026-01-12T21:53:21.349+05:30 ERROR 75424 --- [discovery-service] [et_localhost-15] c.n.e.cluster.ReplicationTaskProcessor   : Network level connection to peer localhost; retrying after delay
+
+jakarta.ws.rs.ProcessingException: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:531) ~[jersey-apache-connector-3.1.5.jar:na]
+	at org.glassfish.jersey.client.ClientRuntime.invoke(ClientRuntime.java:300) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$invoke$0(JerseyInvocation.java:662) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.call(JerseyInvocation.java:697) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$runInScope$3(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:292) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:274) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:205) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:390) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.runInScope(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.invoke(JerseyInvocation.java:661) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.method(JerseyInvocation.java:439) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.post(JerseyInvocation.java:345) ~[jersey-client-3.1.5.jar:na]
+	at com.netflix.eureka.transport.Jersey3ReplicationClient.submitBatchUpdates(Jersey3ReplicationClient.java:116) ~[eureka-core-jersey3-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.cluster.ReplicationTaskProcessor.process(ReplicationTaskProcessor.java:80) ~[eureka-core-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.util.batcher.TaskExecutors$BatchWorkerRunnable.run(TaskExecutors.java:190) ~[eureka-core-2.0.1.jar:2.0.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+Caused by: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:159) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.PoolingHttpClientConnectionManager.connect(PoolingHttpClientConnectionManager.java:359) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.establishRoute(MainClientExec.java:381) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.execute(MainClientExec.java:237) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.ProtocolExec.execute(ProtocolExec.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RetryExec.execute(RetryExec.java:89) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RedirectExec.execute(RedirectExec.java:111) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.InternalHttpClient.doExecute(InternalHttpClient.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:72) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:483) ~[jersey-apache-connector-3.1.5.jar:na]
+	... 16 common frames omitted
+Caused by: java.net.ConnectException: Connection refused
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method) ~[na:na]
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:542) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592) ~[na:na]
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327) ~[na:na]
+	at java.base/java.net.Socket.connect(Socket.java:751) ~[na:na]
+	at org.apache.http.conn.socket.PlainConnectionSocketFactory.connectSocket(PlainConnectionSocketFactory.java:75) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:142) ~[httpclient-4.5.3.jar:4.5.3]
+	... 25 common frames omitted
+
+2026-01-12T21:53:31.424+05:30 ERROR 75424 --- [discovery-service] [et_localhost-18] c.n.e.cluster.ReplicationTaskProcessor   : Network level connection to peer localhost; retrying after delay
+
+jakarta.ws.rs.ProcessingException: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:531) ~[jersey-apache-connector-3.1.5.jar:na]
+	at org.glassfish.jersey.client.ClientRuntime.invoke(ClientRuntime.java:300) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$invoke$0(JerseyInvocation.java:662) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.call(JerseyInvocation.java:697) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$runInScope$3(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:292) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:274) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:205) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:390) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.runInScope(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.invoke(JerseyInvocation.java:661) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.method(JerseyInvocation.java:439) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.post(JerseyInvocation.java:345) ~[jersey-client-3.1.5.jar:na]
+	at com.netflix.eureka.transport.Jersey3ReplicationClient.submitBatchUpdates(Jersey3ReplicationClient.java:116) ~[eureka-core-jersey3-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.cluster.ReplicationTaskProcessor.process(ReplicationTaskProcessor.java:80) ~[eureka-core-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.util.batcher.TaskExecutors$BatchWorkerRunnable.run(TaskExecutors.java:190) ~[eureka-core-2.0.1.jar:2.0.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+Caused by: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:159) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.PoolingHttpClientConnectionManager.connect(PoolingHttpClientConnectionManager.java:359) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.establishRoute(MainClientExec.java:381) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.execute(MainClientExec.java:237) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.ProtocolExec.execute(ProtocolExec.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RetryExec.execute(RetryExec.java:89) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RedirectExec.execute(RedirectExec.java:111) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.InternalHttpClient.doExecute(InternalHttpClient.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:72) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:483) ~[jersey-apache-connector-3.1.5.jar:na]
+	... 16 common frames omitted
+Caused by: java.net.ConnectException: Connection refused
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method) ~[na:na]
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:549) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592) ~[na:na]
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327) ~[na:na]
+	at java.base/java.net.Socket.connect(Socket.java:751) ~[na:na]
+	at org.apache.http.conn.socket.PlainConnectionSocketFactory.connectSocket(PlainConnectionSocketFactory.java:75) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:142) ~[httpclient-4.5.3.jar:4.5.3]
+	... 25 common frames omitted
+
+2026-01-12T21:53:41.477+05:30 ERROR 75424 --- [discovery-service] [et_localhost-14] c.n.e.cluster.ReplicationTaskProcessor   : Network level connection to peer localhost; retrying after delay
+
+jakarta.ws.rs.ProcessingException: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:531) ~[jersey-apache-connector-3.1.5.jar:na]
+	at org.glassfish.jersey.client.ClientRuntime.invoke(ClientRuntime.java:300) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$invoke$0(JerseyInvocation.java:662) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.call(JerseyInvocation.java:697) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$runInScope$3(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:292) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:274) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:205) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:390) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.runInScope(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.invoke(JerseyInvocation.java:661) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.method(JerseyInvocation.java:439) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.post(JerseyInvocation.java:345) ~[jersey-client-3.1.5.jar:na]
+	at com.netflix.eureka.transport.Jersey3ReplicationClient.submitBatchUpdates(Jersey3ReplicationClient.java:116) ~[eureka-core-jersey3-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.cluster.ReplicationTaskProcessor.process(ReplicationTaskProcessor.java:80) ~[eureka-core-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.util.batcher.TaskExecutors$BatchWorkerRunnable.run(TaskExecutors.java:190) ~[eureka-core-2.0.1.jar:2.0.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+Caused by: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:159) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.PoolingHttpClientConnectionManager.connect(PoolingHttpClientConnectionManager.java:359) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.establishRoute(MainClientExec.java:381) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.execute(MainClientExec.java:237) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.ProtocolExec.execute(ProtocolExec.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RetryExec.execute(RetryExec.java:89) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RedirectExec.execute(RedirectExec.java:111) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.InternalHttpClient.doExecute(InternalHttpClient.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:72) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:483) ~[jersey-apache-connector-3.1.5.jar:na]
+	... 16 common frames omitted
+Caused by: java.net.ConnectException: Connection refused
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method) ~[na:na]
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:549) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592) ~[na:na]
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327) ~[na:na]
+	at java.base/java.net.Socket.connect(Socket.java:751) ~[na:na]
+	at org.apache.http.conn.socket.PlainConnectionSocketFactory.connectSocket(PlainConnectionSocketFactory.java:75) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:142) ~[httpclient-4.5.3.jar:4.5.3]
+	... 25 common frames omitted
+
+2026-01-12T21:53:45.735+05:30  INFO 75424 --- [discovery-service] [a-EvictionTimer] c.n.e.registry.AbstractInstanceRegistry  : Running the evict task with compensationTime 5ms
+2026-01-12T21:53:51.524+05:30 ERROR 75424 --- [discovery-service] [get_localhost-9] c.n.e.cluster.ReplicationTaskProcessor   : Network level connection to peer localhost; retrying after delay
+
+jakarta.ws.rs.ProcessingException: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:531) ~[jersey-apache-connector-3.1.5.jar:na]
+	at org.glassfish.jersey.client.ClientRuntime.invoke(ClientRuntime.java:300) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$invoke$0(JerseyInvocation.java:662) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.call(JerseyInvocation.java:697) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$runInScope$3(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:292) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:274) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:205) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:390) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.runInScope(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.invoke(JerseyInvocation.java:661) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.method(JerseyInvocation.java:439) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.post(JerseyInvocation.java:345) ~[jersey-client-3.1.5.jar:na]
+	at com.netflix.eureka.transport.Jersey3ReplicationClient.submitBatchUpdates(Jersey3ReplicationClient.java:116) ~[eureka-core-jersey3-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.cluster.ReplicationTaskProcessor.process(ReplicationTaskProcessor.java:80) ~[eureka-core-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.util.batcher.TaskExecutors$BatchWorkerRunnable.run(TaskExecutors.java:190) ~[eureka-core-2.0.1.jar:2.0.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+Caused by: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:159) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.PoolingHttpClientConnectionManager.connect(PoolingHttpClientConnectionManager.java:359) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.establishRoute(MainClientExec.java:381) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.execute(MainClientExec.java:237) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.ProtocolExec.execute(ProtocolExec.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RetryExec.execute(RetryExec.java:89) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RedirectExec.execute(RedirectExec.java:111) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.InternalHttpClient.doExecute(InternalHttpClient.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:72) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:483) ~[jersey-apache-connector-3.1.5.jar:na]
+	... 16 common frames omitted
+Caused by: java.net.ConnectException: Connection refused
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method) ~[na:na]
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:549) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592) ~[na:na]
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327) ~[na:na]
+	at java.base/java.net.Socket.connect(Socket.java:751) ~[na:na]
+	at org.apache.http.conn.socket.PlainConnectionSocketFactory.connectSocket(PlainConnectionSocketFactory.java:75) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:142) ~[httpclient-4.5.3.jar:4.5.3]
+	... 25 common frames omitted
+
+2026-01-12T21:54:01.532+05:30 ERROR 75424 --- [discovery-service] [et_localhost-19] c.n.e.cluster.ReplicationTaskProcessor   : Network level connection to peer localhost; retrying after delay
+
+jakarta.ws.rs.ProcessingException: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:531) ~[jersey-apache-connector-3.1.5.jar:na]
+	at org.glassfish.jersey.client.ClientRuntime.invoke(ClientRuntime.java:300) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$invoke$0(JerseyInvocation.java:662) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.call(JerseyInvocation.java:697) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$runInScope$3(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:292) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:274) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:205) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:390) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.runInScope(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.invoke(JerseyInvocation.java:661) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.method(JerseyInvocation.java:439) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.post(JerseyInvocation.java:345) ~[jersey-client-3.1.5.jar:na]
+	at com.netflix.eureka.transport.Jersey3ReplicationClient.submitBatchUpdates(Jersey3ReplicationClient.java:116) ~[eureka-core-jersey3-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.cluster.ReplicationTaskProcessor.process(ReplicationTaskProcessor.java:80) ~[eureka-core-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.util.batcher.TaskExecutors$BatchWorkerRunnable.run(TaskExecutors.java:190) ~[eureka-core-2.0.1.jar:2.0.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+Caused by: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:159) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.PoolingHttpClientConnectionManager.connect(PoolingHttpClientConnectionManager.java:359) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.establishRoute(MainClientExec.java:381) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.execute(MainClientExec.java:237) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.ProtocolExec.execute(ProtocolExec.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RetryExec.execute(RetryExec.java:89) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RedirectExec.execute(RedirectExec.java:111) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.InternalHttpClient.doExecute(InternalHttpClient.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:72) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:483) ~[jersey-apache-connector-3.1.5.jar:na]
+	... 16 common frames omitted
+Caused by: java.net.ConnectException: Connection refused
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method) ~[na:na]
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:549) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592) ~[na:na]
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327) ~[na:na]
+	at java.base/java.net.Socket.connect(Socket.java:751) ~[na:na]
+	at org.apache.http.conn.socket.PlainConnectionSocketFactory.connectSocket(PlainConnectionSocketFactory.java:75) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:142) ~[httpclient-4.5.3.jar:4.5.3]
+	... 25 common frames omitted
+
+2026-01-12T21:54:11.560+05:30 ERROR 75424 --- [discovery-service] [get_localhost-2] c.n.e.cluster.ReplicationTaskProcessor   : Network level connection to peer localhost; retrying after delay
+
+jakarta.ws.rs.ProcessingException: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:531) ~[jersey-apache-connector-3.1.5.jar:na]
+	at org.glassfish.jersey.client.ClientRuntime.invoke(ClientRuntime.java:300) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$invoke$0(JerseyInvocation.java:662) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.call(JerseyInvocation.java:697) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$runInScope$3(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:292) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:274) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:205) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:390) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.runInScope(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.invoke(JerseyInvocation.java:661) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.method(JerseyInvocation.java:439) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.post(JerseyInvocation.java:345) ~[jersey-client-3.1.5.jar:na]
+	at com.netflix.eureka.transport.Jersey3ReplicationClient.submitBatchUpdates(Jersey3ReplicationClient.java:116) ~[eureka-core-jersey3-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.cluster.ReplicationTaskProcessor.process(ReplicationTaskProcessor.java:80) ~[eureka-core-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.util.batcher.TaskExecutors$BatchWorkerRunnable.run(TaskExecutors.java:190) ~[eureka-core-2.0.1.jar:2.0.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+Caused by: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:159) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.PoolingHttpClientConnectionManager.connect(PoolingHttpClientConnectionManager.java:359) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.establishRoute(MainClientExec.java:381) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.execute(MainClientExec.java:237) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.ProtocolExec.execute(ProtocolExec.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RetryExec.execute(RetryExec.java:89) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RedirectExec.execute(RedirectExec.java:111) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.InternalHttpClient.doExecute(InternalHttpClient.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:72) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:483) ~[jersey-apache-connector-3.1.5.jar:na]
+	... 16 common frames omitted
+Caused by: java.net.ConnectException: Connection refused
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method) ~[na:na]
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:542) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592) ~[na:na]
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327) ~[na:na]
+	at java.base/java.net.Socket.connect(Socket.java:751) ~[na:na]
+	at org.apache.http.conn.socket.PlainConnectionSocketFactory.connectSocket(PlainConnectionSocketFactory.java:75) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:142) ~[httpclient-4.5.3.jar:4.5.3]
+	... 25 common frames omitted
+
+2026-01-12T21:54:21.641+05:30 ERROR 75424 --- [discovery-service] [et_localhost-10] c.n.e.cluster.ReplicationTaskProcessor   : Network level connection to peer localhost; retrying after delay
+
+jakarta.ws.rs.ProcessingException: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:531) ~[jersey-apache-connector-3.1.5.jar:na]
+	at org.glassfish.jersey.client.ClientRuntime.invoke(ClientRuntime.java:300) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$invoke$0(JerseyInvocation.java:662) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.call(JerseyInvocation.java:697) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$runInScope$3(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:292) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:274) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:205) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:390) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.runInScope(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.invoke(JerseyInvocation.java:661) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.method(JerseyInvocation.java:439) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.post(JerseyInvocation.java:345) ~[jersey-client-3.1.5.jar:na]
+	at com.netflix.eureka.transport.Jersey3ReplicationClient.submitBatchUpdates(Jersey3ReplicationClient.java:116) ~[eureka-core-jersey3-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.cluster.ReplicationTaskProcessor.process(ReplicationTaskProcessor.java:80) ~[eureka-core-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.util.batcher.TaskExecutors$BatchWorkerRunnable.run(TaskExecutors.java:190) ~[eureka-core-2.0.1.jar:2.0.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+Caused by: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:159) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.PoolingHttpClientConnectionManager.connect(PoolingHttpClientConnectionManager.java:359) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.establishRoute(MainClientExec.java:381) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.execute(MainClientExec.java:237) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.ProtocolExec.execute(ProtocolExec.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RetryExec.execute(RetryExec.java:89) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RedirectExec.execute(RedirectExec.java:111) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.InternalHttpClient.doExecute(InternalHttpClient.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:72) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:483) ~[jersey-apache-connector-3.1.5.jar:na]
+	... 16 common frames omitted
+Caused by: java.net.ConnectException: Connection refused
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method) ~[na:na]
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:542) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592) ~[na:na]
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327) ~[na:na]
+	at java.base/java.net.Socket.connect(Socket.java:751) ~[na:na]
+	at org.apache.http.conn.socket.PlainConnectionSocketFactory.connectSocket(PlainConnectionSocketFactory.java:75) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:142) ~[httpclient-4.5.3.jar:4.5.3]
+	... 25 common frames omitted
+
+2026-01-12T21:54:31.725+05:30 ERROR 75424 --- [discovery-service] [et_localhost-12] c.n.e.cluster.ReplicationTaskProcessor   : Network level connection to peer localhost; retrying after delay
+
+jakarta.ws.rs.ProcessingException: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:531) ~[jersey-apache-connector-3.1.5.jar:na]
+	at org.glassfish.jersey.client.ClientRuntime.invoke(ClientRuntime.java:300) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$invoke$0(JerseyInvocation.java:662) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.call(JerseyInvocation.java:697) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$runInScope$3(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:292) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:274) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:205) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:390) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.runInScope(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.invoke(JerseyInvocation.java:661) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.method(JerseyInvocation.java:439) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.post(JerseyInvocation.java:345) ~[jersey-client-3.1.5.jar:na]
+	at com.netflix.eureka.transport.Jersey3ReplicationClient.submitBatchUpdates(Jersey3ReplicationClient.java:116) ~[eureka-core-jersey3-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.cluster.ReplicationTaskProcessor.process(ReplicationTaskProcessor.java:80) ~[eureka-core-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.util.batcher.TaskExecutors$BatchWorkerRunnable.run(TaskExecutors.java:190) ~[eureka-core-2.0.1.jar:2.0.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+Caused by: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:159) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.PoolingHttpClientConnectionManager.connect(PoolingHttpClientConnectionManager.java:359) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.establishRoute(MainClientExec.java:381) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.execute(MainClientExec.java:237) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.ProtocolExec.execute(ProtocolExec.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RetryExec.execute(RetryExec.java:89) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RedirectExec.execute(RedirectExec.java:111) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.InternalHttpClient.doExecute(InternalHttpClient.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:72) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:483) ~[jersey-apache-connector-3.1.5.jar:na]
+	... 16 common frames omitted
+Caused by: java.net.ConnectException: Connection refused
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method) ~[na:na]
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:542) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592) ~[na:na]
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327) ~[na:na]
+	at java.base/java.net.Socket.connect(Socket.java:751) ~[na:na]
+	at org.apache.http.conn.socket.PlainConnectionSocketFactory.connectSocket(PlainConnectionSocketFactory.java:75) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:142) ~[httpclient-4.5.3.jar:4.5.3]
+	... 25 common frames omitted
+
+2026-01-12T21:54:41.743+05:30 ERROR 75424 --- [discovery-service] [et_localhost-18] c.n.e.cluster.ReplicationTaskProcessor   : Network level connection to peer localhost; retrying after delay
+
+jakarta.ws.rs.ProcessingException: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:531) ~[jersey-apache-connector-3.1.5.jar:na]
+	at org.glassfish.jersey.client.ClientRuntime.invoke(ClientRuntime.java:300) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$invoke$0(JerseyInvocation.java:662) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.call(JerseyInvocation.java:697) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$runInScope$3(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:292) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:274) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:205) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:390) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.runInScope(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.invoke(JerseyInvocation.java:661) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.method(JerseyInvocation.java:439) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.post(JerseyInvocation.java:345) ~[jersey-client-3.1.5.jar:na]
+	at com.netflix.eureka.transport.Jersey3ReplicationClient.submitBatchUpdates(Jersey3ReplicationClient.java:116) ~[eureka-core-jersey3-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.cluster.ReplicationTaskProcessor.process(ReplicationTaskProcessor.java:80) ~[eureka-core-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.util.batcher.TaskExecutors$BatchWorkerRunnable.run(TaskExecutors.java:190) ~[eureka-core-2.0.1.jar:2.0.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+Caused by: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:159) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.PoolingHttpClientConnectionManager.connect(PoolingHttpClientConnectionManager.java:359) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.establishRoute(MainClientExec.java:381) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.execute(MainClientExec.java:237) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.ProtocolExec.execute(ProtocolExec.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RetryExec.execute(RetryExec.java:89) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RedirectExec.execute(RedirectExec.java:111) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.InternalHttpClient.doExecute(InternalHttpClient.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:72) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:483) ~[jersey-apache-connector-3.1.5.jar:na]
+	... 16 common frames omitted
+Caused by: java.net.ConnectException: Connection refused
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method) ~[na:na]
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:549) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592) ~[na:na]
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327) ~[na:na]
+	at java.base/java.net.Socket.connect(Socket.java:751) ~[na:na]
+	at org.apache.http.conn.socket.PlainConnectionSocketFactory.connectSocket(PlainConnectionSocketFactory.java:75) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:142) ~[httpclient-4.5.3.jar:4.5.3]
+	... 25 common frames omitted
+
+2026-01-12T21:54:45.738+05:30  INFO 75424 --- [discovery-service] [a-EvictionTimer] c.n.e.registry.AbstractInstanceRegistry  : Running the evict task with compensationTime 4ms
+2026-01-12T21:54:51.792+05:30 ERROR 75424 --- [discovery-service] [et_localhost-14] c.n.e.cluster.ReplicationTaskProcessor   : Network level connection to peer localhost; retrying after delay
+
+jakarta.ws.rs.ProcessingException: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:531) ~[jersey-apache-connector-3.1.5.jar:na]
+	at org.glassfish.jersey.client.ClientRuntime.invoke(ClientRuntime.java:300) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$invoke$0(JerseyInvocation.java:662) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.call(JerseyInvocation.java:697) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$runInScope$3(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:292) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:274) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:205) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:390) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.runInScope(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.invoke(JerseyInvocation.java:661) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.method(JerseyInvocation.java:439) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.post(JerseyInvocation.java:345) ~[jersey-client-3.1.5.jar:na]
+	at com.netflix.eureka.transport.Jersey3ReplicationClient.submitBatchUpdates(Jersey3ReplicationClient.java:116) ~[eureka-core-jersey3-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.cluster.ReplicationTaskProcessor.process(ReplicationTaskProcessor.java:80) ~[eureka-core-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.util.batcher.TaskExecutors$BatchWorkerRunnable.run(TaskExecutors.java:190) ~[eureka-core-2.0.1.jar:2.0.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+Caused by: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:159) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.PoolingHttpClientConnectionManager.connect(PoolingHttpClientConnectionManager.java:359) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.establishRoute(MainClientExec.java:381) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.execute(MainClientExec.java:237) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.ProtocolExec.execute(ProtocolExec.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RetryExec.execute(RetryExec.java:89) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RedirectExec.execute(RedirectExec.java:111) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.InternalHttpClient.doExecute(InternalHttpClient.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:72) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:483) ~[jersey-apache-connector-3.1.5.jar:na]
+	... 16 common frames omitted
+Caused by: java.net.ConnectException: Connection refused
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method) ~[na:na]
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:549) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592) ~[na:na]
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327) ~[na:na]
+	at java.base/java.net.Socket.connect(Socket.java:751) ~[na:na]
+	at org.apache.http.conn.socket.PlainConnectionSocketFactory.connectSocket(PlainConnectionSocketFactory.java:75) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:142) ~[httpclient-4.5.3.jar:4.5.3]
+	... 25 common frames omitted
+
+2026-01-12T21:54:59.920+05:30  INFO 75424 --- [discovery-service] [nio-9000-exec-9] c.n.e.registry.AbstractInstanceRegistry  : Registered instance API-GATEWAY/192.168.2.134:api-gateway:9002 with status DOWN (replication=false)
+2026-01-12T21:55:01.806+05:30 ERROR 75424 --- [discovery-service] [get_localhost-6] c.n.e.cluster.ReplicationTaskProcessor   : Network level connection to peer localhost; retrying after delay
+
+jakarta.ws.rs.ProcessingException: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:531) ~[jersey-apache-connector-3.1.5.jar:na]
+	at org.glassfish.jersey.client.ClientRuntime.invoke(ClientRuntime.java:300) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$invoke$0(JerseyInvocation.java:662) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.call(JerseyInvocation.java:697) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$runInScope$3(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:292) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:274) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:205) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:390) ~[jersey-common-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.runInScope(JerseyInvocation.java:691) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation.invoke(JerseyInvocation.java:661) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.method(JerseyInvocation.java:439) ~[jersey-client-3.1.5.jar:na]
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.post(JerseyInvocation.java:345) ~[jersey-client-3.1.5.jar:na]
+	at com.netflix.eureka.transport.Jersey3ReplicationClient.submitBatchUpdates(Jersey3ReplicationClient.java:116) ~[eureka-core-jersey3-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.cluster.ReplicationTaskProcessor.process(ReplicationTaskProcessor.java:80) ~[eureka-core-2.0.1.jar:2.0.1]
+	at com.netflix.eureka.util.batcher.TaskExecutors$BatchWorkerRunnable.run(TaskExecutors.java:190) ~[eureka-core-2.0.1.jar:2.0.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+Caused by: org.apache.http.conn.HttpHostConnectException: Connect to localhost:8761 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:159) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.PoolingHttpClientConnectionManager.connect(PoolingHttpClientConnectionManager.java:359) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.establishRoute(MainClientExec.java:381) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.MainClientExec.execute(MainClientExec.java:237) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.ProtocolExec.execute(ProtocolExec.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RetryExec.execute(RetryExec.java:89) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.execchain.RedirectExec.execute(RedirectExec.java:111) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.InternalHttpClient.doExecute(InternalHttpClient.java:185) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:72) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.glassfish.jersey.apache.connector.ApacheConnector.apply(ApacheConnector.java:483) ~[jersey-apache-connector-3.1.5.jar:na]
+	... 16 common frames omitted
+Caused by: java.net.ConnectException: Connection refused
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method) ~[na:na]
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:682) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:542) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592) ~[na:na]
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327) ~[na:na]
+	at java.base/java.net.Socket.connect(Socket.java:751) ~[na:na]
+	at org.apache.http.conn.socket.PlainConnectionSocketFactory.connectSocket(PlainConnectionSocketFactory.java:75) ~[httpclient-4.5.3.jar:4.5.3]
+	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:142) ~[httpclient-4.5.3.jar:4.5.3]
+	... 25 common frames omitted
+
+2026-01-12T21:55:05.226+05:30  INFO 75424 --- [discovery-service] [nio-9000-exec-1] c.n.e.registry.AbstractInstanceRegistry  : Cancelled instance API-GATEWAY/192.168.2.134:api-gateway:9002 (replication=false)
+2026-01-12T21:55:06.481+05:30  INFO 75424 --- [discovery-service] [nio-9000-exec-5] c.n.e.registry.AbstractInstanceRegistry  : Registered instance CONFIG-SERVICE/192.168.2.134:config-service:9001 with status DOWN (replication=false)
+2026-01-12T21:55:09.561+05:30  INFO 75424 --- [discovery-service] [nio-9000-exec-3] c.n.e.registry.AbstractInstanceRegistry  : Cancelled instance CONFIG-SERVICE/192.168.2.134:config-service:9001 (replication=false)
+2026-01-12T21:55:10.212+05:30  INFO 75424 --- [discovery-service] [ionShutdownHook] o.s.c.n.e.s.EurekaServiceRegistry        : Unregistering application DISCOVERY-SERVICE with eureka with status DOWN
+2026-01-12T21:55:10.227+05:30  INFO 75424 --- [discovery-service] [ionShutdownHook] o.s.c.n.e.server.EurekaServerBootstrap   : Shutting down Eureka Server..
+2026-01-12T21:55:10.234+05:30  INFO 75424 --- [discovery-service] [ionShutdownHook] c.n.eureka.DefaultEurekaServerContext    : Shutting down ...
+2026-01-12T21:55:10.244+05:30  INFO 75424 --- [discovery-service] [ionShutdownHook] c.n.eureka.DefaultEurekaServerContext    : Shut down
+2026-01-12T21:55:10.245+05:30  INFO 75424 --- [discovery-service] [ionShutdownHook] o.s.c.n.e.server.EurekaServerBootstrap   : Eureka Service is now shutdown...
+2026-01-12T21:55:10.245+05:30  INFO 75424 --- [discovery-service] [ionShutdownHook] c.n.eureka.DefaultEurekaServerContext    : Shutting down ...
+2026-01-12T21:55:10.247+05:30  INFO 75424 --- [discovery-service] [ionShutdownHook] c.n.eureka.DefaultEurekaServerContext    : Shut down
+2026-01-12T21:55:10.249+05:30  INFO 75424 --- [discovery-service] [ionShutdownHook] com.netflix.discovery.DiscoveryClient    : Shutting down DiscoveryClient ...
+2026-01-12T21:55:10.250+05:30  INFO 75424 --- [discovery-service] [ionShutdownHook] com.netflix.discovery.DiscoveryClient    : Completed shut down of DiscoveryClient

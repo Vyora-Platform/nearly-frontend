@@ -26,7 +26,7 @@
 - Primary Brand Color: Red #ef4444 (HSL: 0 84% 60%)
   - Used for primary action buttons, CTAs, brand accents, active icons, and all interactive elements
   - Gradient Start: 0 84% 60% (red)
-  - Gradient End: 0 84% 60% (red - solid color, not gradient)
+  - Gradient End: 0 84% 60% (red - solid color)
 - Success Green: 140 65% 50% (verified badges, positive actions)
 - Warning Red: 0 75% 60% (fake news voting, delete actions)
 

@@ -1,6 +1,7 @@
 import { Users, Lock, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 interface GroupCardProps {
   id: string;
@@ -9,6 +10,8 @@ interface GroupCardProps {
   category: string;
   membersCount: number;
   groupType: "Public" | "Private" | "Invite-only";
+  description?: string;
+  lastMessage?: string;
 }
 
 export default function GroupCard({
@@ -17,6 +20,8 @@ export default function GroupCard({
   category,
   membersCount,
   groupType,
+  description,
+  lastMessage,
 }: GroupCardProps) {
   const getTypeIcon = () => {
     switch (groupType) {
@@ -30,33 +35,36 @@ export default function GroupCard({
   };
 
   return (
-    <div className="bg-card rounded-xl border border-card-border p-4">
+    <div className="bg-card rounded-xl border border-border p-4">
       <div className="flex items-start gap-3 mb-3">
-        <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-muted">
-          {imageUrl ? (
-            <img src={imageUrl} alt={name} className="w-full h-full object-cover" />
-          ) : (
-            <div className="w-full h-full bg-gradient-primary flex items-center justify-center text-white font-bold text-xl">
-              {name[0]}
-            </div>
-          )}
-        </div>
+        <Avatar className="w-14 h-14 flex-shrink-0">
+          <AvatarImage src={imageUrl} alt={name} />
+          <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white font-semibold text-lg">
+            {name[0]}
+          </AvatarFallback>
+        </Avatar>
         <div className="flex-1 min-w-0">
-          <Badge variant="secondary" className="text-xs mb-2">
-            {category}
-          </Badge>
-          <h3 className="text-base font-semibold text-foreground mb-1 truncate">
-            {name}
-          </h3>
-          <div className="flex items-center gap-3 text-xs text-muted-foreground">
-            <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2 mb-1">
+            <h3 className="text-sm font-semibold text-foreground truncate">
+              {name}
+            </h3>
+            {groupType !== "Public" && (
+              <Lock className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+            )}
+          </div>
+          {description && (
+            <p className="text-xs text-muted-foreground line-clamp-1 mb-1">
+              {description}
+            </p>
+          )}
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+              {category}
+            </Badge>
+            <span className="flex items-center gap-1">
               <Users className="w-3 h-3" />
-              <span>{membersCount.toLocaleString()} members</span>
-            </div>
-            <div className="flex items-center gap-1">
-              {getTypeIcon()}
-              <span>{groupType}</span>
-            </div>
+              {membersCount.toLocaleString()}
+            </span>
           </div>
         </div>
       </div>
@@ -64,7 +72,7 @@ export default function GroupCard({
       <Button
         variant="default"
         size="sm"
-        className="w-full bg-gradient-primary text-white h-10"
+        className="w-full bg-gradient-primary text-white h-9"
         data-testid="button-join-group"
       >
         {groupType === "Public" ? "Join Group" : "Request to Join"}

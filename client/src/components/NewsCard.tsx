@@ -9,19 +9,23 @@ import { queryClient } from "@/lib/queryClient";
 interface NewsCardProps {
   id: string;
   author: {
+    id?: string;
     name: string;
-    location: string;
+    username?: string;
+    location?: string;
     avatar?: string;
   };
   headline: string;
-  description: string;
-  imageUrl?: string;
+  description?: string | null;
+  imageUrl?: string | null;
   category: string;
+  location?: string | null;
   trueVotes: number;
   fakeVotes: number;
   likesCount: number;
   commentsCount: number;
-  timeAgo: string;
+  timeAgo?: string;
+  publishedAt?: string;
 }
 
 export default function NewsCard({
@@ -31,15 +35,29 @@ export default function NewsCard({
   description,
   imageUrl,
   category,
+  location,
   trueVotes,
   fakeVotes,
   likesCount,
   commentsCount,
   timeAgo,
+  publishedAt,
 }: NewsCardProps) {
-  const [liked, setLiked] = useState(false);
+  const displayTime = timeAgo || publishedAt || "Just now";
+  const displayLocation = location || author.location;
+  
+  // Initialize liked state from localStorage
+  const [liked, setLiked] = useState(() => {
+    const likedNews = JSON.parse(localStorage.getItem('nearly_liked_news') || '[]');
+    return likedNews.includes(id);
+  });
   const [likes, setLikes] = useState(likesCount);
-  const [userVote, setUserVote] = useState<"true" | "fake" | null>(null);
+  
+  // Initialize vote state from localStorage
+  const [userVote, setUserVote] = useState<"true" | "fake" | null>(() => {
+    const newsVotes = JSON.parse(localStorage.getItem('nearly_news_votes') || '{}');
+    return newsVotes[id] || null;
+  });
   const [votes, setVotes] = useState({ true: trueVotes, fake: fakeVotes });
 
   const totalVotes = votes.true + votes.fake;
@@ -50,15 +68,28 @@ export default function NewsCard({
     const previousVote = userVote;
     const previousVotes = { ...votes };
 
+    // Helper to persist vote to localStorage
+    const persistVote = (newVote: "true" | "fake" | null) => {
+      const newsVotes = JSON.parse(localStorage.getItem('nearly_news_votes') || '{}');
+      if (newVote === null) {
+        delete newsVotes[id];
+      } else {
+        newsVotes[id] = newVote;
+      }
+      localStorage.setItem('nearly_news_votes', JSON.stringify(newsVotes));
+    };
+
     if (userVote === vote) {
       setUserVote(null);
       setVotes({ ...votes, [vote]: votes[vote] - 1 });
+      persistVote(null);
       try {
         await api.voteNews(id, vote, false);
         queryClient.invalidateQueries({ queryKey: ["/api/news"] });
       } catch (error) {
         setUserVote(previousVote);
         setVotes(previousVotes);
+        persistVote(previousVote);
         console.error("Failed to remove vote:", error);
       }
     } else {
@@ -75,6 +106,7 @@ export default function NewsCard({
         } catch (error) {
           setUserVote(previousVote);
           setVotes(previousVotes);
+          persistVote(previousVote);
           console.error("Failed to change vote:", error);
         }
       } else {
@@ -85,24 +117,39 @@ export default function NewsCard({
         } catch (error) {
           setUserVote(previousVote);
           setVotes(previousVotes);
+          persistVote(previousVote);
           console.error("Failed to vote:", error);
         }
       }
       setUserVote(vote);
+      persistVote(vote);
     }
   };
 
   const handleLike = async () => {
-    const newLiked = !liked;
-    setLiked(newLiked);
-    setLikes(newLiked ? likes + 1 : likes - 1);
+    // Prevent multiple likes - only allow one like per user
+    if (liked) {
+      return; // Already liked, don't allow unliking or re-liking
+    }
+    
+    setLiked(true);
+    setLikes(likes + 1);
+    
+    // Persist to localStorage
+    const likedNews = JSON.parse(localStorage.getItem('nearly_liked_news') || '[]');
+    likedNews.push(id);
+    localStorage.setItem('nearly_liked_news', JSON.stringify(likedNews));
     
     try {
-      await api.likeNews(id, newLiked);
+      await api.likeNews(id, true);
       queryClient.invalidateQueries({ queryKey: ["/api/news"] });
     } catch (error) {
-      setLiked(!newLiked);
-      setLikes(newLiked ? likes - 1 : likes + 1);
+      // Revert on error
+      setLiked(false);
+      setLikes(likes);
+      const revertedLikes = JSON.parse(localStorage.getItem('nearly_liked_news') || '[]');
+      const filtered = revertedLikes.filter((newsId: string) => newsId !== id);
+      localStorage.setItem('nearly_liked_news', JSON.stringify(filtered));
       console.error("Failed to like news:", error);
     }
   };
@@ -119,7 +166,7 @@ export default function NewsCard({
             <div>
               <p className="text-xs font-semibold text-foreground">{author.name}</p>
               <p className="text-xs text-muted-foreground">
-                {author.location} • {timeAgo}
+                {displayLocation && `${displayLocation} • `}{displayTime}
               </p>
             </div>
           </div>

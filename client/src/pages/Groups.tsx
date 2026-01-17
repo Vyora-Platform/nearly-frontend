@@ -15,18 +15,38 @@ export default function Groups() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Tech");
   const [, setLocation] = useLocation();
+  const currentUserId = localStorage.getItem('nearly_user_id') || '';
 
-  const { data: groups = [], isLoading } = useQuery({
-    queryKey: ["/api/groups"],
-    queryFn: api.getGroups,
+  // Fetch all groups
+  const { data: groups = [], isLoading, error } = useQuery({
+    queryKey: ["groups"],
+    queryFn: () => api.getGroups(),
   });
 
-  const filteredGroups = groups.filter(group => {
-    const matchesSearch = searchQuery === "" || 
-      group.name.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    return matchesSearch;
+  // Fetch user's groups
+  const { data: myGroups = [], isLoading: myGroupsLoading } = useQuery({
+    queryKey: ["user-groups", currentUserId],
+    queryFn: () => api.getUserGroups(currentUserId),
+    enabled: !!currentUserId,
   });
+
+  const filteredGroups = groups && Array.isArray(groups)
+    ? groups.filter(group => {
+        const matchesSearch = searchQuery === "" ||
+          group.name.toLowerCase().includes(searchQuery.toLowerCase());
+
+        return matchesSearch;
+      })
+    : [];
+
+  const filteredMyGroups = myGroups && Array.isArray(myGroups)
+    ? myGroups.filter(group => {
+        const matchesSearch = searchQuery === "" ||
+          group.name.toLowerCase().includes(searchQuery.toLowerCase());
+
+        return matchesSearch;
+      })
+    : [];
 
   if (isLoading) {
     return (
@@ -34,6 +54,23 @@ export default function Groups() {
         <TopBar title="Groups" showActions={false} />
         <div className="flex items-center justify-center h-96">
           <p className="text-muted-foreground">Loading groups...</p>
+        </div>
+        <BottomNav />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background pb-20">
+        <TopBar title="Groups" showActions={false} />
+        <div className="flex items-center justify-center h-96">
+          <div className="text-center">
+            <p className="text-muted-foreground mb-4">Failed to load groups</p>
+            <p className="text-sm text-muted-foreground">
+              Please check your database connection and try again.
+            </p>
+          </div>
         </div>
         <BottomNav />
       </div>
@@ -103,10 +140,28 @@ export default function Groups() {
               )}
             </TabsContent>
 
-            <TabsContent value="my-groups" className="mt-4">
-              <div className="text-center py-12">
-                <p className="text-muted-foreground">You haven't joined any groups yet</p>
-              </div>
+            <TabsContent value="my-groups" className="mt-4 space-y-4">
+              {myGroupsLoading ? (
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground">Loading your groups...</p>
+                </div>
+              ) : filteredMyGroups.length === 0 ? (
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground">You haven't joined any groups yet</p>
+                </div>
+              ) : (
+                filteredMyGroups.map((group) => (
+                  <GroupCard
+                    key={group.id}
+                    id={group.id}
+                    name={group.name}
+                    imageUrl={group.imageUrl || undefined}
+                    category={group.category || "General"}
+                    membersCount={group.membersCount || 0}
+                    groupType={group.groupType as "Public" | "Private" | "Invite-only"}
+                  />
+                ))
+              )}
             </TabsContent>
           </Tabs>
         </div>

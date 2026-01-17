@@ -67,7 +67,7 @@ export function CreateEventDialog({
         startDate: new Date(Date.now() + 604800000),
         endDate: null,
         maxAttendees: null,
-        category: [],
+        category: "General",
         attendeesCount: 0,
         createdAt: new Date(),
       });

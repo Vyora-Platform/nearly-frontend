@@ -32,9 +32,23 @@ export default defineConfig({
     emptyOutDir: true,
   },
   server: {
+    port: 5731,
     fs: {
       strict: true,
       deny: ["**/.*"],
+    },
+    // Proxy API requests to Java microservices gateway to avoid CORS issues
+    proxy: {
+      "/api": {
+        target: "http://129.212.246.236:9002",
+        changeOrigin: true,
+        secure: false,
+      },
+      "/ws": {
+        target: "http://129.212.246.236:9002",
+        ws: true,
+        changeOrigin: true,
+      },
     },
   },
 });

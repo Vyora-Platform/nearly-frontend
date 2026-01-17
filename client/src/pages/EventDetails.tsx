@@ -1,13 +1,15 @@
 import { useRoute, useLocation } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { ArrowLeft, MapPin, Calendar, Users, Share, BadgeCheck } from "lucide-react";
+import { ArrowLeft, MapPin, Calendar, BadgeCheck, Heart, Bookmark, MessageCircle, Send, Reply, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
-import { useState } from "react";
-import { apiRequest, queryClient } from "@/lib/queryClient";
+import { Input } from "@/components/ui/input";
+import { useState, useRef } from "react";
+import { queryClient, authFetch } from "@/lib/queryClient";
+import { api } from "@/lib/api";
 import { format } from "date-fns";
+import { useToast } from "@/hooks/use-toast";
 
 interface EventGuest {
   id: string;
@@ -26,6 +28,9 @@ interface EventComment {
   createdAt: Date;
   userName?: string;
   userAvatar?: string;
+  parentCommentId?: string;
+  likesCount?: number;
+  replies?: EventComment[];
 }
 
 export default function EventDetails() {
@@ -33,38 +38,177 @@ export default function EventDetails() {
   const [, setLocation] = useLocation();
   const eventId = params?.id;
   const [comment, setComment] = useState("");
+  const [liked, setLiked] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [replyingTo, setReplyingTo] = useState<{ id: string; userName: string } | null>(null);
+  const commentInputRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
+  const currentUserId = localStorage.getItem('nearly_user_id') || '';
 
   const { data: event, isLoading } = useQuery<any>({
-    queryKey: ["/api/events", eventId],
+    queryKey: ["event", eventId],
+    queryFn: () => api.getEvent(eventId || ''),
     enabled: !!eventId,
+  });
+
+  // Fetch the event host user
+  const { data: hostUser } = useQuery({
+    queryKey: ["user", event?.userId],
+    queryFn: () => api.getUser(event?.userId || ''),
+    enabled: !!event?.userId,
+  });
+
+  // Fetch current user
+  const { data: currentUser } = useQuery({
+    queryKey: ["current-user", currentUserId],
+    queryFn: () => api.getCurrentUser(),
+    enabled: !!currentUserId,
   });
 
   const { data: guests = [] } = useQuery<EventGuest[]>({
-    queryKey: ["/api/events", eventId, "guests"],
+    queryKey: ["event-guests", eventId],
+    queryFn: () => api.getEventGuests(eventId || ''),
     enabled: !!eventId,
   });
 
-  const { data: comments = [] } = useQuery<EventComment[]>({
-    queryKey: ["/api/events", eventId, "comments"],
+  const { data: rawComments = [] } = useQuery<EventComment[]>({
+    queryKey: ["event-comments", eventId],
+    queryFn: () => api.getEventComments(eventId || ''),
     enabled: !!eventId,
   });
+
+  // Organize comments into threads
+  const organizedComments = (() => {
+    const parentComments: EventComment[] = [];
+    const repliesMap: Record<string, EventComment[]> = {};
+
+    rawComments.forEach((c: any) => {
+      const comment: EventComment = {
+        ...c,
+        replies: [],
+      };
+
+      if (c.parentCommentId) {
+        if (!repliesMap[c.parentCommentId]) {
+          repliesMap[c.parentCommentId] = [];
+        }
+        repliesMap[c.parentCommentId].push(comment);
+      } else {
+        parentComments.push(comment);
+      }
+    });
+
+    parentComments.forEach(parent => {
+      parent.replies = repliesMap[parent.id] || [];
+    });
+
+    return parentComments;
+  })();
 
   const joinMutation = useMutation({
-    mutationFn: () => apiRequest(`/api/events/${eventId}/join`, "POST", {}),
+    mutationFn: () => api.joinEvent(eventId || '', currentUserId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/events", eventId] });
-      queryClient.invalidateQueries({ queryKey: ["/api/events", eventId, "guests"] });
+      queryClient.invalidateQueries({ queryKey: ["event", eventId] });
+      queryClient.invalidateQueries({ queryKey: ["event-guests", eventId] });
+      toast({ title: "Joined!", description: "You've joined this event" });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to join event", variant: "destructive" });
     },
   });
 
   const commentMutation = useMutation({
-    mutationFn: (content: string) =>
-      apiRequest(`/api/events/${eventId}/comments`, "POST", { content }),
+    mutationFn: ({ content, parentCommentId }: { content: string; parentCommentId?: string }) => {
+      return authFetch(`/api/events/${eventId}/comments`, {
+        method: 'POST',
+        body: JSON.stringify({ content, userId: currentUserId, parentCommentId }),
+      }).then(res => res.json());
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/events", eventId, "comments"] });
+      queryClient.invalidateQueries({ queryKey: ["event-comments", eventId] });
+      queryClient.invalidateQueries({ queryKey: ["event", eventId] });
       setComment("");
+      setReplyingTo(null);
+      toast({ title: replyingTo ? "Reply posted!" : "Comment posted!" });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to post comment", variant: "destructive" });
     },
   });
+
+  const handleReply = (commentId: string, userName: string) => {
+    setReplyingTo({ id: commentId, userName });
+    setComment(`@${userName} `);
+    setTimeout(() => commentInputRef.current?.focus(), 100);
+  };
+
+  const cancelReply = () => {
+    setReplyingTo(null);
+    setComment("");
+  };
+
+  const handleSubmitComment = () => {
+    if (!comment.trim()) return;
+    commentMutation.mutate({
+      content: comment,
+      parentCommentId: replyingTo?.id,
+    });
+  };
+
+  const getTimeAgo = (date: Date | string) => {
+    const now = new Date();
+    const diff = now.getTime() - new Date(date).getTime();
+    const hours = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
+    if (hours < 1) return "Just now";
+    if (hours < 24) return `${hours}h ago`;
+    return `${days}d ago`;
+  };
+
+  // Like mutation for events
+  const likeMutation = useMutation({
+    mutationFn: (increment: boolean) => {
+      return authFetch(`/api/events/${eventId}/like`, {
+        method: 'POST',
+        body: JSON.stringify({ increment, userId: currentUserId }),
+      }).then(res => res.json());
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["event", eventId] });
+    },
+  });
+
+  const handleLike = () => {
+    const newLiked = !liked;
+    setLiked(newLiked);
+    likeMutation.mutate(newLiked);
+  };
+
+  const handleSave = () => {
+    setSaved(!saved);
+    toast({ title: saved ? "Removed from saved" : "Event saved!" });
+  };
+
+  const handleShare = async () => {
+    const shareUrl = window.location.href;
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: event?.title || 'Check out this event',
+          text: event?.description || 'Join this event on Nearly!',
+          url: shareUrl,
+        });
+      } else {
+        await navigator.clipboard.writeText(shareUrl);
+        toast({ title: "Link copied!", description: "Share link copied to clipboard" });
+      }
+    } catch (error) {
+      console.log('Share cancelled');
+    }
+  };
+
+  // Check if current user is the event host
+  const isOwnEvent = currentUserId && event?.userId === currentUserId;
 
   if (isLoading) {
     return (
@@ -88,27 +232,43 @@ export default function EventDetails() {
 
   return (
     <div className="min-h-screen bg-background pb-20">
+      {/* Fixed Header with Back Button */}
+      <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm border-b border-border">
+        <div className="flex items-center gap-3 p-4">
+          <button
+            onClick={() => setLocation("/events")}
+            className="w-10 h-10 rounded-full bg-muted hover:bg-muted/80 flex items-center justify-center transition-colors"
+            data-testid="button-back"
+          >
+            <ArrowLeft className="w-5 h-5 text-foreground" />
+          </button>
+          <div className="flex-1 min-w-0">
+            <h1 className="text-lg font-semibold text-foreground truncate">
+              {event.title}
+            </h1>
+          </div>
+          <button
+            className="w-10 h-10 rounded-full bg-muted hover:bg-muted/80 flex items-center justify-center transition-colors"
+            data-testid="button-options"
+          >
+            <span className="text-foreground text-lg">•••</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Hero Image */}
       <div className="relative">
-        {event.imageUrl && (
+        {event.imageUrl ? (
           <img
             src={event.imageUrl}
             alt={event.title}
-            className="w-full h-64 object-cover"
+            className="w-full h-56 object-cover"
           />
+        ) : (
+          <div className="w-full h-40 bg-gradient-to-br from-primary/20 to-primary/40 flex items-center justify-center">
+            <span className="text-4xl">🎉</span>
+          </div>
         )}
-        <button
-          onClick={() => setLocation("/events")}
-          className="absolute top-4 left-4 w-10 h-10 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center text-white"
-          data-testid="button-back"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
-        <button
-          className="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center text-white"
-          data-testid="button-options"
-        >
-          •••
-        </button>
       </div>
 
       <div className="p-4">
@@ -162,63 +322,41 @@ export default function EventDetails() {
           </p>
         </div>
 
-        <div className="mb-6">
-          <h2 className="text-lg font-semibold text-foreground mb-3">Guest Details</h2>
-          <div className="space-y-3">
-            <div className="flex items-center gap-3 p-3 bg-card rounded-lg">
-              <Avatar className="w-12 h-12">
-                <AvatarImage src="https://api.dicebear.com/7.x/avataaars/svg?seed=Kunal" />
-                <AvatarFallback>KS</AvatarFallback>
-              </Avatar>
-              <div className="flex-1">
-                <p className="text-sm font-medium text-foreground">Kunal Shah</p>
-                <p className="text-xs text-muted-foreground">Keynote speaker on "The Future of Fintech"</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 p-3 bg-card rounded-lg">
-              <Avatar className="w-12 h-12">
-                <AvatarImage src="https://api.dicebear.com/7.x/avataaars/svg?seed=Shradha" />
-                <AvatarFallback>SS</AvatarFallback>
-              </Avatar>
-              <div className="flex-1">
-                <p className="text-sm font-medium text-foreground">Shradha Sharma</p>
-                <p className="text-xs text-muted-foreground">Hosting a panel discussion on "Building in India"</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 p-3 bg-card rounded-lg">
-              <Avatar className="w-12 h-12 bg-primary/10">
-                <div className="w-full h-full flex items-center justify-center text-primary font-semibold">
-                  R
-                </div>
-              </Avatar>
-              <div className="flex-1">
-                <p className="text-sm font-medium text-foreground">Ritvi</p>
-                <p className="text-xs text-muted-foreground">Musician/Artist</p>
-                <p className="text-xs text-muted-foreground">Closing the event with a special live music experience</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
+        {/* Host Section - with real data */}
         <div className="mb-6">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-lg font-semibold text-foreground">Host</h2>
+            <h2 className="text-lg font-semibold text-foreground">Hosted by</h2>
           </div>
-          <div className="flex items-center gap-3 p-3 bg-card rounded-lg">
-            <Avatar className="w-12 h-12">
-              <AvatarImage src="https://api.dicebear.com/7.x/initials/svg?seed=TI" />
-              <AvatarFallback>TI</AvatarFallback>
+          <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-primary/5 to-primary/10 rounded-xl border border-primary/20">
+            <Avatar className="w-14 h-14 ring-2 ring-primary/30">
+              <AvatarImage src={hostUser?.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${event?.userId}`} />
+              <AvatarFallback className="bg-primary/20 text-primary font-semibold">
+                {hostUser?.name?.[0] || 'H'}
+              </AvatarFallback>
             </Avatar>
             <div className="flex-1">
-              <div className="flex items-center gap-1">
-                <p className="text-sm font-medium text-foreground">Techies India</p>
-                <BadgeCheck className="w-4 h-4 text-primary" />
+              <div className="flex items-center gap-2">
+                <p className="text-sm font-semibold text-foreground">
+                  {isOwnEvent ? 'You' : (hostUser?.name || 'Event Host')}
+                </p>
+                {hostUser?.isVerified && <BadgeCheck className="w-4 h-4 text-primary" />}
               </div>
-              <p className="text-xs text-muted-foreground">Official tech community for developers</p>
+              <p className="text-xs text-muted-foreground">@{hostUser?.username || 'user'}</p>
+              {hostUser?.bio && (
+                <p className="text-xs text-muted-foreground mt-1 line-clamp-1">{hostUser.bio}</p>
+              )}
             </div>
-            <button className="text-xs text-primary font-medium" data-testid="button-view-profile">
-              View Profile
-            </button>
+            {!isOwnEvent && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-primary text-primary hover:bg-primary/10"
+                onClick={() => setLocation(`/profile/${hostUser?.username}`)}
+                data-testid="button-view-profile"
+              >
+                View Profile
+              </Button>
+            )}
           </div>
         </div>
 
@@ -252,69 +390,150 @@ export default function EventDetails() {
           )}
         </div>
 
-        <div className="mb-20">
-          <h2 className="text-lg font-semibold text-foreground mb-3">
-            Comments ({comments.length})
+        {/* Comments Section */}
+        <div className="mb-40">
+          <h2 className="text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
+            <MessageCircle className="w-5 h-5" />
+            Comments ({rawComments.length})
           </h2>
-          <div className="space-y-4 mb-4">
-            {comments.map((c) => (
-              <div key={c.id} className="flex gap-3">
-                <Avatar className="w-8 h-8">
-                  <AvatarImage src={c.userAvatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${c.id}`} />
-                  <AvatarFallback>{c.id.slice(0, 2).toUpperCase()}</AvatarFallback>
-                </Avatar>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <p className="text-sm font-medium text-foreground">{c.userName || "Anonymous"}</p>
-                    <span className="text-xs text-muted-foreground">1d ago</span>
-                  </div>
-                  <p className="text-sm text-foreground">{c.content}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="flex gap-2">
-            <Avatar className="w-8 h-8">
-              <AvatarImage src="https://api.dicebear.com/7.x/avataaars/svg?seed=current" />
-              <AvatarFallback>ME</AvatarFallback>
-            </Avatar>
-            <div className="flex-1 flex gap-2">
-              <Textarea
-                placeholder="Add comment..."
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                className="resize-none min-h-[40px] h-10"
-                data-testid="input-comment"
-              />
-              <button
-                onClick={() => comment && commentMutation.mutate(comment)}
-                disabled={!comment || commentMutation.isPending}
-                className="w-10 h-10 rounded-full bg-gradient-primary text-white flex items-center justify-center disabled:opacity-50"
-                data-testid="button-send-comment"
-              >
-                →
-              </button>
+          {organizedComments.length === 0 ? (
+            <div className="text-center py-8 bg-muted/30 rounded-xl">
+              <MessageCircle className="w-10 h-10 mx-auto mb-2 text-muted-foreground/50" />
+              <p className="text-sm text-muted-foreground">No comments yet</p>
+              <p className="text-xs text-muted-foreground/70">Be the first to comment!</p>
             </div>
-          </div>
+          ) : (
+            <div className="space-y-4">
+              {organizedComments.map((c) => (
+                <div key={c.id} className="space-y-3">
+                  {/* Parent Comment */}
+                  <div className="flex gap-3 p-3 bg-card rounded-xl">
+                    <Avatar className="w-9 h-9">
+                      <AvatarImage src={c.userAvatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${c.userId}`} />
+                      <AvatarFallback className="bg-primary/10 text-primary text-xs">
+                        {c.userName?.[0] || 'U'}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <p className="text-sm font-semibold text-foreground">{c.userName || "User"}</p>
+                        <span className="text-xs text-muted-foreground">{getTimeAgo(c.createdAt)}</span>
+                      </div>
+                      <p className="text-sm text-foreground/90">{c.content}</p>
+                      <div className="flex items-center gap-4 mt-2">
+                        {(c.likesCount || 0) > 0 && (
+                          <span className="text-xs text-muted-foreground">{c.likesCount} likes</span>
+                        )}
+                        <button 
+                          onClick={() => handleReply(c.id, c.userName || 'User')}
+                          className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1"
+                        >
+                          <Reply className="w-3 h-3" />
+                          Reply
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Replies */}
+                  {c.replies && c.replies.length > 0 && (
+                    <div className="ml-8 space-y-3">
+                      {c.replies.map((reply) => (
+                        <div key={reply.id} className="flex gap-3 p-3 bg-muted/30 rounded-xl">
+                          <Avatar className="w-7 h-7">
+                            <AvatarImage src={reply.userAvatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${reply.userId}`} />
+                            <AvatarFallback className="bg-primary/10 text-primary text-xs">
+                              {reply.userName?.[0] || 'U'}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <p className="text-xs font-semibold text-foreground">{reply.userName || "User"}</p>
+                              <span className="text-xs text-muted-foreground">{getTimeAgo(reply.createdAt)}</span>
+                            </div>
+                            <p className="text-xs text-foreground/90">{reply.content}</p>
+                            <div className="flex items-center gap-4 mt-1">
+                              {(reply.likesCount || 0) > 0 && (
+                                <span className="text-xs text-muted-foreground">{reply.likesCount} likes</span>
+                              )}
+                              <button 
+                                onClick={() => handleReply(c.id, reply.userName || 'User')}
+                                className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1"
+                              >
+                                <Reply className="w-3 h-3" />
+                                Reply
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border p-4 flex gap-3">
-        <Button
-          variant="outline"
-          className="flex-shrink-0"
-          data-testid="button-share"
-        >
-          <Share className="w-4 h-4" />
-        </Button>
-        <Button
-          className="flex-1 bg-gradient-primary text-white border-none"
-          onClick={() => joinMutation.mutate()}
-          disabled={joinMutation.isPending}
-          data-testid="button-join-event"
-        >
-          {joinMutation.isPending ? "Joining..." : "Join Event"}
-        </Button>
+      {/* Fixed bottom bar with actions */}
+      <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border">
+        {/* Comment input */}
+        <div className="p-3 border-b border-border/50">
+          {replyingTo && (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2 px-2">
+              <Reply className="w-4 h-4" />
+              <span>Replying to <span className="font-semibold text-foreground">@{replyingTo.userName}</span></span>
+              <button onClick={cancelReply} className="ml-auto hover:text-foreground">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          )}
+          <div className="flex items-center gap-3">
+            <Avatar className="w-8 h-8">
+              <AvatarImage src={currentUser?.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUserId}`} />
+              <AvatarFallback>{currentUser?.name?.[0] || 'U'}</AvatarFallback>
+            </Avatar>
+            <Input
+              ref={commentInputRef}
+              placeholder={replyingTo ? `Reply to @${replyingTo.userName}...` : "Add a comment..."}
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              className="flex-1 border-0 bg-muted/50 focus-visible:ring-0 rounded-full h-9"
+              onKeyDown={(e) => e.key === 'Enter' && comment && handleSubmitComment()}
+            />
+            <button
+              onClick={handleSubmitComment}
+              disabled={!comment || commentMutation.isPending}
+              className="text-primary font-semibold text-sm disabled:opacity-50"
+            >
+              {commentMutation.isPending ? "..." : "Post"}
+            </button>
+          </div>
+        </div>
+
+        {/* Action buttons */}
+        <div className="p-4 flex items-center gap-3">
+          <div className="flex items-center gap-3">
+            <button onClick={handleLike} className="p-2 hover:bg-muted rounded-full transition-colors">
+              <Heart className={`w-6 h-6 ${liked ? "fill-red-500 text-red-500" : "text-foreground"}`} />
+            </button>
+            <button onClick={handleSave} className="p-2 hover:bg-muted rounded-full transition-colors">
+              <Bookmark className={`w-6 h-6 ${saved ? "fill-foreground text-foreground" : "text-foreground"}`} />
+            </button>
+            <button onClick={handleShare} className="p-2 hover:bg-muted rounded-full transition-colors">
+              <Send className="w-6 h-6 text-foreground" />
+            </button>
+          </div>
+          <Button
+            className="flex-1 bg-gradient-primary text-white border-none h-11 font-semibold"
+            onClick={() => joinMutation.mutate()}
+            disabled={joinMutation.isPending || isOwnEvent}
+            data-testid="button-join-event"
+          >
+            {isOwnEvent ? "Your Event" : joinMutation.isPending ? "Joining..." : "Join Event"}
+          </Button>
+        </div>
       </div>
     </div>
   );

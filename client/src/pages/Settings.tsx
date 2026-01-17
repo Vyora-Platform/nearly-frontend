@@ -1,10 +1,20 @@
 import { useLocation } from "wouter";
 import { ArrowLeft, ChevronRight, Key, Shield, ShieldCheck, HelpCircle, Headphones, AlertCircle, Info, FileText, ShieldAlert, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Settings() {
   const [, setLocation] = useLocation();
-  
+  const { logout } = useAuth();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+
   const settingsSections = [
     {
       title: "ACCOUNT",
@@ -134,6 +144,7 @@ export default function Settings() {
           <Button
             variant="outline"
             className="w-full justify-center gap-2 text-destructive border-destructive hover:bg-destructive/10 h-12"
+            onClick={handleLogout}
             data-testid="button-logout"
           >
             <LogOut className="w-5 h-5" />

@@ -1,20 +1,20 @@
-import { Home, Calendar, Users, Newspaper, User } from "lucide-react";
+import { House, Send, Camera, Compass, Clapperboard } from "lucide-react";
 import { Link, useLocation } from "wouter";
 
 export default function BottomNav() {
   const [location] = useLocation();
 
   const tabs = [
-    { path: "/", icon: Home, label: "Home" },
-    { path: "/events", icon: Calendar, label: "Events" },
-    { path: "/groups", icon: Users, label: "Groups" },
-    { path: "/news", icon: Newspaper, label: "News" },
-    { path: "/profile", icon: User, label: "Profile" },
+    { path: "/", icon: House, label: "Home" },
+    { path: "/shots", icon: Clapperboard, label: "Shots" },
+    { path: "/moments", icon: Camera, label: "Moments" },
+    { path: "/chat", icon: Send, label: "Chat" },
+    { path: "/discover", icon: Compass, label: "Discover" },
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border z-50">
-      <div className="max-w-md mx-auto flex justify-around items-center h-16 px-2">
+    <nav className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-xl border-t border-border/50 z-50 safe-area-bottom">
+      <div className="max-w-md mx-auto flex justify-around items-center h-16 px-2 pb-safe">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = location === tab.path;
@@ -31,9 +31,9 @@ export default function BottomNav() {
                   fill={isActive ? "currentColor" : "none"}
                 />
                 <span
-                  className={`text-xs ${
+                  className={`text-xs font-semibold ${
                     isActive
-                      ? "text-gradient-primary font-semibold"
+                      ? "text-primary"
                       : "text-muted-foreground"
                   }`}
                 >

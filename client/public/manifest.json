@@ -1,0 +1,51 @@
+{
+  "name": "Nearly - Connect with people nearby",
+  "short_name": "Nearly",
+  "description": "Nearly connects you with people nearby through activities, events, groups, and local news.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0ea5e9",
+  "orientation": "portrait",
+  "scope": "/",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["social", "lifestyle", "news"],
+  "icons": [
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Create Activity",
+      "short_name": "New Activity",
+      "description": "Create a new activity for others to join",
+      "url": "/create-activity",
+      "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Create Event",
+      "short_name": "New Event",
+      "description": "Create a new event in your community",
+      "url": "/create-event",
+      "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Start Discussion",
+      "short_name": "Discuss",
+      "description": "Start a new discussion with your community",
+      "url": "/discuss",
+      "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
+    }
+  ]
+}

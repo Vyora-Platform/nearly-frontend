@@ -6,6 +6,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { CreateGroupDialog } from "@/components/CreateGroupDialog";
 import { format } from "date-fns";
+import { api } from "@/lib/api";
+import { groupApi } from "@/lib/gateway-api";
+import { authFetch } from "@/lib/queryClient";
 
 interface Group {
   id: string;
@@ -22,16 +25,73 @@ export default function MyGroups() {
   const [activeTab, setActiveTab] = useState("my");
   const [searchQuery, setSearchQuery] = useState("");
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const currentUserId = "current-user-id";
+  const currentUserId = localStorage.getItem('nearly_user_id') || '';
 
-  const { data: myGroups = [] } = useQuery<Group[]>({
-    queryKey: ["/api/users", currentUserId, "groups"],
+  // Fetch user's groups
+  const { data: myGroups = [], isLoading: loadingMyGroups } = useQuery<Group[]>({
+    queryKey: ["userGroups", currentUserId],
+    queryFn: async () => {
+      if (!currentUserId) return [];
+      try {
+        // First try the gateway API
+        const gatewayGroups = await groupApi.getUserGroups(currentUserId);
+        if (gatewayGroups && gatewayGroups.length > 0) {
+          return gatewayGroups;
+        }
+        // Fallback to local API
+        const localGroups = await api.getUserGroups(currentUserId);
+        if (localGroups && localGroups.length > 0) {
+          return localGroups;
+        }
+        // Last resort - try direct API call
+        const res = await authFetch(`/api/groups/user/${currentUserId}`);
+        if (res.ok) {
+          const data = await res.json();
+          return Array.isArray(data) ? data : [];
+        }
+        return [];
+      } catch (error) {
+        console.error('Failed to fetch user groups:', error);
+        return [];
+      }
+    },
+    enabled: !!currentUserId,
+    staleTime: 30000,
+    refetchOnWindowFocus: true,
   });
 
-  const { data: allGroups = [] } = useQuery<Group[]>({
-    queryKey: ["/api/groups"],
+  // Fetch all groups
+  const { data: allGroups = [], isLoading: loadingAllGroups } = useQuery<Group[]>({
+    queryKey: ["groups"],
+    queryFn: async () => {
+      try {
+        // First try the gateway API
+        const gatewayGroups = await groupApi.getGroups();
+        if (gatewayGroups && gatewayGroups.length > 0) {
+          return gatewayGroups;
+        }
+        // Fallback to local API
+        const localGroups = await api.getGroups();
+        if (localGroups && localGroups.length > 0) {
+          return localGroups;
+        }
+        // Last resort - try direct API call
+        const res = await authFetch('/api/groups');
+        if (res.ok) {
+          const data = await res.json();
+          return Array.isArray(data) ? data : [];
+        }
+        return [];
+      } catch (error) {
+        console.error('Failed to fetch groups:', error);
+        return [];
+      }
+    },
+    staleTime: 30000,
+    refetchOnWindowFocus: true,
   });
 
+  const isLoading = activeTab === "my" ? loadingMyGroups : loadingAllGroups;
   const displayedGroups = activeTab === "my" ? myGroups : allGroups;
   const filteredGroups = displayedGroups.filter((group) =>
     group.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -55,51 +115,6 @@ export default function MyGroups() {
     if (diffInHours < 24) return format(date, "h:mm a");
     return "Yesterday";
   };
-
-  const sampleGroupsData: Group[] = [
-    {
-      id: "1",
-      name: "Kanpur Startups",
-      description: "Great talk at the meetup!",
-      imageUrl: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400",
-      membersCount: 1200,
-      lastMessage: "Great talk at the meetup!",
-      lastMessageTime: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
-      unreadCount: 12,
-    },
-    {
-      id: "2",
-      name: "Delhi Foodies",
-      description: "Just tried this new cafe...",
-      imageUrl: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400",
-      membersCount: 875,
-      lastMessage: "Just tried this new cafe...",
-      lastMessageTime: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString(),
-      unreadCount: 3,
-    },
-    {
-      id: "3",
-      name: "Bangalore Tech Hub",
-      description: "Anyone up for a game tonight?",
-      imageUrl: "https://images.unsplash.com/photo-1531482615713-2afd69097998?w=400",
-      membersCount: 2340,
-      lastMessage: "Anyone up for a game tonight?",
-      lastMessageTime: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
-      unreadCount: 0,
-    },
-    {
-      id: "4",
-      name: "Mumbai Movie Club",
-      description: "The new Spiderman movie wa...",
-      imageUrl: "",
-      membersCount: 567,
-      lastMessage: "The new Spiderman movie wa...",
-      lastMessageTime: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
-      unreadCount: 1,
-    },
-  ];
-
-  const groupsToDisplay = filteredGroups.length > 0 ? filteredGroups : sampleGroupsData;
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -173,8 +188,20 @@ export default function MyGroups() {
       )}
 
       <div className="divide-y divide-border">
-        {groupsToDisplay.map((group) => (
-          <Link
+        {isLoading ? (
+          <div className="flex items-center justify-center py-20">
+            <p className="text-muted-foreground">Loading groups...</p>
+          </div>
+        ) : filteredGroups.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-20">
+            <p className="text-muted-foreground">No groups found</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              {activeTab === "my" ? "Join some groups to see them here!" : "Create a new group to get started!"}
+            </p>
+          </div>
+        ) : (
+          filteredGroups.map((group) => (
+            <Link
             key={group.id}
             href={`/group/${group.id}/chat`}
             className="flex items-center gap-3 p-4 hover-elevate active-elevate-2"
@@ -210,12 +237,7 @@ export default function MyGroups() {
               )}
             </div>
           </Link>
-        ))}
-
-        {groupsToDisplay.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-20">
-            <p className="text-muted-foreground">No groups found</p>
-          </div>
+        ))
         )}
       </div>
 

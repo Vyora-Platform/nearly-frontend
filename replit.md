@@ -38,72 +38,70 @@ Preferred communication style: Simple, everyday language.
 
 ### Backend Architecture
 
-**Runtime & Framework**
-- Node.js with Express.js for the HTTP server
-- TypeScript with ESM modules for type safety and modern JavaScript features
-- Custom middleware for request/response logging and error handling
+**API Gateway Microservices**
+- All API requests are proxied through a lightweight Express.js server to a Spring Boot microservices gateway
+- Node.js Express server serves the frontend and proxies `/api/*` requests to the gateway
+- Gateway runs on port 9002 (configurable via GATEWAY_URL environment variable)
+- No local database - all data persistence handled by microservices
 
 **API Design**
 - RESTful API architecture with resource-based endpoints
+- ALL endpoints route through the microservices gateway
 - Endpoints organized by domain: `/api/users`, `/api/activities`, `/api/events`, `/api/groups`, `/api/news`
 - CRUD operations for all major entities with proper HTTP methods (GET, POST, PATCH, DELETE)
 - Special endpoints for interactions: like/unlike, voting (true/fake for news), participant counts
 
-**Data Layer**
-- Interface-based storage abstraction (`IStorage`) for flexibility
-- In-memory storage implementation (`MemStorage`) for development/testing
-- Designed for easy migration to database-backed storage
-- Schema validation using Zod with Drizzle-Zod integration
+**Microservices Gateway**
+- Spring Boot-based API Gateway (port 9002)
+- Services include: auth-service, user-service, activity-service, event-service, group-service, news-service, media-service
+- JWT-based authentication with token refresh support
+- Service discovery and configuration management
 
 **Development Environment**
 - Vite dev server running in middleware mode for seamless full-stack development
 - Hot module replacement (HMR) for instant frontend updates
 - Request logging with response capture and truncation
+- Gateway proxy for CORS-free development
 
-### Data Storage Solutions
+### Data Models
 
-**Database Configuration**
-- PostgreSQL as the target production database (via Drizzle ORM configuration)
-- Drizzle ORM for type-safe database queries and migrations
-- Schema defined in `shared/schema.ts` with proper relationships and constraints
+**Type Definitions**
+- Shared TypeScript interfaces in `shared/schema.ts` define all data structures
+- Types include: User, Activity, Event, Group, News, Message, Notification, Moment
+- Zod schemas for client-side form validation
+- No database ORM dependencies - pure TypeScript types
 
-**Database Schema Design**
+**Core Data Models**
 
-*Users Table*
-- UUID primary keys with automatic generation
-- Profile fields: username (unique), name, bio, location, interests (array), avatarUrl
-- Aggregate counts: followers, following, posts for performance optimization
+*Users*
+- UUID primary keys
+- Profile fields: username (unique), name, bio, location, interests, avatarUrl
+- Aggregate counts: followers, following, posts
 
-*Activities Table*
+*Activities*
 - Flexible activity creation with date ranges, participant limits, visibility controls
 - Location-based discovery support
 - Cost field for paid/free activities
 - Category system for filtering
 - Engagement metrics: likes, comments, participants
 
-*Events Table*
+*Events*
 - Structured event management with start/end dates
 - Entry type system (FREE/PAID) with optional pricing
 - Venue location and capacity management
 - Attendee tracking and organizer references
 
-*Groups Table*
+*Groups*
 - Community organization with public/private/invite-only visibility
 - Category-based classification
 - Member count tracking
 - Cover images and descriptions
 
-*News Table*
+*News*
 - Hyperlocal news sharing with location tagging
 - Truth verification system (true/fake vote counts)
 - Category filtering (Local, National, Sport, etc.)
 - Source attribution and user-generated content support
-
-**Key Design Decisions**
-- Timestamp columns use PostgreSQL's `timestamp` type
-- Array types for flexible data (interests, categories)
-- Integer counts denormalized for performance (avoiding expensive COUNT queries)
-- UUID generation handled by database for consistency
 
 ### External Dependencies
 
@@ -117,13 +115,7 @@ Preferred communication style: Simple, everyday language.
 **Form Management**
 - react-hook-form for performant form state management
 - @hookform/resolvers for Zod schema integration
-- Validation schemas shared between client and server using Zod
-
-**Database & ORM**
-- drizzle-orm (v0.39.x) for type-safe SQL query building
-- drizzle-kit for schema migrations and database pushing
-- @neondatabase/serverless for PostgreSQL connection (serverless-optimized)
-- drizzle-zod for automatic Zod schema generation from database schema
+- Validation schemas using Zod for client-side validation
 
 **Date & Time**
 - date-fns (v3.x) for date formatting and manipulation
@@ -141,7 +133,8 @@ Preferred communication style: Simple, everyday language.
 - Gradient utilities for brand-consistent red (#ef4444) accent color
 
 **Key Integration Points**
-- Shared schema definitions between client and server prevent type mismatches
+- Shared type definitions between client and server prevent type mismatches
 - API client wrapper provides centralized request handling with proper error boundaries
 - Query client configuration ensures consistent caching behavior across all data fetching
 - Toast notifications for user feedback on create/update/delete operations
+- All API calls route through the microservices gateway - no local database queries

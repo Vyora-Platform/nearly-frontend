@@ -55,7 +55,7 @@ type CreateActivityFormValues = z.infer<typeof createActivityFormSchema>;
 export default function CreateActivity() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const currentUserId = "current-user-id";
+  const currentUserId = localStorage.getItem('nearly_user_id') || '';
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
   const [organizerType, setOrganizerType] = useState<"user" | "custom">("user");

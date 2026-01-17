@@ -63,7 +63,8 @@ export function CreateGroupDialog({
         createdAt: new Date(),
       });
 
-      queryClient.invalidateQueries({ queryKey: ["/api/groups"] });
+      queryClient.invalidateQueries({ queryKey: ["groups"] });
+      queryClient.invalidateQueries({ queryKey: ["userGroups"] });
       
       toast({
         title: "Success!",
