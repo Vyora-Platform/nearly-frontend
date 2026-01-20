@@ -27,7 +27,7 @@ const logNetwork = (type: 'request' | 'response' | 'error', data: any) => {
 // Check network connectivity
 const checkNetworkStatus = async (): Promise<boolean> => {
   try {
-    const response = await fetch(buildGatewayUrl('/api/health'), {
+    const response = await fetch(buildGatewayUrl('/api/actuator/health'), {
       method: 'HEAD',
       signal: AbortSignal.timeout(5000)
     });
@@ -58,7 +58,7 @@ if (NETWORK_LOGGING_ENABLED) {
     const online = await checkNetworkStatus();
     if (lastNetworkStatus !== online) {
       lastNetworkStatus = online;
-      console.log(`🌐 Network Status: ${online ? 'ONLINE' : 'OFFLINE'} - Gateway: ${buildGatewayUrl('/api/health')}`);
+      console.log(`🌐 Network Status: ${online ? 'ONLINE' : 'OFFLINE'} - Gateway: ${buildGatewayUrl('/api/actuator/health')}`);
 
       // Notify all subscribers
       networkStatusCallbacks.forEach(callback => {
