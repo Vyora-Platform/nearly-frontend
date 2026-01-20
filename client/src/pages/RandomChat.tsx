@@ -120,7 +120,7 @@ export default function RandomChat() {
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
     const port = "9016"; // video-chat-service handles both modes
     const wsPath = "/ws/video";
-    const wsUrl = `${protocol}//${window.location.hostname}:${port}${wsPath}`;
+    const wsUrl = `http://129.212.246.236:9002${wsPath}`;
     
     console.log(`🔌 WebSocket Connecting: ${wsUrl}`, {
       url: wsUrl,
