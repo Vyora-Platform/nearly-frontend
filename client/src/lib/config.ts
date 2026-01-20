@@ -23,10 +23,10 @@ const configs: Record<string, Partial<Config>> = {
     // Use Vite proxy - requests to same origin are proxied to Java gateway at 9002
     // This avoids CORS issues in development
     API_BASE_URL: '',  // Same origin - Vite proxies /api/* to localhost:9002
-    WS_BASE_URL: 'ws://localhost:9002',
+    WS_BASE_URL: 'http://129.212.246.236:9002',
     // Microservices Gateway - proxied via Vite dev server
     GATEWAY_URL: '',  // Same origin - Vite proxies to gateway
-    GATEWAY_WS_URL: 'ws://localhost:9002',
+    GATEWAY_WS_URL: 'http://129.212.246.236:9002',
     ENVIRONMENT: 'development',
     FEATURES: {
       ENABLE_NOTIFICATIONS: true,
@@ -37,10 +37,10 @@ const configs: Record<string, Partial<Config>> = {
     },
   },
   staging: {
-    API_BASE_URL: import.meta.env.VITE_API_BASE_URL || 'https://api-staging.nearly.app',
-    WS_BASE_URL: import.meta.env.VITE_WS_BASE_URL || 'wss://api-staging.nearly.app',
+    API_BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://129.212.246.236:9002',
+    WS_BASE_URL: import.meta.env.VITE_WS_BASE_URL || 'http://129.212.246.236:9002',
     GATEWAY_URL: import.meta.env.VITE_GATEWAY_URL || 'http://129.212.246.236:9002/',
-    GATEWAY_WS_URL: import.meta.env.VITE_GATEWAY_WS_URL || 'wss://gateway-staging.nearly.app',
+    GATEWAY_WS_URL: import.meta.env.VITE_GATEWAY_WS_URL || 'http://129.212.246.236:9002',
     ENVIRONMENT: 'staging',
     FEATURES: {
       ENABLE_NOTIFICATIONS: true,
@@ -51,10 +51,10 @@ const configs: Record<string, Partial<Config>> = {
     },
   },
   production: {
-    API_BASE_URL: import.meta.env.VITE_API_BASE_URL || 'https://api.nearly.app',
-    WS_BASE_URL: import.meta.env.VITE_WS_BASE_URL || 'wss://api.nearly.app',
-    GATEWAY_URL: import.meta.env.VITE_GATEWAY_URL || 'https://gateway.nearly.app',
-    GATEWAY_WS_URL: import.meta.env.VITE_GATEWAY_WS_URL || 'wss://gateway.nearly.app',
+    API_BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://129.212.246.236:9002',
+    WS_BASE_URL: import.meta.env.VITE_WS_BASE_URL || 'http://129.212.246.236:9002',
+    GATEWAY_URL: import.meta.env.VITE_GATEWAY_URL || 'http://129.212.246.236:9002',
+    GATEWAY_WS_URL: import.meta.env.VITE_GATEWAY_WS_URL || 'http://129.212.246.236:9002',
     ENVIRONMENT: 'production',
     FEATURES: {
       ENABLE_NOTIFICATIONS: true,
@@ -69,9 +69,9 @@ const configs: Record<string, Partial<Config>> = {
 // Default configuration
 const defaultConfig: Config = {
   API_BASE_URL: '',  // Same origin - uses Vite proxy in dev
-  WS_BASE_URL: 'ws://localhost:9002',
+  WS_BASE_URL: 'http://129.212.246.236:9002',
   GATEWAY_URL: '',  // Same origin - uses Vite proxy in dev
-  GATEWAY_WS_URL: 'ws://localhost:9002',
+  GATEWAY_WS_URL: 'http://129.212.246.236:9002',
   APP_NAME: 'Nearly',
   APP_VERSION: '1.0.0',
   ENVIRONMENT: 'development',
