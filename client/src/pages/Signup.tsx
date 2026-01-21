@@ -381,7 +381,7 @@ export default function Signup() {
               />
             </div>
 
-         <div className="relative">
+           <div className="relative">
   <Input
     id="password"
     type={showPassword ? "text" : "password"}
@@ -404,6 +404,20 @@ export default function Signup() {
   </button>
 </div>
 
+
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Input
+                id="confirmPassword"
+                type={showPassword ? "text" : "password"}
+                placeholder="Confirm your password"
+                value={formData.confirmPassword}
+                onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                className="h-12"
+              />
+            </div>
+          </div>
+        )}
 
         {/* Step 1: Username */}
         {currentStep === 1 && (
