@@ -16,7 +16,6 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [formData, setFormData] = useState({
     emailOrUsername: "",
-    password: "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
