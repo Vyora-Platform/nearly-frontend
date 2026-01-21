@@ -391,15 +391,17 @@ export default function Signup() {
     className="pr-12 h-12"
   />
 
-  <Button
+  <button
     type="button"
-    variant="ghost"
-    size="icon"
-    className="absolute right-3 top-1/2 -translate-y-1/2 h-9 w-9 flex items-center justify-center"
     onClick={() => setShowPassword(!showPassword)}
+    className="absolute right-0 top-0 h-full w-12 flex items-center justify-center text-muted-foreground hover:text-foreground"
   >
-    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-  </Button>
+    {showPassword ? (
+      <EyeOff className="w-5 h-5" />
+    ) : (
+      <Eye className="w-5 h-5" />
+    )}
+  </button>
 </div>
 
 
