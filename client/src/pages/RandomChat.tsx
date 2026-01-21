@@ -120,8 +120,7 @@ export default function RandomChat() {
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
     const port = "9016"; // video-chat-service handles both modes
     const wsPath = "/ws/video";
-    const wsUrl = `wss://api.nearlyapp.in${wsPath}`;
-
+    const wsUrl = `http://129.212.246.236:9002${wsPath}`;
     
     console.log(`🔌 WebSocket Connecting: ${wsUrl}`, {
       url: wsUrl,
@@ -667,22 +666,34 @@ export default function RandomChat() {
   }, [chatState, sessionId, connectToVideoService]);
 
   // Initialize local video stream
-  const initializeLocalStream = useCallback(async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true,
-      });
-      localStreamRef.current = stream;
+ const initializeLocalStream = useCallback(async () => {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: true,
+      audio: true,
+    });
+
+    localStreamRef.current = stream;
+
+    // Attach to local video preview
+    setTimeout(() => {
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = stream;
+        localVideoRef.current.muted = true;      // REQUIRED for autoplay
+        localVideoRef.current.playsInline = true; // Mobile fix
+        localVideoRef.current.play().catch(err => {
+          console.warn("Autoplay blocked:", err);
+        });
       }
-      return stream;
-    } catch (error) {
-      console.error("Failed to get media devices:", error);
-      return null;
-    }
-  }, []);
+    }, 100);
+
+    return stream;
+  } catch (error) {
+    console.error("Failed to get media devices:", error);
+    return null;
+  }
+}, []);
+
 
   // Stop local stream
   const stopLocalStream = useCallback(() => {
