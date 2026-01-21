@@ -381,7 +381,7 @@ export default function Signup() {
               />
             </div>
 
-           <div className="relative">
+          <div className="relative">
   <Input
     id="password"
     type={showPassword ? "text" : "password"}
@@ -394,21 +394,16 @@ export default function Signup() {
   <button
     type="button"
     onClick={() => setShowPassword(!showPassword)}
-    className="absolute right-0 top-0 h-full w-12 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+    className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center h-6 w-6 text-muted-foreground hover:text-foreground transition"
   >
-    <span
-      className={`transition-all duration-200 ease-in-out transform ${
-        showPassword ? "scale-100 opacity-100 rotate-0" : "scale-90 opacity-80 rotate-6"
-      }`}
-    >
-      {showPassword ? (
-        <EyeOff className="w-5 h-5" />
-      ) : (
-        <Eye className="w-5 h-5" />
-      )}
-    </span>
+    {showPassword ? (
+      <EyeOff className="w-5 h-5 animate-fade" />
+    ) : (
+      <Eye className="w-5 h-5 animate-fade" />
+    )}
   </button>
 </div>
+
 
 
         {/* Step 1: Username */}
