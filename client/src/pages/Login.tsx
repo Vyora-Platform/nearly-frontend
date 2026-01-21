@@ -123,34 +123,36 @@ export default function Login() {
               />
             </div>
           </div>
+        <div className="relative">
+  {/* Left Lock Icon */}
+  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+    <Lock className="w-5 h-5" />
+  </span>
 
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-              <Input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                placeholder="Enter your password"
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                className="pl-11 pr-11 h-12"
-              />
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? (
-                  <EyeOff className="w-4 h-4 text-muted-foreground" />
-                ) : (
-                  <Eye className="w-4 h-4 text-muted-foreground" />
-                )}
-              </Button>
-            </div>
-          </div>
+  {/* Password Input */}
+  <Input
+    id="password"
+    type={showPassword ? "text" : "password"}
+    placeholder="Enter your password"
+    value={password}
+    onChange={(e) => setPassword(e.target.value)}
+    className="pl-11 pr-12 h-12"
+  />
+
+  {/* Right Eye Icon */}
+  <button
+    type="button"
+    onClick={() => setShowPassword(!showPassword)}
+    className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center h-6 w-6 text-muted-foreground hover:text-foreground transition"
+  >
+    {showPassword ? (
+      <EyeOff className="w-5 h-5" />
+    ) : (
+      <Eye className="w-5 h-5" />
+    )}
+  </button>
+</div>
+
 
           <div className="flex justify-end">
             <Button 
