@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,7 @@ export default function Login() {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [password, setPassword] = useState("");
   const [formData, setFormData] = useState({
     emailOrUsername: "",
     password: "",
