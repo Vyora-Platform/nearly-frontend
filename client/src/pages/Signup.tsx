@@ -381,28 +381,27 @@ export default function Signup() {
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="At least 6 characters"
-                  value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="pr-11 h-12"
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </Button>
-              </div>
-            </div>
+            <div className="relative">
+  <Input
+    id="password"
+    type={showPassword ? "text" : "password"}
+    placeholder="At least 6 characters"
+    value={formData.password}
+    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+    className="pr-12 h-12"
+  />
+
+  <Button
+    type="button"
+    variant="ghost"
+    size="icon"
+    className="absolute right-3 top-1/2 -translate-y-1/2 h-9 w-9 flex items-center justify-center"
+    onClick={() => setShowPassword(!showPassword)}
+  >
+    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+  </Button>
+</div>
+
 
             <div className="space-y-2">
               <Label htmlFor="confirmPassword">Confirm Password</Label>
