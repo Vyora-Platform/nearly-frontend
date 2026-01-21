@@ -119,8 +119,9 @@ export default function RandomChat() {
     // Backend decides the actual chat mode based on matching availability
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
     const port = "9016"; // video-chat-service handles both modes
-    const wsPath = "/ws/video";
-    const wsUrl = `http://129.212.246.236:9002${wsPath}`;
+    const wsPath = "/wss/video";
+    const wsUrl = `wss://api.nearlyapp.in${wsPath}`;
+
     
     console.log(`🔌 WebSocket Connecting: ${wsUrl}`, {
       url: wsUrl,
