@@ -381,7 +381,7 @@ export default function Signup() {
               />
             </div>
 
-            <div className="relative">
+           <div className="relative">
   <Input
     id="password"
     type={showPassword ? "text" : "password"}
@@ -394,30 +394,22 @@ export default function Signup() {
   <button
     type="button"
     onClick={() => setShowPassword(!showPassword)}
-    className="absolute right-0 top-0 h-full w-12 flex items-center justify-center text-muted-foreground hover:text-foreground"
+    className="absolute right-0 top-0 h-full w-12 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
   >
-    {showPassword ? (
-      <EyeOff className="w-5 h-5" />
-    ) : (
-      <Eye className="w-5 h-5" />
-    )}
+    <span
+      className={`transition-all duration-200 ease-in-out transform ${
+        showPassword ? "scale-100 opacity-100 rotate-0" : "scale-90 opacity-80 rotate-6"
+      }`}
+    >
+      {showPassword ? (
+        <EyeOff className="w-5 h-5" />
+      ) : (
+        <Eye className="w-5 h-5" />
+      )}
+    </span>
   </button>
 </div>
 
-
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
-              <Input
-                id="confirmPassword"
-                type={showPassword ? "text" : "password"}
-                placeholder="Confirm your password"
-                value={formData.confirmPassword}
-                onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                className="h-12"
-              />
-            </div>
-          </div>
-        )}
 
         {/* Step 1: Username */}
         {currentStep === 1 && (
