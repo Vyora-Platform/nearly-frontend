@@ -472,7 +472,7 @@ export const shotsApi = {
 
     try {
       // Use media upload endpoint with SHOT context
-      const response = await fetch(buildGatewayUrl("/api/media/crt/upload"), {
+      const response = await fetch(buildGatewayUrl("/api/media/video/async"), {
         method: "POST",
         headers,
         body: formData,
