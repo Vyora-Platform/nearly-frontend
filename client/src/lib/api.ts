@@ -897,7 +897,7 @@ export const api = {
       headers['X-Anonymous-Session'] = sessionId;
     }
     
-    const res = await fetch(buildGatewayUrl("/media/video/async"), {
+    const res = await fetch(buildGatewayUrl("/api/media/crt/upload"), {
       method: 'POST',
       headers,
       body: formData,
