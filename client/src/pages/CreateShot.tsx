@@ -182,7 +182,12 @@ export default function CreateShot() {
       xhr.addEventListener('load', () => {
         if (xhr.status >= 200 && xhr.status < 300) {
           try {
+            console.log('[UPLOAD] Upload resultt:', xhr);
+
             const result = JSON.parse(xhr.responseText);
+            console.log('[UPLOAD] Upload result1:', xhr.responseText);
+            console.log('[UPLOAD] Upload result2:',result);
+
             const url = result.url || result.data?.url || result.fileUrl || '';
             const id = result.id || result.data?.id || '';
             
