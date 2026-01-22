@@ -183,8 +183,8 @@ export default function CreateShot() {
         if (xhr.status >= 200 && xhr.status < 300) {
           try {
             const result = JSON.parse(xhr.responseText);
-            const url = result.rawUrl || result.data?.rawUrl || result.fileUrl || '';
-            const id = result.mediaId || result.data?.mediaId || '';
+            const url = result.url || result.data?.url || result.fileUrl || '';
+            const id = result.id || result.data?.id || '';
             
             setUploadProgress(prev => ({
               ...prev,
@@ -263,8 +263,8 @@ export default function CreateShot() {
       const uploadResult = await uploadWithProgress(selectedFile);
       console.log('[UPLOAD] Upload result:', uploadResult);
       
-      if (!uploadResult.success || !uploadResult.rawUrl) {
-        throw new Error("Failed to upload video");
+      if (!uploadResult.success || !uploadResult.url) {
+        throw new Error("Failed to upload video  issue ");
       }
       
       setUploadProgress(prev => ({
