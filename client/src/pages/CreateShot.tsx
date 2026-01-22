@@ -226,7 +226,7 @@ export default function CreateShot() {
       });
 
       // Open connection
-      xhr.open('POST', buildGatewayUrl('/api/media/crt/upload'));
+      xhr.open('POST', buildGatewayUrl('/api/media/video/async'));
 
       // Add auth headers
       const accessToken = localStorage.getItem('nearly_access_token');
