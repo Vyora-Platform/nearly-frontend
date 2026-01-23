@@ -103,6 +103,8 @@ const ReelItem = memo(function ReelItem({
         .then(info => setVideoInfo(info))
         .catch(() => {
           // Fallback to direct URL
+          console.log('[REELFEED] Upload resultt:');
+
           setVideoInfo(null);
         });
     }
