@@ -137,9 +137,13 @@ export const buildGatewayUrl = (endpoint: string): string => {
   const cleanEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
   // If GATEWAY_URL is empty (same-origin proxy), just return the endpoint with leading slash
     console.log('GATEWAY_URL+',config.GATEWAY_URL);
+  console.log('GATEWAY_URL+1',cleanEndpoint);
   if (!config.GATEWAY_URL) {
-    return `/${cleanEndpoint}`;
+    //return `/${cleanEndpoint}`;
+    return `${config.GATEWAY_URL}/${cleanEndpoint}`;
   }
+      console.log('GATEWAY_URL++',config.GATEWAY_URL);
+
   return `${config.GATEWAY_URL}/${cleanEndpoint}`;
 };
 
