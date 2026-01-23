@@ -25,17 +25,15 @@ export default function BottomNav() {
                 className="flex flex-col items-center justify-center gap-1 px-3 py-2 min-w-[60px]"
               >
                 <Icon
-                  className={`w-6 h-6 ${
-                    isActive ? "text-primary" : "text-muted-foreground"
-                  }`}
-                  fill={isActive ? "currentColor" : "none"}
+                  className={`w-6 h-6 ${isActive ? "text-primary" : "text-muted-foreground"
+                    }`}
+                // fill={isActive ? "currentColor" : "none"} // Removed to keep outline style
                 />
                 <span
-                  className={`text-xs font-semibold ${
-                    isActive
+                  className={`text-xs font-semibold ${isActive
                       ? "text-primary"
                       : "text-muted-foreground"
-                  }`}
+                    }`}
                 >
                   {tab.label}
                 </span>

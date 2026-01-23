@@ -18,7 +18,8 @@ import { SkeletonList } from "@/components/ui/skeleton";
 import {
   Activity, Calendar, Plus, Search,
   Target, CalendarDays, MessageSquare, MessageCircle,
-  Newspaper, BarChart3, MessageSquareMore, Filter
+  Newspaper, BarChart3, MessageSquareMore, Filter,
+  Vote, AlertCircle, Hash
 } from "lucide-react";
 
 type HomeTab = "discussions" | "activities" | "events";
@@ -33,9 +34,9 @@ const DISCUSSION_CATEGORIES = {
 
 const discussSubTabs = [
   { id: "news" as DiscussSubTab, icon: Newspaper, label: "News" },
-  { id: "polls" as DiscussSubTab, icon: BarChart3, label: "Polls" },
-  { id: "issues" as DiscussSubTab, icon: MessageSquareMore, label: "Issues" },
-  { id: "general" as DiscussSubTab, icon: MessageCircle, label: "General" },
+  { id: "polls" as DiscussSubTab, icon: Vote, label: "Polls" },
+  { id: "issues" as DiscussSubTab, icon: AlertCircle, label: "Issues" },
+  { id: "general" as DiscussSubTab, icon: Hash, label: "General" },
 ];
 
 export default function Home() {
@@ -107,19 +108,19 @@ export default function Home() {
 
   const getUserById = (userId: string) => {
     if (userId === currentUserId) {
-      return { 
-        id: userId, 
-        name: "You", 
+      return {
+        id: userId,
+        name: "You",
         username: "@you",
-        avatarUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${userId}` 
+        avatarUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${userId}`
       };
     }
     const user = users.find(u => u?.id === userId);
-    return user || { 
-      id: userId, 
-      name: "User", 
+    return user || {
+      id: userId,
+      name: "User",
       username: "@user",
-      avatarUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${userId}` 
+      avatarUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${userId}`
     };
   };
 
@@ -140,72 +141,72 @@ export default function Home() {
   // Filter activities
   const filteredActivities = activities && Array.isArray(activities)
     ? activities.filter(a => {
-        const matchesSearch = searchQuery === "" ||
-          a.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          a.description?.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesCategory = selectedCategory === "All" || a.category === selectedCategory;
-        return matchesSearch && matchesCategory;
-      })
+      const matchesSearch = searchQuery === "" ||
+        a.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        a.description?.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesCategory = selectedCategory === "All" || a.category === selectedCategory;
+      return matchesSearch && matchesCategory;
+    })
     : [];
 
   // Filter events
   const filteredEvents = events && Array.isArray(events)
     ? events.filter(e => {
-        const matchesSearch = searchQuery === "" ||
-          e.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          e.location?.toLowerCase().includes(searchQuery.toLowerCase());
-        let matchesCategory = selectedCategory === "All";
-        if (!matchesCategory) {
-          if (Array.isArray(e.category)) {
-            matchesCategory = e.category.some((cat: string) => 
-              cat.toLowerCase() === selectedCategory.toLowerCase()
-            );
-          } else if (typeof e.category === 'string') {
-            matchesCategory = e.category.toLowerCase() === selectedCategory.toLowerCase();
-          }
+      const matchesSearch = searchQuery === "" ||
+        e.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        e.location?.toLowerCase().includes(searchQuery.toLowerCase());
+      let matchesCategory = selectedCategory === "All";
+      if (!matchesCategory) {
+        if (Array.isArray(e.category)) {
+          matchesCategory = e.category.some((cat: string) =>
+            cat.toLowerCase() === selectedCategory.toLowerCase()
+          );
+        } else if (typeof e.category === 'string') {
+          matchesCategory = e.category.toLowerCase() === selectedCategory.toLowerCase();
         }
-        return matchesSearch && matchesCategory;
-      })
+      }
+      return matchesSearch && matchesCategory;
+    })
     : [];
 
   // Filter discussion content
   const filteredNews = news && Array.isArray(news)
     ? news.filter(n => {
-        const matchesSearch = searchQuery === "" ||
-          n.headline?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          n.description?.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesCategory = selectedCategory === "All" || n.category === selectedCategory;
-        return matchesSearch && matchesCategory;
-      })
+      const matchesSearch = searchQuery === "" ||
+        n.headline?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        n.description?.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesCategory = selectedCategory === "All" || n.category === selectedCategory;
+      return matchesSearch && matchesCategory;
+    })
     : [];
 
   const filteredPolls = polls && Array.isArray(polls)
     ? polls.filter(p => {
-        const matchesSearch = searchQuery === "" ||
-          p.question?.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesCategory = selectedCategory === "All" || p.category === selectedCategory;
-        return matchesSearch && matchesCategory;
-      })
+      const matchesSearch = searchQuery === "" ||
+        p.question?.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesCategory = selectedCategory === "All" || p.category === selectedCategory;
+      return matchesSearch && matchesCategory;
+    })
     : [];
 
   const filteredQuestions = questions && Array.isArray(questions)
     ? questions.filter(q => {
-        const matchesSearch = searchQuery === "" ||
-          q.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          q.content?.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesCategory = selectedCategory === "All" || q.category === selectedCategory;
-        return matchesSearch && matchesCategory;
-      })
+      const matchesSearch = searchQuery === "" ||
+        q.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        q.content?.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesCategory = selectedCategory === "All" || q.category === selectedCategory;
+      return matchesSearch && matchesCategory;
+    })
     : [];
 
   const filteredDiscussions = discussions && Array.isArray(discussions)
     ? discussions.filter(d => {
-        const matchesSearch = searchQuery === "" ||
-          d.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          d.content?.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesCategory = selectedCategory === "All" || d.category === selectedCategory;
-        return matchesSearch && matchesCategory;
-      })
+      const matchesSearch = searchQuery === "" ||
+        d.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        d.content?.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesCategory = selectedCategory === "All" || d.category === selectedCategory;
+      return matchesSearch && matchesCategory;
+    })
     : [];
 
   const tabs = [
@@ -214,7 +215,7 @@ export default function Home() {
     { id: "events" as HomeTab, icon: CalendarDays, label: "Events" },
   ];
 
-  const isLoading = 
+  const isLoading =
     (activeTab === "activities" && activitiesLoading) ||
     (activeTab === "events" && eventsLoading) ||
     (activeTab === "discussions" && (newsLoading || pollsLoading || questionsLoading || discussionsLoading));
@@ -223,7 +224,7 @@ export default function Home() {
     switch (activeTab) {
       case "activities": return "/create-activity";
       case "events": return "/create-event";
-      case "discussions": 
+      case "discussions":
         switch (discussSubTab) {
           case "news": return "/create-news";
           case "polls": return "/create-poll";
@@ -246,7 +247,7 @@ export default function Home() {
 
   // Get title label based on section type
   const getTitleLabel = (type: string) => {
-    switch(type) {
+    switch (type) {
       case 'news': return 'Headline';
       case 'poll': return 'Question';
       case 'issue': return 'Issue';
@@ -323,9 +324,9 @@ export default function Home() {
       <TopBar />
 
       <div className="max-w-md mx-auto">
-        {/* Custom Tab Navigation */}
-        <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-border">
-          <div className="flex">
+        {/* Custom Tab Navigation - Segmented Control Style */}
+        <div className="sticky top-0 z-10 bg-background pt-2 pb-2 border-b border-border/50">
+          <div className="mx-4 bg-muted/50 p-1 rounded-xl flex">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
@@ -337,17 +338,14 @@ export default function Home() {
                     setSearchQuery("");
                     setSelectedCategory("All");
                   }}
-                  className={`flex-1 flex items-center justify-center gap-2 py-3.5 transition-all relative
-                    ${isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground/80"}`}
+                  className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg transition-all text-sm font-medium
+                    ${isActive
+                      ? "bg-background text-foreground shadow-sm relative z-10"
+                      : "text-muted-foreground hover:text-foreground/80 hover:bg-background/30"}`}
                   data-testid={`tab-${tab.id}`}
                 >
                   <Icon className={`w-4 h-4 ${isActive ? "text-primary" : ""}`} />
-                  <span className={`text-sm font-medium ${isActive ? "font-semibold" : ""}`}>
-                    {tab.label}
-                  </span>
-                  {isActive && (
-                    <div className="absolute bottom-0 left-4 right-4 h-0.5 bg-gradient-primary rounded-full" />
-                  )}
+                  <span>{tab.label}</span>
                 </button>
               );
             })}
@@ -356,8 +354,8 @@ export default function Home() {
 
         {/* Discussion Sub-tabs */}
         {activeTab === "discussions" && (
-          <div className="border-b border-border overflow-x-auto scrollbar-hide">
-            <div className="flex min-w-max">
+          <div className="border-b border-border/50 bg-background/50 backdrop-blur-sm overflow-x-auto scrollbar-hide">
+            <div className="flex px-2">
               {discussSubTabs.map((tab) => {
                 const Icon = tab.icon;
                 const isActive = discussSubTab === tab.id;
@@ -368,13 +366,13 @@ export default function Home() {
                       setDiscussSubTab(tab.id);
                       setSelectedCategory("All");
                     }}
-                    className={`flex items-center gap-1.5 px-4 py-2.5 transition-all relative whitespace-nowrap
+                    className={`flex items-center gap-2 px-4 py-3 transition-colors relative whitespace-nowrap
                       ${isActive ? "text-primary" : "text-muted-foreground hover:text-foreground/80"}`}
                   >
-                    <Icon className="w-3.5 h-3.5" />
-                    <span className="text-xs font-medium">{tab.label}</span>
+                    <Icon className={`w-4 h-4 ${isActive ? "stroke-[2.5px]" : "stroke-2"}`} />
+                    <span className={`text-sm ${isActive ? "font-bold" : "font-medium"}`}>{tab.label}</span>
                     {isActive && (
-                      <div className="absolute bottom-0 left-2 right-2 h-0.5 bg-primary rounded-full" />
+                      <div className="absolute bottom-0 left-3 right-3 h-[2px] bg-primary rounded-full" />
                     )}
                   </button>
                 );
@@ -453,7 +451,7 @@ export default function Home() {
                 <DiscussionCard key={item.id} item={item} type="news" />
               ))
             )}
-            
+
             {discussSubTab === "polls" && (
               filteredPolls.length === 0 ? (
                 <div className="text-center py-12">
@@ -467,7 +465,7 @@ export default function Home() {
                 <DiscussionCard key={item.id} item={item} type="poll" />
               ))
             )}
-            
+
             {discussSubTab === "issues" && (
               filteredDiscussions.length === 0 ? (
                 <div className="text-center py-12">
@@ -481,15 +479,15 @@ export default function Home() {
                 <DiscussionCard key={item.id} item={item} type="issue" />
               ))
             )}
-            
+
             {discussSubTab === "general" && (
               (() => {
                 // Merge discussions and questions for general tab, remove duplicates by id
                 const allGeneralItems = [...filteredDiscussions, ...filteredQuestions];
-                const uniqueItems = allGeneralItems.filter((item, index, self) => 
+                const uniqueItems = allGeneralItems.filter((item, index, self) =>
                   index === self.findIndex((t) => t.id === item.id)
                 );
-                
+
                 return uniqueItems.length === 0 ? (
                   <div className="text-center py-12">
                     <MessageCircle className="w-12 h-12 mx-auto mb-3 text-muted-foreground/50" />
@@ -527,7 +525,7 @@ export default function Home() {
             ) : (
               filteredActivities.map((activity) => {
                 const isOwnPost = activity.userId === currentUserId;
-                const user = isOwnPost 
+                const user = isOwnPost
                   ? { id: currentUserId, name: "You", username: "@you", avatarUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUserId}` }
                   : getUserById(activity.userId);
                 return (

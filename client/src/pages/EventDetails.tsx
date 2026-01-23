@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { useState, useRef } from "react";
 import { queryClient, authFetch } from "@/lib/queryClient";
 import { api } from "@/lib/api";
+import { notificationApi } from "@/lib/gateway-api";
 import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 
@@ -77,18 +78,17 @@ export default function EventDetails() {
     enabled: !!eventId,
   });
 
-  // Get all unique user IDs from comments and replies
-  const userIds = [...new Set(
-    rawComments.flatMap((c: any) => [c.userId, ...(c.replies?.map((r: any) => r.userId) || [])])
-  )].filter(Boolean) as string[];
+  // Get all unique user IDs from comments (including replies)
+  const userIds = Array.from(new Set(
+    rawComments.map((c: any) => c.userId)
+  )).filter(Boolean) as string[];
 
-  // Fetch users for comments
+  // Fetch ALL users for comments upfront
   const { data: users = [] } = useQuery({
-    queryKey: ['users', userIds],
+    queryKey: ['event-comment-users', userIds],
     queryFn: async () => {
       if (userIds.length === 0) return [];
-      // Fetch users one by one since we don't have a bulk endpoint yet
-      // In a real app, this should be a bulk fetch or users should be included in comments
+      // Fetch all users in parallel
       const promises = userIds.map(id => api.getUser(id).catch(() => null));
       const results = await Promise.all(promises);
       return results.filter(Boolean);
@@ -105,10 +105,11 @@ export default function EventDetails() {
 
     rawComments.forEach((c: any) => {
       const user = usersMap.get(c.userId);
+      // Use real username from API, priority: name > username
       const comment: EventComment = {
         ...c,
-        userName: c.userName || user?.username || user?.name || 'User',
-        userAvatar: c.userAvatar || user?.avatarUrl,
+        userName: user?.name || user?.username || c.userName || 'User',
+        userAvatar: user?.avatarUrl || c.userAvatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${c.userId}`,
         replies: [],
       };
 
@@ -124,13 +125,15 @@ export default function EventDetails() {
 
     parentComments.forEach(parent => {
       parent.replies = repliesMap[parent.id] || [];
+      // Sort replies by date
+      parent.replies.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
     });
 
     return parentComments;
   })();
 
   const joinMutation = useMutation({
-    mutationFn: () => api.joinEvent(eventId || '', currentUserId),
+    mutationFn: () => api.joinEvent(eventId || ''),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["event", eventId] });
       queryClient.invalidateQueries({ queryKey: ["event-guests", eventId] });
@@ -142,11 +145,30 @@ export default function EventDetails() {
   });
 
   const commentMutation = useMutation({
-    mutationFn: ({ content, parentCommentId }: { content: string; parentCommentId?: string }) => {
-      return authFetch(`/api/events/${eventId}/comments`, {
+    mutationFn: async ({ content, parentCommentId }: { content: string; parentCommentId?: string }) => {
+      const result = await authFetch(`/api/events/${eventId}/comments`, {
         method: 'POST',
         body: JSON.stringify({ content, userId: currentUserId, parentCommentId }),
       }).then(res => res.json());
+
+      // Send notification to event host (if not commenting on own event)
+      if (event?.userId && event.userId !== currentUserId) {
+        try {
+          await notificationApi.createNotification({
+            userId: event.userId,
+            type: parentCommentId ? 'comment_reply' : 'event_comment',
+            title: parentCommentId ? 'New Reply' : 'New Comment',
+            description: content.substring(0, 100),
+            relatedId: currentUserId,
+            entityId: eventId || '',
+            actionUrl: `/event/${eventId}`,
+          });
+        } catch (err) {
+          console.error('Failed to send notification:', err);
+        }
+      }
+
+      return result;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["event-comments", eventId] });
@@ -371,7 +393,7 @@ export default function EventDetails() {
                 <p className="text-sm font-semibold text-foreground">
                   {isOwnEvent ? 'You' : (hostUser?.name || 'Event Host')}
                 </p>
-                {hostUser?.isVerified && <BadgeCheck className="w-4 h-4 text-primary" />}
+                {(hostUser as any)?.isVerified && <BadgeCheck className="w-4 h-4 text-primary" />}
               </div>
               <p className="text-xs text-muted-foreground">@{hostUser?.username || 'user'}</p>
               {hostUser?.bio && (
@@ -467,30 +489,30 @@ export default function EventDetails() {
                     </div>
                   </div>
 
-                  {/* Replies */}
+                  {/* Replies - Instagram/YouTube style */}
                   {c.replies && c.replies.length > 0 && (
-                    <div className="ml-8 space-y-3">
+                    <div className="ml-12 space-y-2 pl-3 border-l-2 border-border/50">
                       {c.replies.map((reply) => (
-                        <div key={reply.id} className="flex gap-3 p-3 bg-muted/30 rounded-xl">
-                          <Avatar className="w-7 h-7">
+                        <div key={reply.id} className="flex gap-2 p-2 bg-muted/20 rounded-lg">
+                          <Avatar className="w-7 h-7 flex-shrink-0">
                             <AvatarImage src={reply.userAvatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${reply.userId}`} />
                             <AvatarFallback className="bg-primary/10 text-primary text-xs">
                               {reply.userName?.[0] || 'U'}
                             </AvatarFallback>
                           </Avatar>
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-1">
-                              <p className="text-xs font-semibold text-foreground">{reply.userName || "User"}</p>
-                              <span className="text-xs text-muted-foreground">{getTimeAgo(reply.createdAt)}</span>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-0.5">
+                              <p className="text-xs font-semibold text-foreground truncate">{reply.userName || "User"}</p>
+                              <span className="text-xs text-muted-foreground flex-shrink-0">{getTimeAgo(reply.createdAt)}</span>
                             </div>
-                            <p className="text-xs text-foreground/90">{reply.content}</p>
-                            <div className="flex items-center gap-4 mt-1">
+                            <p className="text-xs text-foreground/90 leading-relaxed">{reply.content}</p>
+                            <div className="flex items-center gap-3 mt-1.5">
                               {(reply.likesCount || 0) > 0 && (
                                 <span className="text-xs text-muted-foreground">{reply.likesCount} likes</span>
                               )}
                               <button
                                 onClick={() => handleReply(c.id, reply.userName || 'User')}
-                                className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1"
+                                className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1 transition-colors"
                               >
                                 <Reply className="w-3 h-3" />
                                 Reply
@@ -559,11 +581,16 @@ export default function EventDetails() {
           </div>
           <Button
             className="flex-1 bg-gradient-primary text-white border-none h-11 font-semibold"
-            onClick={() => joinMutation.mutate()}
-            disabled={joinMutation.isPending || isOwnEvent}
+            onClick={() => {
+              if (!isOwnEvent && hostUser?.username) {
+                // Navigate to direct chat with the host
+                setLocation(`/chat/${hostUser.username}`);
+              }
+            }}
+            disabled={!!isOwnEvent}
             data-testid="button-join-event"
           >
-            {isOwnEvent ? "Your Event" : joinMutation.isPending ? "Joining..." : "Join Event"}
+            {isOwnEvent ? "Your Event" : "Join Event"}
           </Button>
         </div>
       </div>

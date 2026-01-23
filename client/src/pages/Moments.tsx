@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback, memo } from "react";
 import { useLocation } from "wouter";
-import { 
-  Plus, Heart, Send, Volume2, VolumeX, 
+import {
+  Plus, Heart, Send, Volume2, VolumeX,
   Globe, Users, Eye, Play, Lock, Camera, X, Loader2, Pause
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -105,7 +105,7 @@ const enrichMomentWithUser = async (moment: Moment): Promise<Moment> => {
   // Check localStorage for liked/saved state
   const likedMoments = JSON.parse(localStorage.getItem('nearly_liked_moments') || '[]');
   const savedMoments = JSON.parse(localStorage.getItem('nearly_saved_moments') || '[]');
-  
+
   try {
     const user = await api.getUser(moment.userId);
     return {
@@ -154,7 +154,7 @@ const enrichMomentWithUser = async (moment: Moment): Promise<Moment> => {
 const hasPostedToday = (): boolean => {
   const lastPostDate = localStorage.getItem('nearly_last_moment_date');
   if (!lastPostDate) return false;
-  
+
   const today = new Date().toDateString();
   return lastPostDate === today;
 };
@@ -209,7 +209,7 @@ const MomentReel = memo(function MomentReel({
   const [mp4Urls, setMp4Urls] = useState<Record<string, string> | undefined>(undefined);
   const [transcodeStatus, setTranscodeStatus] = useState<'UPLOADED' | 'TRANSCODING' | 'READY' | 'FAILED' | undefined>(undefined);
   const [thumbnailUrl, setThumbnailUrl] = useState<string | undefined>(undefined);
-  
+
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const hlsRef = useRef<Hls | null>(null);
@@ -217,8 +217,8 @@ const MomentReel = memo(function MomentReel({
   const tapTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Check if video URL is valid
-  const isValidVideoUrl = effectiveMediaUrl && 
-    !effectiveMediaUrl.startsWith('blob:') && 
+  const isValidVideoUrl = effectiveMediaUrl &&
+    !effectiveMediaUrl.startsWith('blob:') &&
     (effectiveMediaUrl.startsWith('http://') || effectiveMediaUrl.startsWith('https://'));
 
   // IntersectionObserver for scroll-based pause
@@ -233,7 +233,7 @@ const MomentReel = memo(function MomentReel({
           // Video should play if at least 60% is visible (scrolled less than 40% away)
           const visible = entry.isIntersecting && entry.intersectionRatio >= 0.6;
           setIsVisible(visible);
-          
+
           // Auto-pause when scrolled more than 40% out of view (for videos)
           if (!visible && moment.mediaType === "video" && videoRef.current && !videoRef.current.paused) {
             videoRef.current.pause();
@@ -307,7 +307,7 @@ const MomentReel = memo(function MomentReel({
   // Initialize HLS or native video for video moments with MP4 fallback
   useEffect(() => {
     if (moment.mediaType !== "video") return;
-    
+
     const video = videoRef.current;
     if (!video || !isValidVideoUrl) return;
 
@@ -352,7 +352,7 @@ const MomentReel = memo(function MomentReel({
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
         setIsLoading(false);
         if (isActive && isVisible && !isPaused) {
-          video.play().catch(() => {});
+          video.play().catch(() => { });
         }
       });
 
@@ -388,7 +388,7 @@ const MomentReel = memo(function MomentReel({
   useEffect(() => {
     if (isActive && moment.id && !hasViewed) {
       setHasViewed(true);
-      api.viewMoment(moment.id).catch(() => {});
+      api.viewMoment(moment.id).catch(() => { });
     }
   }, [isActive, moment.id, hasViewed]);
 
@@ -396,7 +396,7 @@ const MomentReel = memo(function MomentReel({
   // Only plays if active, at least 60% visible (scrolled less than 40% away), and not manually paused
   useEffect(() => {
     if (moment.mediaType !== "video") return;
-    
+
     const video = videoRef.current;
     const hls = hlsRef.current;
     if (!video) return;
@@ -422,7 +422,7 @@ const MomentReel = memo(function MomentReel({
   // Handle preloading for upcoming moments
   useEffect(() => {
     if (moment.mediaType !== "video") return;
-    
+
     const hls = hlsRef.current;
     if (!hls) return;
 
@@ -558,14 +558,14 @@ const MomentReel = memo(function MomentReel({
       setLikesCount(prev => prev + 1);
       setShowHeart(true);
       setTimeout(() => setShowHeart(false), 1000);
-      
+
       // Persist to localStorage
       const likedMoments = JSON.parse(localStorage.getItem('nearly_liked_moments') || '[]');
       if (!likedMoments.includes(moment.id)) {
         likedMoments.push(moment.id);
         localStorage.setItem('nearly_liked_moments', JSON.stringify(likedMoments));
       }
-      
+
       onLike();
     }
   }, [isLiked, onLike, moment.id]);
@@ -573,19 +573,19 @@ const MomentReel = memo(function MomentReel({
   const handleLike = () => {
     // Only allow liking once (no unlike)
     if (isLiked) return;
-    
+
     setIsLiked(true);
     setLikesCount(prev => prev + 1);
     setShowHeart(true);
     setTimeout(() => setShowHeart(false), 1000);
-    
+
     // Persist to localStorage
     const likedMoments = JSON.parse(localStorage.getItem('nearly_liked_moments') || '[]');
     if (!likedMoments.includes(moment.id)) {
       likedMoments.push(moment.id);
       localStorage.setItem('nearly_liked_moments', JSON.stringify(likedMoments));
     }
-    
+
     onLike();
   };
 
@@ -612,8 +612,8 @@ const MomentReel = memo(function MomentReel({
   const transcodeFailed = transcodeStatus === 'FAILED';
 
   // Get effective poster URL (from API or generate fallback from video URL)
-  const effectivePoster = thumbnailUrl || (moment.mediaType === "video" 
-    ? moment.mediaUrl.replace(/\.(mp4|webm|mov)$/i, '.jpg') 
+  const effectivePoster = thumbnailUrl || (moment.mediaType === "video"
+    ? moment.mediaUrl.replace(/\.(mp4|webm|mov)$/i, '.jpg')
     : undefined);
 
   return (
@@ -646,11 +646,11 @@ const MomentReel = memo(function MomentReel({
 
             {/* Progress Bar for video */}
             <div className="absolute top-0 left-0 right-0 h-1 bg-white/20 z-30">
-              <div 
+              <div
                 className="absolute h-full bg-white/30 transition-all duration-300"
                 style={{ width: `${buffered}%` }}
               />
-              <div 
+              <div
                 className="absolute h-full bg-white transition-all duration-100"
                 style={{ width: `${progress}%` }}
               />
@@ -755,7 +755,7 @@ const MomentReel = memo(function MomentReel({
 
         {/* Mute/Unmute for video */}
         {moment.mediaType === "video" && (
-          <button 
+          <button
             onClick={(e) => {
               e.stopPropagation();
               setIsMuted(!isMuted);
@@ -781,7 +781,7 @@ const MomentReel = memo(function MomentReel({
           <button onClick={onUserClick} className="flex items-center gap-2">
             <Avatar className="w-9 h-9 ring-2 ring-white">
               <AvatarImage src={moment.user?.avatarUrl} />
-              <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold text-sm">
+              <AvatarFallback className="bg-primary text-white font-bold text-sm">
                 {moment.user?.name?.[0] || "U"}
               </AvatarFallback>
             </Avatar>
@@ -818,16 +818,16 @@ function LockedMomentsScreen({ onCreateMoment }: { onCreateMoment: () => void })
     <div className="fixed inset-0 bg-black flex flex-col items-center justify-center p-6">
       {/* Animated background */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-[120px] animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-pink-600/20 rounded-full blur-[120px] animate-pulse delay-1000" />
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-red-600/20 rounded-full blur-[120px] animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-orange-600/20 rounded-full blur-[120px] animate-pulse delay-1000" />
       </div>
 
       {/* Lock Icon */}
       <div className="relative z-10 mb-8">
-        <div className="w-32 h-32 rounded-full bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center border border-white/10 backdrop-blur-sm">
+        <div className="w-32 h-32 rounded-full bg-gradient-to-br from-red-500/20 to-orange-500/20 flex items-center justify-center border border-white/10 backdrop-blur-sm">
           <Lock className="w-16 h-16 text-white/80" />
         </div>
-        <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-4 py-1 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full">
+        <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-4 py-1 bg-primary rounded-full">
           <span className="text-white text-xs font-bold">LOCKED</span>
         </div>
       </div>
@@ -836,7 +836,7 @@ function LockedMomentsScreen({ onCreateMoment }: { onCreateMoment: () => void })
       <h1 className="text-white text-2xl font-bold text-center mb-3 relative z-10">
         Post to View Moments
       </h1>
-      
+
       <p className="text-white/60 text-center text-sm mb-8 max-w-xs relative z-10">
         Share your moment today to unlock and see what your friends are up to!
       </p>
@@ -844,7 +844,7 @@ function LockedMomentsScreen({ onCreateMoment }: { onCreateMoment: () => void })
       {/* CTA Button */}
       <Button
         onClick={onCreateMoment}
-        className="relative z-10 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-6 rounded-2xl font-semibold text-lg shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all hover:scale-105"
+        className="relative z-10 bg-primary text-white px-8 py-6 rounded-2xl font-semibold text-lg shadow-lg shadow-red-500/30 hover:shadow-red-500/50 transition-all hover:scale-105"
       >
         <Camera className="w-6 h-6 mr-3" />
         Create Your Moment
@@ -915,10 +915,10 @@ export default function Moments() {
       const height = containerRef.current.clientHeight;
       const newIndex = Math.round(scrollTop / height);
       setCurrentMomentIndex(newIndex);
-      
+
       const now = Date.now();
       const timeDiff = now - lastScrollTime.current;
-      
+
       if (timeDiff > 50) {
         if (scrollTop > lastScrollTop.current && scrollTop > 50) {
           setHeaderVisible(false);
@@ -975,7 +975,7 @@ export default function Moments() {
     }
 
     setSelectedMoment(moment);
-    
+
     const shareUrl = `${window.location.origin}/moment/${momentId}`;
     const shareData = {
       title: `${moment.user?.name}'s Moment`,
@@ -1056,9 +1056,9 @@ export default function Moments() {
 
   const handlePostComment = () => {
     if (!newComment.trim()) return;
-    commentMutation.mutate({ 
-      content: newComment, 
-      parentId: replyingTo?.commentId 
+    commentMutation.mutate({
+      content: newComment,
+      parentId: replyingTo?.commentId
     });
   };
 
@@ -1123,7 +1123,7 @@ export default function Moments() {
               {/* Create Moment Button - Right side */}
               <button
                 onClick={handleCreateMoment}
-                className="absolute right-4 w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center shadow-lg"
+                className="absolute right-4 w-10 h-10 rounded-full bg-primary flex items-center justify-center shadow-lg"
               >
                 <Plus className="w-5 h-5 text-white" />
               </button>
@@ -1161,7 +1161,7 @@ export default function Moments() {
             {moments.map((moment, index) => {
               // Pre-load next 2 and previous 1 moments for instant playback
               const shouldPreload = Math.abs(index - currentMomentIndex) <= 2 && index !== currentMomentIndex;
-              
+
               return (
                 <div key={moment.id} className="h-full w-full snap-start">
                   <MomentReel
@@ -1197,7 +1197,7 @@ export default function Moments() {
               </p>
               <Button
                 onClick={handleCreateMoment}
-                className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 rounded-full"
+                className="bg-primary text-white px-6 rounded-full"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Create Moment
@@ -1232,7 +1232,7 @@ export default function Moments() {
           <DialogHeader className="p-4 border-b border-border">
             <DialogTitle className="text-center">Comments</DialogTitle>
           </DialogHeader>
-          
+
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
             {comments.length === 0 ? (
               <div className="text-center py-8">
@@ -1245,7 +1245,7 @@ export default function Moments() {
                 <div key={comment.id} className="space-y-3">
                   {/* Main comment */}
                   <div className="flex gap-3">
-                    <Avatar 
+                    <Avatar
                       className="w-9 h-9 flex-shrink-0 cursor-pointer"
                       onClick={() => setLocation(`/profile/${comment.userId}`)}
                     >
@@ -1254,7 +1254,7 @@ export default function Moments() {
                     </Avatar>
                     <div className="flex-1">
                       <p className="text-sm">
-                        <span 
+                        <span
                           className="font-semibold mr-2 cursor-pointer hover:underline"
                           onClick={() => setLocation(`/profile/${comment.userId}`)}
                         >
@@ -1271,7 +1271,7 @@ export default function Moments() {
                             {comment.likesCount} likes
                           </button>
                         )}
-                        <button 
+                        <button
                           className="text-xs font-semibold text-muted-foreground hover:text-foreground"
                           onClick={() => handleReply(comment.id, comment.userName)}
                         >
@@ -1289,7 +1289,7 @@ export default function Moments() {
                     <div className="ml-12 space-y-3">
                       {comment.replies.map((reply) => (
                         <div key={reply.id} className="flex gap-3">
-                          <Avatar 
+                          <Avatar
                             className="w-7 h-7 flex-shrink-0 cursor-pointer"
                             onClick={() => setLocation(`/profile/${reply.userId}`)}
                           >
@@ -1298,7 +1298,7 @@ export default function Moments() {
                           </Avatar>
                           <div className="flex-1">
                             <p className="text-sm">
-                              <span 
+                              <span
                                 className="font-semibold mr-2 cursor-pointer hover:underline"
                                 onClick={() => setLocation(`/profile/${reply.userId}`)}
                               >
@@ -1315,7 +1315,7 @@ export default function Moments() {
                                   {reply.likesCount} likes
                                 </button>
                               )}
-                              <button 
+                              <button
                                 className="text-xs font-semibold text-muted-foreground hover:text-foreground"
                                 onClick={() => handleReply(comment.id, reply.userName)}
                               >
@@ -1382,16 +1382,16 @@ export default function Moments() {
             <DialogTitle className="text-center">Share Moment</DialogTitle>
           </DialogHeader>
           <div className="space-y-3">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className="w-full justify-start gap-3"
               onClick={copyLink}
             >
               <Send className="w-5 h-5" />
               Copy Link
             </Button>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className="w-full justify-start gap-3"
               onClick={() => {
                 if (selectedMoment) {
@@ -1402,8 +1402,8 @@ export default function Moments() {
             >
               Share to Twitter
             </Button>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className="w-full justify-start gap-3"
               onClick={() => {
                 if (selectedMoment) {
@@ -1414,8 +1414,8 @@ export default function Moments() {
             >
               Share to Facebook
             </Button>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className="w-full justify-start gap-3"
               onClick={() => {
                 if (selectedMoment) {

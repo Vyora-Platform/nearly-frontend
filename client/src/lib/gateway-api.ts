@@ -13,7 +13,7 @@
 import { buildGatewayUrl, buildGatewayWsUrl } from "./config";
 
 // Network logging utilities
-const NETWORK_LOGGING_ENABLED = true; // Set to false to disable network logging
+const NETWORK_LOGGING_ENABLED = false; // Set to false to disable network logging
 
 const logNetwork = (type: 'request' | 'response' | 'error', data: any) => {
   if (!NETWORK_LOGGING_ENABLED) return;

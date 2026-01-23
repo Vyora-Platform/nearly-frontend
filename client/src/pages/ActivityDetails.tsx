@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { useState, useRef } from "react";
 import { api } from "@/lib/api";
+import { notificationApi } from "@/lib/gateway-api";
 import { authFetch } from "@/lib/queryClient";
 import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
@@ -94,20 +95,52 @@ export default function ActivityDetails() {
     enabled: !!activityId,
   });
 
-  // Fetch comments from API
+  // Fetch comments from API with user enrichment
   const { data: rawComments = [], refetch: refetchComments } = useQuery<ActivityComment[]>({
     queryKey: ["activity-comments", activityId],
-    queryFn: () => api.getActivityComments(activityId || ''),
+    queryFn: async () => {
+      try {
+        const fetchedComments = await api.getActivityComments(activityId || '');
+        // ALWAYS enrich ALL comments with user data from API
+        const enrichedComments = await Promise.all(
+          fetchedComments.map(async (c: any) => {
+            // Always fetch user data to get real username
+            try {
+              const userData = await api.getUser(c.userId);
+              return {
+                ...c,
+                userName: userData.name || userData.username || 'Unknown User',
+                userAvatar: userData.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${c.userId}`,
+              };
+            } catch {
+              // Fallback only if API call fails
+              return {
+                ...c,
+                userName: c.userName || 'Unknown User',
+                userAvatar: c.userAvatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${c.userId}`,
+              };
+            }
+          })
+        );
+        return enrichedComments;
+      } catch {
+        return [];
+      }
+    },
     enabled: !!activityId,
   });
 
-  // Organize comments into threads
+  // Organize comments into threads - preserve user data from enrichment
   const organizedComments = (() => {
     const parentComments: ActivityComment[] = [];
     const repliesMap: Record<string, ActivityComment[]> = {};
 
     rawComments.forEach((c: any) => {
-      const comment: ActivityComment = { ...c, replies: [] };
+      // Use the enriched data as-is, don't override userName
+      const comment: ActivityComment = {
+        ...c,
+        replies: []
+      };
 
       if (c.parentCommentId) {
         if (!repliesMap[c.parentCommentId]) {
@@ -121,6 +154,8 @@ export default function ActivityDetails() {
 
     parentComments.forEach(parent => {
       parent.replies = repliesMap[parent.id] || [];
+      // Sort replies by date
+      parent.replies.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
     });
 
     return parentComments;
@@ -146,14 +181,33 @@ export default function ActivityDetails() {
     },
   });
 
-  // Comment mutation with reply support
+  // Comment mutation with reply support and notifications
   const commentMutation = useMutation({
     mutationFn: async ({ content, parentCommentId }: { content: string; parentCommentId?: string }) => {
       const res = await authFetch(`/api/activities/${activityId}/comments`, {
         method: 'POST',
         body: JSON.stringify({ content, userId: currentUserId, parentCommentId }),
       });
-      return res.json();
+      const result = await res.json();
+
+      // Send notification to activity host (if not commenting on own activity)
+      if (activity?.userId && activity.userId !== currentUserId) {
+        try {
+          await notificationApi.createNotification({
+            userId: activity.userId,
+            type: parentCommentId ? 'comment_reply' : 'activity_comment',
+            title: parentCommentId ? 'New Reply' : 'New Comment',
+            description: content.substring(0, 100),
+            relatedId: currentUserId,
+            entityId: activityId || '',
+            actionUrl: `/activity/${activityId}`,
+          });
+        } catch (err) {
+          console.error('Failed to send notification:', err);
+        }
+      }
+
+      return result;
     },
     onSuccess: () => {
       setComment("");
@@ -344,7 +398,7 @@ export default function ActivityDetails() {
                 <p className="text-sm font-semibold text-foreground" data-testid="text-host-name">
                   {isOwnActivity ? 'You' : (hostUser?.name || 'Host')}
                 </p>
-                {hostUser?.isVerified && <BadgeCheck className="w-4 h-4 text-primary" />}
+                {(hostUser as any)?.isVerified && <BadgeCheck className="w-4 h-4 text-primary" />}
               </div>
               <p className="text-xs text-muted-foreground">@{hostUser?.username || 'user'}</p>
               {hostUser?.bio && (
@@ -427,7 +481,7 @@ export default function ActivityDetails() {
             <MessageCircle className="w-5 h-5" />
             Comments ({rawComments.length})
           </h2>
-          
+
           {organizedComments.length === 0 ? (
             <div className="text-center py-8 bg-muted/30 rounded-xl">
               <MessageCircle className="w-10 h-10 mx-auto mb-2 text-muted-foreground/50" />
@@ -460,7 +514,7 @@ export default function ActivityDetails() {
                         {(c.likesCount || 0) > 0 && (
                           <span className="text-xs text-muted-foreground">{c.likesCount} likes</span>
                         )}
-                        <button 
+                        <button
                           onClick={() => handleReply(c.id, c.userName || 'User')}
                           className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1"
                         >
@@ -471,34 +525,34 @@ export default function ActivityDetails() {
                     </div>
                   </div>
 
-                  {/* Replies */}
+                  {/* Replies - Instagram/YouTube style */}
                   {c.replies && c.replies.length > 0 && (
-                    <div className="ml-8 space-y-3">
+                    <div className="ml-12 space-y-2 pl-3 border-l-2 border-border/50">
                       {c.replies.map((reply) => (
-                        <div key={reply.id} className="flex gap-3 p-3 bg-muted/30 rounded-xl">
+                        <div key={reply.id} className="flex gap-2 p-2 bg-muted/20 rounded-lg">
                           <Avatar className="w-7 h-7 flex-shrink-0">
                             <AvatarImage src={reply.userAvatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${reply.userId}`} />
                             <AvatarFallback className="bg-primary/10 text-primary text-xs">
                               {reply.userName?.[0] || 'U'}
                             </AvatarFallback>
                           </Avatar>
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-1">
-                              <p className="text-xs font-semibold text-foreground">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-0.5">
+                              <p className="text-xs font-semibold text-foreground truncate">
                                 {reply.userId === currentUserId ? 'You' : (reply.userName || 'User')}
                               </p>
-                              <span className="text-xs text-muted-foreground">
+                              <span className="text-xs text-muted-foreground flex-shrink-0">
                                 {reply.createdAt ? format(new Date(reply.createdAt), "MMM d") : 'Just now'}
                               </span>
                             </div>
-                            <p className="text-xs text-foreground/90">{reply.content}</p>
-                            <div className="flex items-center gap-4 mt-1">
+                            <p className="text-xs text-foreground/90 leading-relaxed">{reply.content}</p>
+                            <div className="flex items-center gap-3 mt-1.5">
                               {(reply.likesCount || 0) > 0 && (
                                 <span className="text-xs text-muted-foreground">{reply.likesCount} likes</span>
                               )}
-                              <button 
+                              <button
                                 onClick={() => handleReply(c.id, reply.userName || 'User')}
-                                className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1"
+                                className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1 transition-colors"
                               >
                                 <Reply className="w-3 h-3" />
                                 Reply
@@ -567,11 +621,16 @@ export default function ActivityDetails() {
           </div>
           <Button
             className="flex-1 bg-gradient-primary text-white border-none h-11 font-semibold"
-            onClick={() => joinMutation.mutate()}
-            disabled={joinMutation.isPending || isOwnActivity}
+            onClick={() => {
+              if (!isOwnActivity && hostUser?.username) {
+                // Navigate to direct chat with the host
+                setLocation(`/chat/${hostUser.username}`);
+              }
+            }}
+            disabled={!!isOwnActivity}
             data-testid="button-send-request"
           >
-            {isOwnActivity ? "Your Activity" : joinMutation.isPending ? "Joining..." : "Join Activity"}
+            {isOwnActivity ? "Your Activity" : "Join Activity"}
           </Button>
         </div>
       </div>

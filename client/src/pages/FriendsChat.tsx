@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link, useLocation } from "wouter";
-import { 
+import {
   Search, Mail, Check, X, MessageCircle, Clock, UserX, MessageSquare
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -83,7 +83,7 @@ export default function FriendsChat() {
 
   // Transform following to friends
   const friends: Friend[] = following.map((user: any) => {
-    const conversation = conversations.find((c: any) => 
+    const conversation = conversations.find((c: any) =>
       c.userId === user.id || c.recipientId === user.id
     );
     return {
@@ -190,7 +190,7 @@ export default function FriendsChat() {
             placeholder="Search"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 bg-zinc-900 rounded-xl text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+            className="w-full pl-12 pr-4 py-3 bg-zinc-900 rounded-xl text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-primary/50"
           />
         </div>
       </div>
@@ -201,7 +201,7 @@ export default function FriendsChat() {
           onClick={() => setActiveSection("chats")}
           className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all
             ${activeSection === "chats"
-              ? "bg-white text-black"
+              ? "bg-primary text-white"
               : "bg-zinc-900 text-zinc-400 hover:bg-zinc-800"
             }`}
         >
@@ -212,14 +212,14 @@ export default function FriendsChat() {
           onClick={() => setActiveSection("requests")}
           className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all relative
             ${activeSection === "requests"
-              ? "bg-white text-black"
+              ? "bg-primary text-white"
               : "bg-zinc-900 text-zinc-400 hover:bg-zinc-800"
             }`}
         >
           <Mail className="w-4 h-4" />
           Requests
           {filteredMessageRequests.length > 0 && (
-            <span className="absolute -top-1 -right-1 min-w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold px-1">
+            <span className="absolute -top-1 -right-1 min-w-5 h-5 bg-white text-primary text-xs rounded-full flex items-center justify-center font-bold px-1 ring-2 ring-black">
               {filteredMessageRequests.length}
             </span>
           )}
@@ -247,9 +247,9 @@ export default function FriendsChat() {
                 <p className="text-zinc-500 text-sm text-center mt-1">
                   {searchQuery ? "No results found" : "Send a message to start a chat"}
                 </p>
-                <Button 
+                <Button
                   onClick={() => setLocation("/discover")}
-                  className="mt-6 bg-blue-500 hover:bg-blue-600 text-white rounded-xl px-6"
+                  className="mt-6 bg-primary hover:bg-primary/90 text-white rounded-xl px-6"
                 >
                   Send message
                 </Button>
@@ -264,7 +264,7 @@ export default function FriendsChat() {
                   <div className="relative">
                     <Avatar className="w-14 h-14">
                       <AvatarImage src={friend.avatarUrl} />
-                      <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white font-semibold">
+                      <AvatarFallback className="bg-primary text-white font-semibold">
                         {friend.name.charAt(0)}
                       </AvatarFallback>
                     </Avatar>
@@ -284,11 +284,11 @@ export default function FriendsChat() {
                     <div className="flex items-center justify-between mt-0.5">
                       <p className={`text-sm truncate pr-4 ${friend.unreadCount ? "text-white font-medium" : "text-zinc-500"}`}>
                         {friend.lastMessage ? friend.lastMessage : (
-                          <span className="text-blue-400 italic">Start conversation</span>
+                          <span className="text-primary italic">Start conversation</span>
                         )}
                       </p>
                       {friend.unreadCount && friend.unreadCount > 0 && (
-                        <span className="flex-shrink-0 w-5 h-5 bg-blue-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
+                        <span className="flex-shrink-0 w-5 h-5 bg-primary text-white text-xs rounded-full flex items-center justify-center font-bold">
                           {friend.unreadCount > 9 ? "9+" : friend.unreadCount}
                         </span>
                       )}
@@ -310,8 +310,8 @@ export default function FriendsChat() {
           {/* Info banner */}
           <div className="bg-zinc-900 rounded-2xl p-4 border border-zinc-800">
             <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center flex-shrink-0">
-                <UserX className="w-5 h-5 text-blue-400" />
+              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <UserX className="w-5 h-5 text-primary" />
               </div>
               <div>
                 <p className="text-sm font-medium text-white">Message Requests</p>
@@ -339,19 +339,19 @@ export default function FriendsChat() {
                 className="bg-zinc-900 rounded-2xl p-4 border border-zinc-800"
               >
                 <div className="flex items-start gap-3">
-                  <Avatar 
-                    className="w-14 h-14 cursor-pointer ring-2 ring-pink-500 ring-offset-2 ring-offset-black"
+                  <Avatar
+                    className="w-14 h-14 cursor-pointer ring-2 ring-primary ring-offset-2 ring-offset-black"
                     onClick={() => setLocation(`/profile/${request.senderUsername}`)}
                   >
                     <AvatarImage src={request.senderAvatar} />
-                    <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white font-semibold">
+                    <AvatarFallback className="bg-primary text-white font-semibold">
                       {request.senderName.charAt(0)}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p 
+                        <p
                           className="text-sm font-semibold text-white cursor-pointer hover:underline"
                           onClick={() => setLocation(`/profile/${request.senderUsername}`)}
                         >
@@ -376,7 +376,7 @@ export default function FriendsChat() {
                 <div className="flex gap-2 mt-4">
                   <Button
                     onClick={() => handleAcceptRequest(request.id)}
-                    className="flex-1 bg-blue-500 hover:bg-blue-600 text-white rounded-xl h-11"
+                    className="flex-1 bg-primary hover:bg-primary/90 text-white rounded-xl h-11"
                   >
                     <Check className="w-4 h-4 mr-2" />
                     Accept
