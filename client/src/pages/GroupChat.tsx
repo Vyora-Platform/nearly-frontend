@@ -261,7 +261,7 @@ export default function GroupChat() {
   // Mark messages as seen
   useEffect(() => {
     if (groupId && messages.length > 0) {
-      authFetch(`/api/groups/${groupId}/messages/mark-seen`, {
+      authFetch(`/api/messages/groups/${groupId}/messages/mark-seen`, {
         method: "POST",
         body: JSON.stringify({ userId: currentUserId }),
       }).catch(() => { });
