@@ -21,11 +21,11 @@ interface Config {
 const configs: Record<string, Partial<Config>> = {
   development: {
     // Use Vite proxy - requests to same origin are proxied to Java gateway at 9002
-    API_BASE_URL: '',
+    API_BASE_URL: 'https://api.nearlyapp.in',
     WSS_BASE_URL: 'wss://api.nearlyapp.in',
 
     // Microservices Gateway - proxied via Vite dev server
-    GATEWAY_URL: '',
+    GATEWAY_URL: 'https://api.nearlyapp.in',
     GATEWAY_WSS_URL: 'wss://api.nearlyapp.in',
 
     ENVIRONMENT: 'development',
@@ -53,10 +53,10 @@ const configs: Record<string, Partial<Config>> = {
     },
   },
   production: {
-    API_BASE_URL: import.meta.env.VITE_API_BASE_URL || 'https://api.nearlyapp.in',
-    WSS_BASE_URL: import.meta.env.VITE_WS_BASE_URL || 'wss://api.nearlyapp.in',
-    GATEWAY_URL: import.meta.env.VITE_GATEWAY_URL || 'https://api.nearlyapp.in',
-    GATEWAY_WSS_URL: import.meta.env.VITE_GATEWAY_WSS_URL || 'wss://api.nearlyapp.in',
+    API_BASE_URL: 'https://api.nearlyapp.in',
+    WSS_BASE_URL: 'wss://api.nearlyapp.in',
+    GATEWAY_URL: 'https://api.nearlyapp.in',
+    GATEWAY_WSS_URL: 'wss://api.nearlyapp.in',
     ENVIRONMENT: 'production',
     FEATURES: {
       ENABLE_NOTIFICATIONS: true,
@@ -123,6 +123,7 @@ export const buildApiUrl = (endpoint: string): string => {
   // Remove leading slash if present for non-empty base URLs
   const cleanEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
   // If GATEWAY_URL is empty (same-origin proxy), just return the endpoint with leading slash
+  console.log('GATEWAY_URL',config.GATEWAY_URL);
   if (!config.GATEWAY_URL) {
     return `/${cleanEndpoint}`;
   }
