@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, memo } from "react";
+hlsUrlimport { useState, useEffect, useRef, useCallback, memo } from "react";
 import { useLocation } from "wouter";
 import { 
   Plus, Heart, Send, Volume2, VolumeX, 
@@ -251,9 +251,9 @@ const ShotReel = memo(function ShotReel({
             setMp4FallbackUrl(info.mp4Url);
           }
           // Direct URL
-          if (info.url) {
-            setEffectiveVideoUrl(info.url);
-          }
+          // if (info.url) {
+          //   setEffectiveVideoUrl(info.url);
+          // }
           // Transcode status for showing processing state
           if (info.transcodeStatus) {
             setTranscodeStatus(info.transcodeStatus);
