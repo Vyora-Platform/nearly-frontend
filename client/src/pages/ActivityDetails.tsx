@@ -4,7 +4,7 @@ import { ArrowLeft, MapPin, Calendar, Users, IndianRupee, Heart, MessageCircle, 
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { api } from "@/lib/api";
 import { notificationApi } from "@/lib/gateway-api";
 import { authFetch } from "@/lib/queryClient";
@@ -41,7 +41,6 @@ export default function ActivityDetails() {
   const [replyingTo, setReplyingTo] = useState<{ id: string; userName: string } | null>(null);
   const commentInputRef = useRef<HTMLInputElement>(null);
   const currentUserId = localStorage.getItem('nearly_user_id') || '';
-  const currentUsername = localStorage.getItem('nearly_username') || 'user';
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -95,31 +94,34 @@ export default function ActivityDetails() {
     enabled: !!activityId,
   });
 
-  // Fetch comments from API with user enrichment
-  const { data: rawComments = [], refetch: refetchComments } = useQuery<ActivityComment[]>({
+  // Fetch comments using gateway API
+  const { data: rawComments = [], refetch: refetchComments } = useQuery({
     queryKey: ["activity-comments", activityId],
     queryFn: async () => {
       try {
         const fetchedComments = await api.getActivityComments(activityId || '');
-        // ALWAYS enrich ALL comments with user data from API
+        // Enrich comments with user data if not provided (similar to Shots.tsx)
         const enrichedComments = await Promise.all(
           fetchedComments.map(async (c: any) => {
-            // Always fetch user data to get real username
-            try {
-              const userData = await api.getUser(c.userId);
-              return {
-                ...c,
-                userName: userData.name || userData.username || 'Unknown User',
-                userAvatar: userData.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${c.userId}`,
-              };
-            } catch {
-              // Fallback only if API call fails
-              return {
-                ...c,
-                userName: c.userName || 'Unknown User',
-                userAvatar: c.userAvatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${c.userId}`,
-              };
+            let userName = c.userName || 'User';
+            console.log("#######", c);
+            console.log("#######", c.userName);
+            let userAvatar = c.userAvatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${c.userId}`;
+
+            // Fetch user data if not provided
+            if (!c.userName) {
+              try {
+                const userData = await api.getUser(c.userId);
+                userName = userData.name || userData.username || 'User';
+                userAvatar = userData.avatarUrl || userAvatar;
+              } catch { }
             }
+
+            return {
+              ...c,
+              userName,
+              userAvatar,
+            };
           })
         );
         return enrichedComments;
@@ -130,16 +132,23 @@ export default function ActivityDetails() {
     enabled: !!activityId,
   });
 
-  // Organize comments into threads - preserve user data from enrichment
+  // Organize comments into threads (parent comments with their replies)
   const organizedComments = (() => {
     const parentComments: ActivityComment[] = [];
     const repliesMap: Record<string, ActivityComment[]> = {};
 
     rawComments.forEach((c: any) => {
-      // Use the enriched data as-is, don't override userName
       const comment: ActivityComment = {
-        ...c,
-        replies: []
+        id: c.id,
+        activityId: c.activityId,
+        userId: c.userId,
+        userName: c.userName || 'User',
+        userAvatar: c.userAvatar,
+        content: c.content,
+        parentCommentId: c.parentCommentId,
+        likesCount: c.likesCount || 0,
+        createdAt: c.createdAt,
+        replies: [],
       };
 
       if (c.parentCommentId) {
@@ -152,10 +161,9 @@ export default function ActivityDetails() {
       }
     });
 
+    // Attach replies to parent comments
     parentComments.forEach(parent => {
       parent.replies = repliesMap[parent.id] || [];
-      // Sort replies by date
-      parent.replies.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
     });
 
     return parentComments;
@@ -223,8 +231,14 @@ export default function ActivityDetails() {
 
   const handleReply = (commentId: string, userName: string) => {
     setReplyingTo({ id: commentId, userName });
-    setComment(`@${userName} `);
-    setTimeout(() => commentInputRef.current?.focus(), 100);
+    const text = `@${userName} `;
+    setComment(text);
+    setTimeout(() => {
+      if (commentInputRef.current) {
+        commentInputRef.current.focus();
+        commentInputRef.current.setSelectionRange(text.length, text.length);
+      }
+    }, 100);
   };
 
   const cancelReply = () => {

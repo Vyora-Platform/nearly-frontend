@@ -293,6 +293,12 @@ export const activityApi = {
 
   getUserActivities: (userId: string) =>
     gatewayRequest<any[]>("GET", `/api/activities/user/${userId}`),
+
+  getComments: (activityId: string) =>
+    gatewayRequest<any[]>("GET", `/api/activities/${activityId}/comments`),
+
+  addComment: (activityId: string, userId: string, content: string, parentCommentId?: string) =>
+    gatewayRequest<any>("POST", `/api/activities/${activityId}/comments`, { userId, content, parentCommentId }),
 };
 
 // =====================

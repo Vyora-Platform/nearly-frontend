@@ -395,8 +395,14 @@ export default function ActivityCard({
 
   const handleReply = (commentId: string, userName: string) => {
     setReplyingTo({ commentId, userName });
-    setNewComment(`@${userName} `);
-    setTimeout(() => commentInputRef.current?.focus(), 100);
+    const text = `@${userName} `;
+    setNewComment(text);
+    setTimeout(() => {
+      if (commentInputRef.current) {
+        commentInputRef.current.focus();
+        commentInputRef.current.setSelectionRange(text.length, text.length);
+      }
+    }, 100);
   };
 
   const getTimeAgo = (date: string) => {

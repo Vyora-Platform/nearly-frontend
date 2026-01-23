@@ -14,6 +14,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { authFetch } from "@/lib/queryClient";
 import { api } from "@/lib/api";
 import { momentsApi, streamingApi } from "@/lib/gateway-api";
 import { cn } from "@/lib/utils";
@@ -869,7 +870,79 @@ export default function Moments() {
   const [showComments, setShowComments] = useState(false);
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [selectedMoment, setSelectedMoment] = useState<Moment | null>(null);
-  const [comments, setComments] = useState<Comment[]>([]);
+
+  const { data: comments = [], refetch: refetchComments } = useQuery({
+    queryKey: ['moment-comments', selectedMoment?.id],
+    queryFn: async () => {
+      if (!selectedMoment) return [];
+      try {
+        const fetchedComments = await api.getMomentComments(selectedMoment.id);
+
+        // Enrich comments with user data
+        const enrichedComments = await Promise.all(
+          fetchedComments.map(async (c: any) => {
+            let userName = c.userName || 'User';
+            let userAvatar = c.userAvatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${c.userId}`;
+
+            // Fetch user data if not provided
+            if (!c.userName) {
+              try {
+                const userData = await api.getUser(c.userId);
+                userName = userData.name || userData.username || 'User';
+                userAvatar = userData.avatarUrl || userAvatar;
+              } catch { }
+            }
+
+            return {
+              ...c,
+              userName,
+              userAvatar,
+            };
+          })
+        );
+
+        // Organize comments into threads
+        const parentComments: Comment[] = [];
+        const repliesMap: Record<string, Comment[]> = {};
+
+        enrichedComments.forEach((c: any) => {
+          const comment: Comment = {
+            id: c.id,
+            userId: c.userId,
+            userName: c.userName || 'User',
+            userAvatar: c.userAvatar,
+            content: c.content,
+            createdAt: c.createdAt,
+            likesCount: c.likesCount || 0,
+            replies: [],
+          };
+
+          if (c.parentCommentId) {
+            if (!repliesMap[c.parentCommentId]) {
+              repliesMap[c.parentCommentId] = [];
+            }
+            repliesMap[c.parentCommentId].push(comment);
+          } else {
+            parentComments.push(comment);
+          }
+        });
+
+        // Attach replies to parent comments
+        parentComments.forEach(parent => {
+          parent.replies = repliesMap[parent.id] || [];
+          if (parent.replies) {
+            parent.replies.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+          }
+        });
+
+        // Sort parent comments by date desc (newest first)
+        return parentComments.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      } catch {
+        return [];
+      }
+    },
+    enabled: !!selectedMoment && showComments,
+  });
   const [newComment, setNewComment] = useState("");
   const [replyingTo, setReplyingTo] = useState<{ commentId: string; userName: string } | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -948,25 +1021,9 @@ export default function Moments() {
     }
   };
 
-  const openCommentsDialog = async (moment: Moment) => {
+  const openCommentsDialog = (moment: Moment) => {
     setSelectedMoment(moment);
     setShowComments(true);
-    // Fetch comments for this moment from the API
-    try {
-      const fetchedComments = await api.getMomentComments(moment.id);
-      setComments(fetchedComments.map((c: any) => ({
-        id: c.id,
-        userId: c.userId,
-        userName: c.userName || 'User',
-        userAvatar: c.userAvatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${c.userId}`,
-        content: c.content,
-        createdAt: c.createdAt,
-        likesCount: c.likesCount || 0,
-        replies: [],
-      })));
-    } catch {
-      setComments([]);
-    }
   };
 
   const handleShare = async (momentId: string, moment: Moment) => {
@@ -1007,44 +1064,16 @@ export default function Moments() {
   const commentMutation = useMutation({
     mutationFn: async ({ content, parentId }: { content: string; parentId?: string }) => {
       if (!selectedMoment) throw new Error("No moment selected");
-      return api.createMomentComment(selectedMoment.id, content);
+      const res = await authFetch(`/api/moments/${selectedMoment.id}/comments`, {
+        method: 'POST',
+        body: JSON.stringify({ content, userId, parentCommentId: parentId }),
+      });
+      return res.json();
     },
-    onSuccess: (result) => {
-      // Add the new comment to the local state
-      if (result && result.id) {
-        if (replyingTo) {
-          setComments(prev => prev.map(comment => {
-            if (comment.id === replyingTo.commentId) {
-              return {
-                ...comment,
-                replies: [...(comment.replies || []), {
-                  id: result.id,
-                  userId: userId || '',
-                  userName: currentUser?.name || 'You',
-                  userAvatar: currentUser?.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${userId}`,
-                  content: result.content || newComment,
-                  createdAt: result.createdAt || new Date().toISOString(),
-                  likesCount: 0,
-                }]
-              };
-            }
-            return comment;
-          }));
-        } else {
-          setComments(prev => [{
-            id: result.id,
-            userId: userId || '',
-            userName: currentUser?.name || 'You',
-            userAvatar: currentUser?.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${userId}`,
-            content: result.content || newComment,
-            createdAt: result.createdAt || new Date().toISOString(),
-            likesCount: 0,
-            replies: [],
-          }, ...prev]);
-        }
-      }
+    onSuccess: () => {
       setNewComment("");
       setReplyingTo(null);
+      refetchComments();
       // Invalidate queries to refresh data
       queryClient.invalidateQueries({ queryKey: ["moments"] });
       toast({ title: "Comment posted!" });
@@ -1064,8 +1093,14 @@ export default function Moments() {
 
   const handleReply = (commentId: string, userName: string) => {
     setReplyingTo({ commentId, userName });
-    setNewComment(`@${userName} `);
-    setTimeout(() => commentInputRef.current?.focus(), 100);
+    const text = `@${userName} `;
+    setNewComment(text);
+    setTimeout(() => {
+      if (commentInputRef.current) {
+        commentInputRef.current.focus();
+        commentInputRef.current.setSelectionRange(text.length, text.length);
+      }
+    }, 100);
   };
 
   const handleUserClick = (userId: string) => {
