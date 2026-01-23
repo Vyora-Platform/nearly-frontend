@@ -446,25 +446,25 @@ export default function GroupChat() {
     if (!isMe) return null;
     const seenCount = msg.seenBy?.length || 0;
     if (seenCount === 0) {
-      return <Check className="w-3.5 h-3.5 text-zinc-500" />;
+      return <Check className="w-3.5 h-3.5 text-muted-foreground" />;
     } else if (allMembersSeen(msg.seenBy)) {
-      return <CheckCheck className="w-3.5 h-3.5 text-green-500" />;
+      return <CheckCheck className="w-3.5 h-3.5 text-primary" />;
     } else {
-      return <CheckCheck className="w-3.5 h-3.5 text-zinc-400" />;
+      return <CheckCheck className="w-3.5 h-3.5 text-muted-foreground" />;
     }
   };
 
   const getMemberById = (userId: string) => members.find(m => m.userId === userId);
 
   return (
-    <div className="flex flex-col h-screen bg-black">
-      {/* Header */}
-      <div className="flex items-center gap-3 px-4 py-3 bg-black border-b border-zinc-800">
+    <div className="flex flex-col h-screen bg-background">
+      {/* Native Header */}
+      <div className="flex items-center gap-3 px-4 py-3 bg-background border-b border-border safe-area-top">
         <button
           onClick={() => setLocation("/chat")}
-          className="p-1 hover:bg-zinc-800 rounded-full transition-colors"
+          className="p-1.5 -ml-1.5 hover:bg-muted rounded-full transition-colors"
         >
-          <ArrowLeft className="w-6 h-6 text-white" />
+          <ArrowLeft className="w-6 h-6 text-foreground" />
         </button>
 
         <button
@@ -472,56 +472,56 @@ export default function GroupChat() {
           className="flex items-center gap-3 flex-1"
         >
           <div className="relative">
-            <Avatar className="w-10 h-10 ring-2 ring-purple-500 ring-offset-2 ring-offset-black">
+            <Avatar className="w-10 h-10">
               <AvatarImage src={group?.imageUrl || ""} />
-              <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white">
+              <AvatarFallback className="bg-gradient-primary text-white font-semibold">
                 {group?.name?.charAt(0) || "G"}
               </AvatarFallback>
             </Avatar>
           </div>
           <div className="text-left">
-            <p className="text-sm font-semibold text-white">{group?.name || "Group"}</p>
-            <p className="text-xs text-zinc-400">{members.length} members</p>
+            <p className="text-sm font-semibold text-foreground">{group?.name || "Group"}</p>
+            <p className="text-xs text-muted-foreground">{members.length} members</p>
           </div>
         </button>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           <button
             onClick={handleShareGroup}
-            className="p-2 hover:bg-zinc-800 rounded-full transition-colors"
+            className="p-2 hover:bg-muted rounded-full transition-colors"
           >
-            <Share2 className="w-5 h-5 text-white" />
+            <Share2 className="w-5 h-5 text-foreground" />
           </button>
           <button
             onClick={() => setLocation(`/group/${groupId}/details`)}
-            className="p-2 hover:bg-zinc-800 rounded-full transition-colors"
+            className="p-2 hover:bg-muted rounded-full transition-colors"
           >
-            <Info className="w-5 h-5 text-white" />
+            <Info className="w-5 h-5 text-foreground" />
           </button>
         </div>
       </div>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto px-4 py-2 bg-black">
+      <div className="flex-1 overflow-y-auto px-4 py-3 bg-background">
         {loadingMessages ? (
           <div className="flex items-center justify-center py-8">
-            <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
+            <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
           </div>
         ) : messages.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20">
-            <div className="w-24 h-24 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center mb-4">
-              <Users className="w-12 h-12 text-white" />
+          <div className="flex flex-col items-center justify-center py-16">
+            <div className="w-20 h-20 bg-gradient-primary rounded-full flex items-center justify-center mb-4">
+              <Users className="w-10 h-10 text-white" />
             </div>
-            <p className="text-white font-semibold text-lg">{group?.name}</p>
-            <p className="text-zinc-400 text-sm">{members.length} members</p>
-            <p className="text-zinc-500 text-sm mt-4">Start the conversation!</p>
+            <p className="text-foreground font-semibold text-lg">{group?.name}</p>
+            <p className="text-muted-foreground text-sm">{members.length} members</p>
+            <p className="text-muted-foreground text-sm mt-4">Start the conversation!</p>
           </div>
         ) : (
           groupedMessages.map((grp) => (
             <div key={grp.date}>
               {/* Date Divider */}
               <div className="flex items-center justify-center my-4">
-                <span className="px-3 py-1 bg-zinc-800 rounded-full text-xs text-zinc-400">
+                <span className="px-3 py-1 bg-muted rounded-full text-xs text-muted-foreground font-medium">
                   {formatDateDivider(new Date(grp.date))}
                 </span>
               </div>
@@ -538,16 +538,16 @@ export default function GroupChat() {
 
                   return (
                     <div key={msg.id} className="my-4">
-                      <div className="bg-zinc-900 rounded-2xl p-4 max-w-md mx-auto border border-zinc-800">
+                      <div className="bg-card rounded-2xl p-4 max-w-md mx-auto border border-border">
                         <div className="flex items-center gap-2 mb-3">
-                          <BarChart2 className="w-5 h-5 text-purple-500" />
-                          <span className="text-sm font-medium text-white">Poll</span>
-                          <span className="text-xs text-zinc-500 ml-auto">
+                          <BarChart2 className="w-5 h-5 text-primary" />
+                          <span className="text-sm font-medium text-foreground">Poll</span>
+                          <span className="text-xs text-muted-foreground ml-auto">
                             {msg.poll.totalVotes} votes
                           </span>
                         </div>
 
-                        <p className="text-white font-medium mb-4">{msg.poll.question}</p>
+                        <p className="text-foreground font-medium mb-4">{msg.poll.question}</p>
 
                         <div className="space-y-2">
                           {msg.poll.options.map((option) => {
@@ -562,22 +562,22 @@ export default function GroupChat() {
                                 onClick={() => !hasVoted && voteMutation.mutate({ messageId: msg.id, optionId: option.id })}
                                 disabled={hasVoted}
                                 className={`w-full relative overflow-hidden rounded-xl p-3 text-left transition-all ${hasVoted
-                                  ? "bg-zinc-800"
-                                  : "bg-zinc-800 hover:bg-zinc-700 active:scale-[0.98]"
+                                  ? "bg-muted"
+                                  : "bg-muted hover:bg-muted/80 active:scale-[0.98]"
                                   }`}
                               >
                                 {hasVoted && (
                                   <div
-                                    className="absolute inset-0 bg-gradient-to-r from-purple-500/30 to-pink-500/30 transition-all"
+                                    className="absolute inset-0 bg-primary/20 transition-all"
                                     style={{ width: `${votePercentage}%` }}
                                   />
                                 )}
                                 <div className="relative flex items-center justify-between">
-                                  <span className={`text-sm ${isMyVote ? "text-purple-400 font-medium" : "text-white"}`}>
+                                  <span className={`text-sm ${isMyVote ? "text-primary font-medium" : "text-foreground"}`}>
                                     {option.text}
                                   </span>
                                   {hasVoted && (
-                                    <span className="text-xs text-zinc-400">
+                                    <span className="text-xs text-muted-foreground">
                                       {Math.round(votePercentage)}%
                                     </span>
                                   )}
@@ -587,7 +587,7 @@ export default function GroupChat() {
                           })}
                         </div>
 
-                        <p className="text-xs text-zinc-500 mt-3">
+                        <p className="text-xs text-muted-foreground mt-3">
                           Created by {sender?.name || "Unknown"} • {formatMessageTime(msg.createdAt)}
                         </p>
                       </div>
@@ -598,15 +598,15 @@ export default function GroupChat() {
                 return (
                   <div
                     key={msg.id}
-                    className={`flex gap-2 mb-1 ${isMe ? "flex-row-reverse" : "flex-row"}`}
+                    className={`flex gap-2 mb-1.5 ${isMe ? "flex-row-reverse" : "flex-row"}`}
                   >
                     {/* Avatar */}
                     {!isMe && (
-                      <div className="w-7 flex-shrink-0">
+                      <div className="w-8 flex-shrink-0">
                         {showSenderInfo && (
-                          <Avatar className="w-7 h-7">
+                          <Avatar className="w-8 h-8">
                             <AvatarImage src={msg.senderAvatar || sender?.avatarUrl || ""} />
-                            <AvatarFallback className="bg-zinc-700 text-white text-xs">
+                            <AvatarFallback className="bg-muted text-muted-foreground text-xs font-medium">
                               {(msg.senderName || sender?.name || "U").charAt(0)}
                             </AvatarFallback>
                           </Avatar>
@@ -617,10 +617,10 @@ export default function GroupChat() {
                     <div className={`flex flex-col ${isMe ? "items-end" : "items-start"} max-w-[75%]`}>
                       {/* Sender Name */}
                       {showSenderInfo && !isMe && (
-                        <p className="text-xs text-zinc-500 mb-1 ml-1 flex items-center gap-1">
+                        <p className="text-xs text-muted-foreground mb-1 ml-1 flex items-center gap-1">
                           {msg.senderName || sender?.name || "Unknown"}
                           {sender?.role === "admin" && (
-                            <Crown className="w-3 h-3 text-yellow-500" />
+                            <Crown className="w-3 h-3 text-amber-500" />
                           )}
                         </p>
                       )}
@@ -629,8 +629,8 @@ export default function GroupChat() {
                       <div
                         className={`relative group ${msg.messageType === "image" ? "" : "px-4 py-2.5"
                           } ${isMe
-                            ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-3xl rounded-br-md"
-                            : "bg-zinc-800 text-white rounded-3xl rounded-bl-md"
+                            ? "bg-gradient-primary text-white rounded-2xl rounded-br-md"
+                            : "bg-muted text-foreground rounded-2xl rounded-bl-md"
                           }`}
                         onDoubleClick={() => !isMe && handleReaction(msg.id, "❤️")}
                         onClick={() => setSelectedMessageId(isSelected ? null : msg.id)}
@@ -640,20 +640,20 @@ export default function GroupChat() {
                           <img
                             src={msg.mediaUrl}
                             alt="Shared"
-                            className="rounded-2xl max-w-full max-h-64 object-cover"
+                            className="rounded-xl max-w-full max-h-64 object-cover"
                           />
                         )}
 
                         {/* Text Content */}
                         {msg.content && (
-                          <p className={`text-sm ${msg.messageType === "image" ? "mt-2 px-2" : ""}`}>
+                          <p className={`text-sm leading-relaxed ${msg.messageType === "image" ? "mt-2 px-2" : ""}`}>
                             {msg.content}
                           </p>
                         )}
 
                         {/* Quick Reactions */}
                         {isSelected && !isMe && (
-                          <div className="absolute -top-12 left-0 flex gap-1 bg-zinc-900 rounded-full px-2 py-1 shadow-xl border border-zinc-700 z-10">
+                          <div className="absolute -top-12 left-0 flex gap-1 bg-card rounded-full px-2 py-1 shadow-xl border border-border z-10">
                             {quickReactions.map((emoji) => (
                               <button
                                 key={emoji}
@@ -674,7 +674,7 @@ export default function GroupChat() {
                       {msg.reactions && msg.reactions.length > 0 && (
                         <div className={`flex gap-0.5 mt-1 ${isMe ? "mr-2" : "ml-2"}`}>
                           {msg.reactions.map((r, i) => (
-                            <span key={i} className="text-sm bg-zinc-800 rounded-full px-1.5 py-0.5">
+                            <span key={i} className="text-sm bg-muted rounded-full px-1.5 py-0.5">
                               {r.emoji}
                             </span>
                           ))}
@@ -683,7 +683,7 @@ export default function GroupChat() {
 
                       {/* Time and Status */}
                       <div className={`flex items-center gap-1 mt-1 ${isMe ? "mr-1" : "ml-1"}`}>
-                        <span className="text-[10px] text-zinc-500">
+                        <span className="text-[10px] text-muted-foreground">
                           {formatMessageTime(msg.createdAt)}
                         </span>
                         {getStatusIcon(msg, isMe)}
@@ -700,29 +700,29 @@ export default function GroupChat() {
 
       {/* Poll Creator Modal */}
       {showPollCreator && (
-        <div className="fixed inset-0 bg-black/80 z-50 flex items-end justify-center">
-          <div className="bg-zinc-900 rounded-t-3xl w-full max-w-md p-6 animate-in slide-in-from-bottom">
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-end justify-center">
+          <div className="bg-card rounded-t-3xl w-full max-w-md p-6 animate-in slide-in-from-bottom">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold text-white">Create Poll</h3>
+              <h3 className="text-lg font-semibold text-foreground">Create Poll</h3>
               <button onClick={() => setShowPollCreator(false)}>
-                <X className="w-6 h-6 text-zinc-400" />
+                <X className="w-6 h-6 text-muted-foreground" />
               </button>
             </div>
 
             <div className="space-y-4">
               <div>
-                <label className="text-sm text-zinc-400 mb-2 block">Question</label>
+                <label className="text-sm text-muted-foreground mb-2 block">Question</label>
                 <input
                   type="text"
                   value={pollQuestion}
                   onChange={(e) => setPollQuestion(e.target.value)}
                   placeholder="Ask a question..."
-                  className="w-full px-4 py-3 bg-zinc-800 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-4 py-3 bg-muted rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
                 />
               </div>
 
               <div>
-                <label className="text-sm text-zinc-400 mb-2 block">Options</label>
+                <label className="text-sm text-muted-foreground mb-2 block">Options</label>
                 <div className="space-y-2">
                   {pollOptions.map((option, idx) => (
                     <div key={idx} className="flex gap-2">
@@ -735,14 +735,14 @@ export default function GroupChat() {
                           setPollOptions(newOptions);
                         }}
                         placeholder={`Option ${idx + 1}`}
-                        className="flex-1 px-4 py-3 bg-zinc-800 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        className="flex-1 px-4 py-3 bg-muted rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
                       />
                       {idx > 1 && (
                         <button
                           onClick={() => setPollOptions(pollOptions.filter((_, i) => i !== idx))}
-                          className="p-3 bg-zinc-800 rounded-xl"
+                          className="p-3 bg-muted rounded-xl"
                         >
-                          <X className="w-5 h-5 text-zinc-400" />
+                          <X className="w-5 h-5 text-muted-foreground" />
                         </button>
                       )}
                     </div>
@@ -751,7 +751,7 @@ export default function GroupChat() {
                 {pollOptions.length < 4 && (
                   <button
                     onClick={() => setPollOptions([...pollOptions, ""])}
-                    className="mt-2 text-sm text-purple-400 hover:text-purple-300"
+                    className="mt-2 text-sm text-primary font-medium"
                   >
                     + Add option
                   </button>
@@ -762,7 +762,7 @@ export default function GroupChat() {
             <Button
               onClick={handleCreatePoll}
               disabled={!pollQuestion.trim() || pollOptions.filter(o => o.trim()).length < 2}
-              className="w-full mt-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white py-6 rounded-xl font-medium"
+              className="w-full mt-6 bg-gradient-primary text-white py-6 rounded-xl font-semibold"
             >
               Create Poll
             </Button>
@@ -772,15 +772,15 @@ export default function GroupChat() {
 
       {/* Image Preview */}
       {imagePreview && (
-        <div className="px-4 py-2 bg-zinc-900 border-t border-zinc-800">
+        <div className="px-4 py-2 bg-card border-t border-border">
           <div className="relative inline-block">
-            <img src={imagePreview} alt="Preview" className="h-24 rounded-lg object-cover" />
+            <img src={imagePreview} alt="Preview" className="h-20 rounded-lg object-cover" />
             <button
               onClick={() => {
                 setSelectedImage(null);
                 setImagePreview(null);
               }}
-              className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center"
+              className="absolute -top-2 -right-2 w-6 h-6 bg-destructive rounded-full flex items-center justify-center"
             >
               <X className="w-4 h-4 text-white" />
             </button>
@@ -790,14 +790,14 @@ export default function GroupChat() {
 
       {/* Emoji Picker */}
       {showEmojiPicker && (
-        <div className="absolute bottom-20 left-4 z-50 bg-zinc-900 rounded-2xl p-3 shadow-xl border border-zinc-800 w-80">
-          <p className="text-xs text-zinc-500 mb-2 px-1">Popular Emojis</p>
+        <div className="absolute bottom-20 left-4 z-50 bg-card rounded-2xl p-3 shadow-xl border border-border w-80">
+          <p className="text-xs text-muted-foreground mb-2 px-1">Popular Emojis</p>
           <div className="grid grid-cols-8 gap-1 max-h-64 overflow-y-auto">
             {popularEmojis.map((emoji, idx) => (
               <button
                 key={idx}
                 onClick={() => handleEmojiClick(emoji)}
-                className="text-2xl p-2 hover:bg-zinc-800 rounded-lg transition-colors"
+                className="text-2xl p-2 hover:bg-muted rounded-lg transition-colors"
               >
                 {emoji}
               </button>
@@ -808,53 +808,53 @@ export default function GroupChat() {
 
       {/* Media Options */}
       {showMediaOptions && (
-        <div className="absolute bottom-20 left-4 bg-zinc-900 rounded-2xl p-4 shadow-xl border border-zinc-800 z-50">
+        <div className="absolute bottom-20 left-4 bg-card rounded-2xl p-4 shadow-xl border border-border z-50">
           <div className="grid grid-cols-3 gap-4">
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="flex flex-col items-center gap-2 p-3 hover:bg-zinc-800 rounded-xl transition-colors"
+              className="flex flex-col items-center gap-2 p-3 hover:bg-muted rounded-xl transition-colors"
             >
-              <div className="w-12 h-12 bg-purple-500/20 rounded-full flex items-center justify-center">
-                <ImageIcon className="w-6 h-6 text-purple-500" />
+              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                <ImageIcon className="w-6 h-6 text-primary" />
               </div>
-              <span className="text-xs text-zinc-400">Gallery</span>
+              <span className="text-xs text-muted-foreground">Gallery</span>
             </button>
             <button
               onClick={() => {
                 setShowMediaOptions(false);
                 setShowPollCreator(true);
               }}
-              className="flex flex-col items-center gap-2 p-3 hover:bg-zinc-800 rounded-xl transition-colors"
+              className="flex flex-col items-center gap-2 p-3 hover:bg-muted rounded-xl transition-colors"
             >
-              <div className="w-12 h-12 bg-pink-500/20 rounded-full flex items-center justify-center">
-                <BarChart2 className="w-6 h-6 text-pink-500" />
+              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                <BarChart2 className="w-6 h-6 text-primary" />
               </div>
-              <span className="text-xs text-zinc-400">Poll</span>
+              <span className="text-xs text-muted-foreground">Poll</span>
             </button>
-            <button className="flex flex-col items-center gap-2 p-3 hover:bg-zinc-800 rounded-xl transition-colors">
-              <div className="w-12 h-12 bg-blue-500/20 rounded-full flex items-center justify-center">
-                <Camera className="w-6 h-6 text-blue-500" />
+            <button className="flex flex-col items-center gap-2 p-3 hover:bg-muted rounded-xl transition-colors">
+              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                <Camera className="w-6 h-6 text-primary" />
               </div>
-              <span className="text-xs text-zinc-400">Camera</span>
+              <span className="text-xs text-muted-foreground">Camera</span>
             </button>
           </div>
         </div>
       )}
 
-      {/* Input Area */}
-      <div className="px-4 py-3 bg-black border-t border-zinc-800">
+      {/* Input Area - Native Style */}
+      <div className="px-4 py-3 bg-background border-t border-border safe-area-bottom">
         <div className="flex items-center gap-2">
           <button
             onClick={() => {
               setShowMediaOptions(!showMediaOptions);
               setShowEmojiPicker(false);
             }}
-            className="p-2 hover:bg-zinc-800 rounded-full transition-colors"
+            className="p-2 hover:bg-muted rounded-full transition-colors"
           >
-            <Plus className="w-6 h-6 text-white" />
+            <Plus className="w-6 h-6 text-foreground" />
           </button>
 
-          <div className="flex-1 flex items-center gap-2 bg-zinc-800 rounded-full px-4 py-2">
+          <div className="flex-1 flex items-center gap-2 bg-muted rounded-full px-4 py-2.5">
             <input
               ref={inputRef}
               type="text"
@@ -862,7 +862,7 @@ export default function GroupChat() {
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               onKeyPress={(e) => e.key === "Enter" && handleSend()}
-              className="flex-1 bg-transparent text-sm text-white placeholder:text-zinc-500 focus:outline-none"
+              className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
             />
             <button
               onClick={() => {
@@ -871,7 +871,7 @@ export default function GroupChat() {
               }}
               className="hover:opacity-70 transition-opacity"
             >
-              <Smile className="w-5 h-5 text-zinc-400" />
+              <Smile className="w-5 h-5 text-muted-foreground" />
             </button>
           </div>
 
@@ -879,13 +879,13 @@ export default function GroupChat() {
             <button
               onClick={handleSend}
               disabled={sendMutation.isPending}
-              className="p-2 hover:opacity-80 transition-opacity"
+              className="p-2.5 bg-gradient-primary rounded-full hover:opacity-90 transition-opacity"
             >
-              <Send className="w-6 h-6 text-purple-500" />
+              <Send className="w-5 h-5 text-white" />
             </button>
           ) : (
-            <button className="p-2 hover:bg-zinc-800 rounded-full transition-colors">
-              <Mic className="w-6 h-6 text-white" />
+            <button className="p-2 hover:bg-muted rounded-full transition-colors">
+              <Mic className="w-6 h-6 text-foreground" />
             </button>
           )}
         </div>

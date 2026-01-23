@@ -6,18 +6,18 @@ import FriendsChat from "@/pages/FriendsChat";
 import GroupsDiscover from "@/pages/GroupsDiscover";
 import RandomChat from "@/pages/RandomChat";
 
-type ChatTab = "friends" | "groups" | "random";
+type ChatTab = "random" | "friends" | "groups";
 type RandomChatState = "idle" | "searching" | "connected" | "disconnected";
 
 export default function Chat() {
-  const [activeTab, setActiveTab] = useState<ChatTab>("friends");
+  const [activeTab, setActiveTab] = useState<ChatTab>("random");
   const [isRandomFullScreen, setIsRandomFullScreen] = useState(false);
   const [randomChatState, setRandomChatState] = useState<RandomChatState>("idle");
 
   const tabs = [
+    { id: "random" as ChatTab, icon: Shuffle, label: "Random" },
     { id: "friends" as ChatTab, icon: User, label: "Friends" },
     { id: "groups" as ChatTab, icon: Users, label: "Groups" },
-    { id: "random" as ChatTab, icon: Shuffle, label: "Random" },
   ];
 
   // Show footer for friends, groups, OR when random is in idle state

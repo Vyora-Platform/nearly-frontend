@@ -1,7 +1,7 @@
 import { useRoute, useLocation } from "wouter";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  ArrowLeft, Smile, ImageIcon, Mic, Send,
+  ArrowLeft, Smile, ImageIcon, Send,
   Heart, Check, CheckCheck, Camera, Sticker, X, Info
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -314,27 +314,27 @@ export default function DirectChat() {
     if (!isMe) return null;
     switch (status) {
       case "sending":
-        return <div className="w-3 h-3 border border-gray-400 border-t-transparent rounded-full animate-spin" />;
+        return <div className="w-3 h-3 border border-muted-foreground border-t-transparent rounded-full animate-spin" />;
       case "sent":
-        return <Check className="w-3.5 h-3.5 text-gray-400" />;
+        return <Check className="w-3.5 h-3.5 text-muted-foreground" />;
       case "delivered":
-        return <CheckCheck className="w-3.5 h-3.5 text-gray-400" />;
+        return <CheckCheck className="w-3.5 h-3.5 text-muted-foreground" />;
       case "seen":
-        return <CheckCheck className="w-3.5 h-3.5 text-green-500" />;
+        return <CheckCheck className="w-3.5 h-3.5 text-primary" />;
       default:
-        return <Check className="w-3.5 h-3.5 text-gray-400" />;
+        return <Check className="w-3.5 h-3.5 text-muted-foreground" />;
     }
   };
 
   return (
-    <div className="flex flex-col h-screen bg-black">
-      {/* Instagram-style Header */}
-      <div className="flex items-center gap-3 px-4 py-3 bg-black border-b border-zinc-800">
+    <div className="flex flex-col h-screen bg-background">
+      {/* Native Header */}
+      <div className="flex items-center gap-3 px-4 py-3 bg-background border-b border-border safe-area-top">
         <button
           onClick={() => setLocation("/chat")}
-          className="p-1 hover:bg-zinc-800 rounded-full transition-colors"
+          className="p-1.5 -ml-1.5 hover:bg-muted rounded-full transition-colors"
         >
-          <ArrowLeft className="w-6 h-6 text-white" />
+          <ArrowLeft className="w-6 h-6 text-foreground" />
         </button>
 
         <button
@@ -342,54 +342,52 @@ export default function DirectChat() {
           className="flex items-center gap-3 flex-1"
         >
           <div className="relative">
-            <Avatar className="w-10 h-10 ring-2 ring-pink-500 ring-offset-2 ring-offset-black">
+            <Avatar className="w-10 h-10">
               <AvatarImage src={user?.avatarUrl || ""} />
-              <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white">
+              <AvatarFallback className="bg-gradient-primary text-white font-semibold">
                 {user?.name?.charAt(0) || "U"}
               </AvatarFallback>
             </Avatar>
-            <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-black" />
+            <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-background" />
           </div>
           <div className="text-left">
-            <p className="text-sm font-semibold text-white">{user?.name || username}</p>
-            <p className="text-xs text-zinc-400">Active now</p>
+            <p className="text-sm font-semibold text-foreground">{user?.name || username}</p>
+            <p className="text-xs text-muted-foreground">Active now</p>
           </div>
         </button>
 
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setLocation(`/profile/${username}`)}
-            className="p-2 hover:bg-zinc-800 rounded-full transition-colors"
-          >
-            <Info className="w-5 h-5 text-white" />
-          </button>
-        </div>
+        <button
+          onClick={() => setLocation(`/profile/${username}`)}
+          className="p-2 hover:bg-muted rounded-full transition-colors"
+        >
+          <Info className="w-5 h-5 text-foreground" />
+        </button>
       </div>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto px-4 py-2 space-y-1 bg-black">
+      <div className="flex-1 overflow-y-auto px-4 py-3 space-y-1 bg-background">
         {loadingMessages ? (
           <div className="flex items-center justify-center py-8">
-            <div className="w-8 h-8 border-2 border-pink-500 border-t-transparent rounded-full animate-spin" />
+            <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
           </div>
         ) : messages.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20">
-            <Avatar className="w-24 h-24 mb-4 ring-4 ring-pink-500 ring-offset-4 ring-offset-black">
+          <div className="flex flex-col items-center justify-center py-16">
+            <Avatar className="w-20 h-20 mb-4">
               <AvatarImage src={user?.avatarUrl || ""} />
-              <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white text-2xl">
+              <AvatarFallback className="bg-gradient-primary text-white text-2xl font-semibold">
                 {user?.name?.charAt(0) || "U"}
               </AvatarFallback>
             </Avatar>
-            <p className="text-white font-semibold text-lg">{user?.name || username}</p>
-            <p className="text-zinc-400 text-sm">@{username}</p>
-            <p className="text-zinc-500 text-sm mt-4">Start a conversation</p>
+            <p className="text-foreground font-semibold text-lg">{user?.name || username}</p>
+            <p className="text-muted-foreground text-sm">@{username}</p>
+            <p className="text-muted-foreground text-sm mt-4">Start a conversation</p>
           </div>
         ) : (
           groupedMessages.map((group) => (
             <div key={group.date}>
               {/* Date Divider */}
               <div className="flex items-center justify-center my-4">
-                <span className="px-3 py-1 bg-zinc-800 rounded-full text-xs text-zinc-400">
+                <span className="px-3 py-1 bg-muted rounded-full text-xs text-muted-foreground font-medium">
                   {formatDateDivider(new Date(group.date))}
                 </span>
               </div>
@@ -402,15 +400,15 @@ export default function DirectChat() {
                 return (
                   <div
                     key={msg.id}
-                    className={`flex gap-2 mb-1 ${isMe ? "flex-row-reverse" : "flex-row"}`}
+                    className={`flex gap-2 mb-1.5 ${isMe ? "flex-row-reverse" : "flex-row"}`}
                   >
                     {/* Avatar for other user */}
                     {!isMe && (
-                      <div className="w-7 flex-shrink-0">
+                      <div className="w-8 flex-shrink-0">
                         {showAvatar && (
-                          <Avatar className="w-7 h-7">
+                          <Avatar className="w-8 h-8">
                             <AvatarImage src={user?.avatarUrl || ""} />
-                            <AvatarFallback className="bg-zinc-700 text-white text-xs">
+                            <AvatarFallback className="bg-muted text-muted-foreground text-xs font-medium">
                               {user?.name?.charAt(0) || "U"}
                             </AvatarFallback>
                           </Avatar>
@@ -423,15 +421,15 @@ export default function DirectChat() {
                       <div
                         className={`relative group ${msg.messageType === "image" ? "" : "px-4 py-2.5"
                           } ${isMe
-                            ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-3xl rounded-br-md"
-                            : "bg-zinc-800 text-white rounded-3xl rounded-bl-md"
+                            ? "bg-gradient-primary text-white rounded-2xl rounded-br-md"
+                            : "bg-muted text-foreground rounded-2xl rounded-bl-md"
                           }`}
                         onDoubleClick={() => !isMe && handleReaction(msg.id, "❤️")}
                         onClick={() => setSelectedMessageId(isSelected ? null : msg.id)}
                       >
                         {/* Reply Preview */}
                         {msg.replyToId && (
-                          <div className="bg-black/20 rounded-lg p-2 mb-2 text-xs text-zinc-300 border-l-2 border-pink-500">
+                          <div className={`rounded-lg p-2 mb-2 text-xs border-l-2 ${isMe ? "bg-white/10 border-white/50 text-white/80" : "bg-background border-primary text-muted-foreground"}`}>
                             Replying to message
                           </div>
                         )}
@@ -441,20 +439,20 @@ export default function DirectChat() {
                           <img
                             src={msg.mediaUrl || msg.imageUrl || ""}
                             alt="Shared"
-                            className="rounded-2xl max-w-full max-h-64 object-cover"
+                            className="rounded-xl max-w-full max-h-64 object-cover"
                           />
                         )}
 
                         {/* Text Content */}
                         {msg.content && (
-                          <p className={`text-sm ${msg.messageType === "image" ? "mt-2 px-2" : ""}`}>
+                          <p className={`text-sm leading-relaxed ${msg.messageType === "image" ? "mt-2 px-2" : ""}`}>
                             {msg.content}
                           </p>
                         )}
 
                         {/* Quick Reactions Popup */}
                         {isSelected && !isMe && (
-                          <div className="absolute -top-12 left-0 flex gap-1 bg-zinc-900 rounded-full px-2 py-1 shadow-xl border border-zinc-700 z-10">
+                          <div className="absolute -top-12 left-0 flex gap-1 bg-card rounded-full px-2 py-1 shadow-xl border border-border z-10">
                             {quickReactions.map((emoji) => (
                               <button
                                 key={emoji}
@@ -475,7 +473,7 @@ export default function DirectChat() {
                       {msg.reactions && msg.reactions.length > 0 && (
                         <div className={`flex gap-0.5 mt-1 ${isMe ? "mr-2" : "ml-2"}`}>
                           {msg.reactions.map((r, i) => (
-                            <span key={i} className="text-sm bg-zinc-800 rounded-full px-1.5 py-0.5">
+                            <span key={i} className="text-sm bg-muted rounded-full px-1.5 py-0.5">
                               {r.emoji}
                             </span>
                           ))}
@@ -484,7 +482,7 @@ export default function DirectChat() {
 
                       {/* Time and Status */}
                       <div className={`flex items-center gap-1 mt-1 ${isMe ? "mr-1" : "ml-1"}`}>
-                        <span className="text-[10px] text-zinc-500">
+                        <span className="text-[10px] text-muted-foreground">
                           {formatMessageTime(msg.createdAt)}
                         </span>
                         {getStatusIcon(msg.status, isMe)}
@@ -501,15 +499,15 @@ export default function DirectChat() {
 
       {/* Image Preview */}
       {imagePreview && (
-        <div className="px-4 py-2 bg-zinc-900 border-t border-zinc-800">
+        <div className="px-4 py-2 bg-card border-t border-border">
           <div className="relative inline-block">
-            <img src={imagePreview} alt="Preview" className="h-24 rounded-lg object-cover" />
+            <img src={imagePreview} alt="Preview" className="h-20 rounded-lg object-cover" />
             <button
               onClick={() => {
                 setSelectedImage(null);
                 setImagePreview(null);
               }}
-              className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center"
+              className="absolute -top-2 -right-2 w-6 h-6 bg-destructive rounded-full flex items-center justify-center"
             >
               <X className="w-4 h-4 text-white" />
             </button>
@@ -519,32 +517,32 @@ export default function DirectChat() {
 
       {/* Reply Preview */}
       {replyingTo && (
-        <div className="px-4 py-2 bg-zinc-900 border-t border-zinc-800 flex items-center justify-between">
+        <div className="px-4 py-2 bg-card border-t border-border flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-1 h-10 bg-pink-500 rounded-full" />
+            <div className="w-1 h-10 bg-primary rounded-full" />
             <div>
-              <p className="text-xs text-pink-500 font-medium">
+              <p className="text-xs text-primary font-medium">
                 Replying to {replyingTo.senderId === currentUserId ? "yourself" : user?.name}
               </p>
-              <p className="text-xs text-zinc-400 truncate max-w-[200px]">{replyingTo.content}</p>
+              <p className="text-xs text-muted-foreground truncate max-w-[200px]">{replyingTo.content}</p>
             </div>
           </div>
           <button onClick={() => setReplyingTo(null)} className="p-1">
-            <X className="w-5 h-5 text-zinc-400" />
+            <X className="w-5 h-5 text-muted-foreground" />
           </button>
         </div>
       )}
 
       {/* Emoji Picker */}
       {showEmojiPicker && (
-        <div className="absolute bottom-20 left-4 z-50 bg-zinc-900 rounded-2xl p-3 shadow-xl border border-zinc-800 w-80">
-          <p className="text-xs text-zinc-500 mb-2 px-1">Popular Emojis</p>
+        <div className="absolute bottom-20 left-4 z-50 bg-card rounded-2xl p-3 shadow-xl border border-border w-80">
+          <p className="text-xs text-muted-foreground mb-2 px-1">Popular Emojis</p>
           <div className="grid grid-cols-8 gap-1 max-h-64 overflow-y-auto">
             {popularEmojis.map((emoji, idx) => (
               <button
                 key={idx}
                 onClick={() => handleEmojiClick(emoji)}
-                className="text-2xl p-2 hover:bg-zinc-800 rounded-lg transition-colors"
+                className="text-2xl p-2 hover:bg-muted rounded-lg transition-colors"
               >
                 {emoji}
               </button>
@@ -555,47 +553,47 @@ export default function DirectChat() {
 
       {/* Media Options */}
       {showMediaOptions && (
-        <div className="absolute bottom-20 left-4 bg-zinc-900 rounded-2xl p-4 shadow-xl border border-zinc-800 z-50">
+        <div className="absolute bottom-20 left-4 bg-card rounded-2xl p-4 shadow-xl border border-border z-50">
           <div className="grid grid-cols-3 gap-4">
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="flex flex-col items-center gap-2 p-3 hover:bg-zinc-800 rounded-xl transition-colors"
+              className="flex flex-col items-center gap-2 p-3 hover:bg-muted rounded-xl transition-colors"
             >
-              <div className="w-12 h-12 bg-purple-500/20 rounded-full flex items-center justify-center">
-                <ImageIcon className="w-6 h-6 text-purple-500" />
+              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                <ImageIcon className="w-6 h-6 text-primary" />
               </div>
-              <span className="text-xs text-zinc-400">Gallery</span>
+              <span className="text-xs text-muted-foreground">Gallery</span>
             </button>
-            <button className="flex flex-col items-center gap-2 p-3 hover:bg-zinc-800 rounded-xl transition-colors">
-              <div className="w-12 h-12 bg-pink-500/20 rounded-full flex items-center justify-center">
-                <Camera className="w-6 h-6 text-pink-500" />
+            <button className="flex flex-col items-center gap-2 p-3 hover:bg-muted rounded-xl transition-colors">
+              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                <Camera className="w-6 h-6 text-primary" />
               </div>
-              <span className="text-xs text-zinc-400">Camera</span>
+              <span className="text-xs text-muted-foreground">Camera</span>
             </button>
-            <button className="flex flex-col items-center gap-2 p-3 hover:bg-zinc-800 rounded-xl transition-colors">
-              <div className="w-12 h-12 bg-blue-500/20 rounded-full flex items-center justify-center">
-                <Sticker className="w-6 h-6 text-blue-500" />
+            <button className="flex flex-col items-center gap-2 p-3 hover:bg-muted rounded-xl transition-colors">
+              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                <Sticker className="w-6 h-6 text-primary" />
               </div>
-              <span className="text-xs text-zinc-400">Sticker</span>
+              <span className="text-xs text-muted-foreground">Sticker</span>
             </button>
           </div>
         </div>
       )}
 
-      {/* Input Area - Instagram Style */}
-      <div className="px-4 py-3 bg-black border-t border-zinc-800">
-        <div className="flex items-center gap-2">
+      {/* Input Area - Native Style */}
+      <div className="px-4 py-3 bg-background/95 backdrop-blur-sm border-t border-border/50 safe-area-bottom">
+        <div className="flex items-center gap-3">
           <button
             onClick={() => {
               setShowMediaOptions(!showMediaOptions);
               setShowEmojiPicker(false);
             }}
-            className="p-2 hover:bg-zinc-800 rounded-full transition-colors"
+            className="p-2 hover:bg-muted/50 rounded-full transition-colors active:scale-95 duration-200"
           >
-            <Camera className="w-6 h-6 text-white" />
+            <Camera className="w-7 h-7 text-foreground/90 stroke-[1.5]" />
           </button>
 
-          <div className="flex-1 flex items-center gap-2 bg-zinc-800 rounded-full px-4 py-2">
+          <div className="flex-1 flex items-center gap-2 bg-muted/80 hover:bg-muted transition-colors rounded-3xl px-4 py-2.5 shadow-sm border border-transparent focus-within:border-border/50 focus-within:bg-muted">
             <input
               ref={inputRef}
               type="text"
@@ -603,16 +601,16 @@ export default function DirectChat() {
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               onKeyPress={(e) => e.key === "Enter" && handleSend()}
-              className="flex-1 bg-transparent text-sm text-white placeholder:text-zinc-500 focus:outline-none"
+              className="flex-1 bg-transparent text-[15px] text-foreground placeholder:text-muted-foreground/70 focus:outline-none min-w-0"
             />
             <button
               onClick={() => {
                 setShowEmojiPicker(!showEmojiPicker);
                 setShowMediaOptions(false);
               }}
-              className="hover:opacity-70 transition-opacity"
+              className="hover:opacity-70 transition-opacity active:scale-90 duration-200"
             >
-              <Smile className="w-5 h-5 text-zinc-400" />
+              <Smile className="w-6 h-6 text-muted-foreground/80" />
             </button>
           </div>
 
@@ -620,22 +618,19 @@ export default function DirectChat() {
             <button
               onClick={handleSend}
               disabled={sendMutation.isPending}
-              className="p-2 hover:opacity-80 transition-opacity"
+              className="p-3 bg-gradient-primary rounded-full shadow-lg shadow-primary/25 hover:opacity-90 active:scale-95 transition-all duration-200"
             >
-              <Send className="w-6 h-6 text-pink-500" />
+              <Send className="w-5 h-5 text-white fill-current" />
             </button>
           ) : (
-            <>
-              <button className="p-2 hover:bg-zinc-800 rounded-full transition-colors">
-                <Mic className="w-6 h-6 text-white" />
-              </button>
+            <div className="flex items-center gap-1">
               <button
                 onClick={() => fileInputRef.current?.click()}
-                className="p-2 hover:bg-zinc-800 rounded-full transition-colors"
+                className="p-2 hover:bg-muted/50 rounded-full transition-colors active:scale-95 duration-200"
               >
-                <ImageIcon className="w-6 h-6 text-white" />
+                <ImageIcon className="w-7 h-7 text-foreground/90 stroke-[1.5]" />
               </button>
-            </>
+            </div>
           )}
         </div>
       </div>
