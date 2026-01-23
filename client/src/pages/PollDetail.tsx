@@ -285,13 +285,13 @@ export default function PollDetail() {
 
   const getTotalVotes = () => {
     if (!poll?.options) return 0;
-    return poll.options.reduce((acc: number, opt: any) => acc + (opt.votes?.length || opt.votesCount || 0), 0);
+    return poll.options.reduce((acc: number, opt: any) => acc + (opt.voteCount ?? opt.votesCount ?? opt.votes?.length ?? 0), 0);
   };
 
   const getVotePercentage = (option: any) => {
     const total = getTotalVotes();
     if (total === 0) return 0;
-    const optionVotes = option.votes?.length || option.votesCount || 0;
+    const optionVotes = option.voteCount ?? option.votesCount ?? option.votes?.length ?? 0;
     return Math.round((optionVotes / total) * 100);
   };
 
@@ -369,7 +369,7 @@ export default function PollDetail() {
             const optionId = option.id || `opt-${idx}`;
             const isSelected = votedOption === optionId;
             const percentage = getVotePercentage(option);
-            const optionVotes = option.votes?.length || option.votesCount || 0;
+            const optionVotes = option.voteCount ?? option.votesCount ?? option.votes?.length ?? 0;
 
             return (
               <button

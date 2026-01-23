@@ -38,7 +38,7 @@ export default function CreatePoll() {
   const createPollMutation = useMutation({
     mutationFn: async (data: {
       question: string;
-      options: { text: string }[];
+      options: string[];
       category: string;
       endsAt: string;
     }) => {
@@ -116,7 +116,7 @@ export default function CreatePoll() {
 
     createPollMutation.mutate({
       question: question.trim(),
-      options: validOptions.map(text => ({ text: text.trim() })),
+      options: validOptions.map(text => text.trim()),
       category,
       endsAt: endsAt.toISOString(),
     });
