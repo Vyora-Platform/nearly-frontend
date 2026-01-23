@@ -371,7 +371,7 @@ const ShotReel = memo(function ShotReel({
     if (!video) return;
 
     // Only play if active, visible (>=60%), and not manually paused
-    if (isActive && isVisible && !isPaused) {
+    if (isActive && isVisible && isPaused) {
       video.play().catch((err) => {
         console.log("[SHOT] Autoplay blocked:", err.name);
                 console.log("[SHOT] Autoplay blocked isActive:",isActive);
