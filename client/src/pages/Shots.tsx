@@ -338,6 +338,22 @@ const ShotReel = memo(function ShotReel({
       hls.on(Hls.Events.ERROR, (_, data) => {
         if (data.fatal) {
           console.error("[HLS] Fatal error:", data.type, data.details);
+
+          // Detailed logging for debugging production issues
+          if (data.type === Hls.ErrorTypes.NETWORK_ERROR || data.details === 'levelParsingError') {
+             // @ts-ignore - response indicates the response object if available in the error data
+            const response = data.response; 
+            if (response) {
+               console.error("[HLS] Error Response URL:", response.url);
+               console.error("[HLS] Error Response Status:", response.code);
+               console.error("[HLS] Error Response Text:", response.text);
+            }
+             // @ts-ignore - loader context might have info
+            if (data.context) {
+                console.error("[HLS] Error Context:", data.context);
+            }
+          }
+
           // Auto-fallback to MP4 on HLS failure
           console.log("[HLS] Falling back to MP4 after HLS failure");
           setUseFallback(true);
