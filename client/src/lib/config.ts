@@ -13,8 +13,8 @@ interface Config {
     ENABLE_VIDEO_CHAT: boolean;
   };
   // Microservices API Gateway
-  GATEWAY_URL: string;
-  GATEWAY_WSS_URL: string;
+  GATEWAY_URL: 'https://api.nearlyapp.in';
+  GATEWAY_WSS_URL: 'wss://api.nearlyapp.in';
 }
 
 // Environment-specific configurations
