@@ -188,8 +188,8 @@ export default function CreateShot() {
             console.log('[UPLOAD] Upload result1:', xhr.responseText);
             console.log('[UPLOAD] Upload result2:',result);
 
-            const url = result.url || result.data?.url || result.fileUrl || '';
-            const id = result.id || result.data?.id || '';
+            const url = result.rawUrl || result.data?.rawUrl || result.fileUrl || '';
+            const id = result.mediaId || result.data?.mediaId || '';
             
             setUploadProgress(prev => ({
               ...prev,
