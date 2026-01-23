@@ -93,40 +93,40 @@ const marketplaceCategories = [
   { id: "cameras", label: "Cameras & Lenses", icon: Camera, color: "bg-pink-500" },
   { id: "audio", label: "Audio & Headphones", icon: Headphones, color: "bg-rose-500" },
   { id: "gaming", label: "Gaming", icon: Gamepad2, color: "bg-red-500" },
-  
+
   // Vehicles
   { id: "cars", label: "Cars", icon: Car, color: "bg-orange-500" },
   { id: "bikes", label: "Bikes & Scooters", icon: Bike, color: "bg-amber-500" },
   { id: "bicycles", label: "Bicycles", icon: Bike, color: "bg-lime-500" },
-  
+
   // Property
   { id: "houses", label: "Houses & Apartments", icon: Home, color: "bg-green-500" },
   { id: "pg-rooms", label: "PG & Rooms", icon: Home, color: "bg-emerald-500" },
-  
+
   // Fashion
   { id: "clothing", label: "Clothing", icon: Shirt, color: "bg-teal-500" },
   { id: "shoes", label: "Footwear", icon: ShoppingBag, color: "bg-sky-500" },
   { id: "watches", label: "Watches", icon: Watch, color: "bg-yellow-500" },
   { id: "jewelry", label: "Jewelry & Accessories", icon: Gem, color: "bg-fuchsia-500" },
-  
+
   // Home & Living
   { id: "furniture", label: "Furniture", icon: Sofa, color: "bg-violet-500" },
   { id: "home-decor", label: "Home Decor", icon: Gift, color: "bg-slate-500" },
   { id: "kitchen", label: "Kitchen & Dining", icon: Coffee, color: "bg-zinc-500" },
   { id: "garden", label: "Garden & Outdoor", icon: Leaf, color: "bg-green-600" },
-  
+
   // Kids & Baby
   { id: "baby-products", label: "Baby Products", icon: Baby, color: "bg-pink-400" },
   { id: "kids-toys", label: "Kids Toys", icon: Gift, color: "bg-orange-400" },
-  
+
   // Books & Hobbies
   { id: "books", label: "Books & Magazines", icon: BookOpen, color: "bg-amber-600" },
   { id: "sports", label: "Sports Equipment", icon: Dumbbell, color: "bg-red-600" },
   { id: "musical", label: "Musical Instruments", icon: Music, color: "bg-purple-600" },
-  
+
   // Pets
   { id: "pets", label: "Pets & Pet Supplies", icon: Dog, color: "bg-brown-500" },
-  
+
   // Services
   { id: "repair", label: "Repair & Services", icon: Wrench, color: "bg-gray-500" },
   { id: "beauty", label: "Beauty & Salon", icon: Scissors, color: "bg-pink-600" },
@@ -134,11 +134,11 @@ const marketplaceCategories = [
   { id: "education", label: "Tutors & Classes", icon: GraduationCap, color: "bg-indigo-600" },
   { id: "legal", label: "Legal Services", icon: Scale, color: "bg-slate-600" },
   { id: "home-services", label: "Home Services", icon: Hammer, color: "bg-orange-600" },
-  
+
   // Food
   { id: "food-delivery", label: "Food & Catering", icon: Pizza, color: "bg-red-400" },
   { id: "groceries", label: "Groceries", icon: ShoppingBag, color: "bg-green-400" },
-  
+
   // Other
   { id: "office", label: "Office Supplies", icon: Briefcase, color: "bg-gray-600" },
   { id: "other", label: "Other Items", icon: Package, color: "bg-neutral-500" },
@@ -167,11 +167,11 @@ const enrichUserData = (user: any) => ({
 });
 
 // Category Pills Component
-function CategoryPills({ 
-  categories, 
-  selected, 
-  onSelect 
-}: { 
+function CategoryPills({
+  categories,
+  selected,
+  onSelect
+}: {
   categories: { id: string; label: string; icon: any }[];
   selected: string;
   onSelect: (id: string) => void;
@@ -185,11 +185,10 @@ function CategoryPills({
           <button
             key={cat.id}
             onClick={() => onSelect(cat.id)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
-              isActive
-                ? "bg-primary text-primary-foreground"
-                : "bg-muted text-muted-foreground hover:bg-muted/80"
-            }`}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all ${isActive
+              ? "bg-primary text-primary-foreground"
+              : "bg-muted text-muted-foreground hover:bg-muted/80"
+              }`}
           >
             <Icon className="w-3.5 h-3.5" />
             {cat.label}
@@ -226,15 +225,11 @@ export default function Discover() {
   // Follow user mutation - with localStorage persistence
   const followMutation = useMutation({
     mutationFn: async (userId: string) => {
-      // Prevent multiple follows
-      if (followedUsers.has(userId)) {
-        throw new Error('Already following');
-      }
       return api.followUser(currentUserId, userId);
     },
     onMutate: (userId) => {
       if (followedUsers.has(userId)) return;
-      
+
       // Optimistically update
       setFollowedUsers(prev => {
         const newSet = new Set(prev);
@@ -251,7 +246,8 @@ export default function Discover() {
         description: "You are now following this user.",
       });
     },
-    onError: (_, userId) => {
+    onError: (error, userId) => {
+      console.error("Follow user failed:", error);
       // Revert on error
       setFollowedUsers(prev => {
         const newSet = new Set(prev);
@@ -268,6 +264,15 @@ export default function Discover() {
   });
 
   const handleFollowUser = (userId: string) => {
+    if (!currentUserId) {
+      toast({
+        title: "Login Required",
+        description: "Please login to follow users.",
+        variant: "destructive",
+      });
+      return;
+    }
+    if (userId === currentUserId) return; // Cannot follow self
     if (followedUsers.has(userId)) return;
     followMutation.mutate(userId);
   };
@@ -370,7 +375,7 @@ export default function Discover() {
                   <Users className="w-4 h-4 text-primary" />
                   People You May Know
                 </h3>
-                <button 
+                <button
                   onClick={() => setActiveTab("people")}
                   className="text-sm text-primary font-medium flex items-center"
                 >
@@ -400,8 +405,8 @@ export default function Discover() {
                         <p className="text-sm font-medium truncate hover:text-primary transition-colors">{person.name?.split(" ")[0] || 'User'}</p>
                       </button>
                       <p className="text-xs text-muted-foreground truncate">{person.mutualFriends} mutual</p>
-                      <Button 
-                        size="sm" 
+                      <Button
+                        size="sm"
                         className={`w-full mt-2 h-7 text-xs ${isFollowing ? 'bg-muted text-foreground hover:bg-muted/80' : ''}`}
                         onClick={() => handleFollowUser(person.id)}
                         disabled={followMutation.isPending}
@@ -477,7 +482,7 @@ export default function Discover() {
                   <Store className="w-4 h-4 text-primary" />
                   Marketplace
                 </h3>
-                <button 
+                <button
                   onClick={() => setActiveTab("marketplace")}
                   className="text-sm text-primary font-medium flex items-center"
                 >
@@ -512,7 +517,7 @@ export default function Discover() {
                   <Zap className="w-4 h-4 text-yellow-500" />
                   Best Deals
                 </h3>
-                <button 
+                <button
                   onClick={() => setActiveTab("deals")}
                   className="text-sm text-primary font-medium flex items-center"
                 >
@@ -539,10 +544,10 @@ export default function Discover() {
           {/* People Tab */}
           <TabsContent value="people" className="mt-0">
             <div className="p-4 border-b border-border">
-              <CategoryPills 
-                categories={peopleCategories} 
-                selected={peopleFilter} 
-                onSelect={setPeopleFilter} 
+              <CategoryPills
+                categories={peopleCategories}
+                selected={peopleFilter}
+                onSelect={setPeopleFilter}
               />
             </div>
             <div className="p-4">
@@ -582,8 +587,8 @@ export default function Discover() {
                         <p className="text-sm text-muted-foreground">@{person.username}</p>
                         <p className="text-xs text-muted-foreground mt-0.5">{person.mutualFriends} mutual friends</p>
                       </button>
-                      <Button 
-                        size="sm" 
+                      <Button
+                        size="sm"
                         className={`shrink-0 ${isFollowing ? 'bg-muted text-foreground hover:bg-muted/80' : ''}`}
                         onClick={() => handleFollowUser(person.id)}
                         disabled={followMutation.isPending}
@@ -617,7 +622,7 @@ export default function Discover() {
                 <h3 className="font-semibold text-foreground">Browse Categories</h3>
                 <Badge variant="secondary">{marketplaceCategories.length} categories</Badge>
               </div>
-              
+
               <div className="grid grid-cols-3 gap-3">
                 {marketplaceCategories.map((category) => {
                   const Icon = category.icon;
@@ -643,13 +648,13 @@ export default function Discover() {
           {/* Deals Tab - Coming Soon */}
           <TabsContent value="deals" className="mt-0">
             <div className="p-4 border-b border-border">
-              <CategoryPills 
-                categories={dealCategories} 
-                selected={dealFilter} 
+              <CategoryPills
+                categories={dealCategories}
+                selected={dealFilter}
                 onSelect={(id) => {
                   setDealFilter(id);
                   setShowDealsComingSoon(true);
-                }} 
+                }}
               />
             </div>
             <div className="p-4">
@@ -713,7 +718,7 @@ export default function Discover() {
               </>
             )}
             <p className="text-muted-foreground mb-6">
-              The marketplace for this category is coming soon! 
+              The marketplace for this category is coming soon!
               Buy, sell, and discover items from your local community.
             </p>
             <div className="flex gap-3">
@@ -753,7 +758,7 @@ export default function Discover() {
             </div>
             <h3 className="text-xl font-semibold mb-2">Amazing Deals Await!</h3>
             <p className="text-muted-foreground mb-6">
-              Get exclusive discounts and offers from your favorite local brands. 
+              Get exclusive discounts and offers from your favorite local brands.
               Restaurants, shops, services, and more!
             </p>
             <div className="flex gap-3">
