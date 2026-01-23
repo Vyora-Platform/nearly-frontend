@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { z } from "zod";
 import { ChevronLeft, ImageIcon, User, X, Loader2 } from "lucide-react";
-import { mediaApi } from "@/lib/gateway-api";
+import { mediaApi, eventApi } from "@/lib/gateway-api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -38,7 +38,7 @@ interface Guest {
 }
 
 const createEventFormSchema = insertEventSchema
-  .omit({ 
+  .omit({
     attendeesCount: true,
     startDate: true,
     endDate: true,
@@ -138,7 +138,7 @@ export default function CreateEvent() {
   const createEventMutation = useMutation({
     mutationFn: async (data: CreateEventFormValues) => {
       const startDateTime = new Date(`${data.startDate}T${data.startTime}`);
-      const endDateTime = data.endDate && data.endTime 
+      const endDateTime = data.endDate && data.endTime
         ? new Date(`${data.endDate}T${data.endTime}`)
         : undefined;
 
@@ -171,7 +171,7 @@ export default function CreateEvent() {
         eventData.category = data.category.trim();
       }
 
-      return apiRequest("POST", "/api/events", eventData);
+      return eventApi.createEvent(eventData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/events"] });
@@ -493,11 +493,10 @@ export default function CreateEvent() {
                       className="space-y-3"
                     >
                       <div
-                        className={`flex items-start gap-3 p-4 rounded-lg border-2 cursor-pointer ${
-                          field.value === "Public"
+                        className={`flex items-start gap-3 p-4 rounded-lg border-2 cursor-pointer ${field.value === "Public"
                             ? "border-primary bg-primary/5"
                             : "border-border"
-                        }`}
+                          }`}
                         onClick={() => field.onChange("Public")}
                         data-testid="radio-visibility-public"
                       >
@@ -513,11 +512,10 @@ export default function CreateEvent() {
                       </div>
 
                       <div
-                        className={`flex items-start gap-3 p-4 rounded-lg border-2 cursor-pointer ${
-                          field.value === "Private"
+                        className={`flex items-start gap-3 p-4 rounded-lg border-2 cursor-pointer ${field.value === "Private"
                             ? "border-primary bg-primary/5"
                             : "border-border"
-                        }`}
+                          }`}
                         onClick={() => field.onChange("Private")}
                         data-testid="radio-visibility-private"
                       >
@@ -533,11 +531,10 @@ export default function CreateEvent() {
                       </div>
 
                       <div
-                        className={`flex items-start gap-3 p-4 rounded-lg border-2 cursor-pointer ${
-                          field.value === "Invite Only"
+                        className={`flex items-start gap-3 p-4 rounded-lg border-2 cursor-pointer ${field.value === "Invite Only"
                             ? "border-primary bg-primary/5"
                             : "border-border"
-                        }`}
+                          }`}
                         onClick={() => field.onChange("Invite Only")}
                         data-testid="radio-visibility-invite"
                       >
@@ -604,7 +601,7 @@ export default function CreateEvent() {
             {/* Guest Details */}
             <div className="space-y-3">
               <FormLabel className="text-sm font-semibold">Guest Details (Optional)</FormLabel>
-              
+
               {guests.map((guest) => (
                 <div
                   key={guest.id}
