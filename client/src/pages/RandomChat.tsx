@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { 
-  Shuffle, Play, Square, Send, SkipForward, 
+import {
+  Shuffle, Play, Square, Send, SkipForward,
   Shield, AlertTriangle, MessageCircle, Users,
   EyeOff, Flag, X, Video, VideoOff, Mic, MicOff,
   Phone, PhoneOff, Camera, Monitor, Volume2, VolumeX,
@@ -40,12 +40,35 @@ interface ReportReason {
 }
 
 // WebRTC ICE servers for peer-to-peer connection
-const ICE_SERVERS = [
+let ICE_SERVERS: RTCIceServer[] = [
   { urls: "stun:stun.l.google.com:19302" },
   { urls: "stun:stun1.l.google.com:19302" },
   { urls: "stun:stun2.l.google.com:19302" },
   { urls: "stun:stun3.l.google.com:19302" },
 ];
+
+const fetchTurnCredentials = async () => {
+  try {
+    const response = await fetch('https://api.nearlyapp.in/api/video-chat/ice-servers');
+    if (response.ok) {
+      const data = await response.json();
+      if (data.username && data.credential && data.urls) {
+        console.log("Acquired TURN credentials");
+        ICE_SERVERS = [
+          // ...ICE_SERVERS, // Keep STUN servers
+          {
+            urls: data.urls,
+            username: data.username,
+            credential: data.credential
+          }
+        ];
+        console.log("Updated ICE servers:", ICE_SERVERS);
+      }
+    }
+  } catch (e) {
+    console.error("Failed to fetch TURN credentials", e);
+  }
+};
 
 const REPORT_REASONS: ReportReason[] = [
   { id: "inappropriate", label: "Inappropriate Content", description: "Sexual content, nudity, or explicit material" },
@@ -67,27 +90,27 @@ export default function RandomChat() {
   const [chatCount, setChatCount] = useState(0);
   const [onlineUsers, setOnlineUsers] = useState(0);
   const [lookingCount, setLookingCount] = useState(0);
-  
+
   // Video chat state
   const [isCameraOn, setIsCameraOn] = useState(true);
   const [isMicOn, setIsMicOn] = useState(true);
   const [isStrangerMuted, setIsStrangerMuted] = useState(false);
   const [connectionQuality, setConnectionQuality] = useState<"good" | "fair" | "poor">("good");
   const [partnerUsername, setPartnerUsername] = useState<string>("Stranger");
-  
+
   // Report dialog state
   const [showReportDialog, setShowReportDialog] = useState(false);
   const [selectedReportReason, setSelectedReportReason] = useState<string>("");
   const [reportDetails, setReportDetails] = useState("");
   const [reportSubmitted, setReportSubmitted] = useState(false);
-  
+
   // Session state
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [roomId, setRoomId] = useState<string | null>(null);
   const [isInitiator, setIsInitiator] = useState(false);
   const wsRef = useRef<WebSocket | null>(null);
   const isConnectingRef = useRef<boolean>(false);
-  
+
   // Refs
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -112,16 +135,17 @@ export default function RandomChat() {
     if (!sessionId || isConnectingRef.current || wsRef.current?.readyState === WebSocket.OPEN) {
       return;
     }
-    
+
+    fetchTurnCredentials(); // Ensure we have latest TURN creds before starting
     isConnectingRef.current = true;
-    
+
     // Build WebSocket URL - connect to video-chat-service which handles both video and text
     // Backend decides the actual chat mode based on matching availability
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
     const port = "9016"; // video-chat-service handles both modes
     const wsPath = "/ws/video";
     const wsUrl = `wss://api.nearlyapp.in/ws/video`;
-    
+
     console.log(`🔌 WebSocket Connecting: ${wsUrl}`, {
       url: wsUrl,
       protocol,
@@ -142,7 +166,7 @@ export default function RandomChat() {
           timestamp: new Date().toISOString()
         });
         isConnectingRef.current = false;
-        
+
         // Send JOIN request - backend will decide the chat mode
         // Backend handles matching logic and returns the assigned mode
         const joinMessage = {
@@ -150,7 +174,7 @@ export default function RandomChat() {
           sessionId,
           // Don't send chatMode - let backend decide
         };
-        
+
         ws.send(JSON.stringify(joinMessage));
         console.log("📤 WebSocket Sent:", {
           type: 'JOIN',
@@ -158,7 +182,7 @@ export default function RandomChat() {
           timestamp: new Date().toISOString()
         });
       };
-      
+
       ws.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
@@ -169,13 +193,13 @@ export default function RandomChat() {
             timestamp: new Date().toISOString()
           });
           console.log("Received message:", data.type, data);
-          
+
           handleWebSocketMessage(data);
         } catch (error) {
           console.error("Failed to parse WebSocket message:", error);
         }
       };
-      
+
       ws.onclose = (event) => {
         console.log("🔌 WebSocket Disconnected:", {
           code: event.code,
@@ -185,14 +209,14 @@ export default function RandomChat() {
         });
         isConnectingRef.current = false;
         wsRef.current = null;
-        
+
         // If we were connected and suddenly disconnected, update state
         if (chatState === "connected") {
           setChatState("disconnected");
           addSystemMessage("Connection lost. Please try again.");
         }
       };
-      
+
       ws.onerror = (error) => {
         console.error("🔌 WebSocket Error:", {
           error,
@@ -201,11 +225,11 @@ export default function RandomChat() {
           timestamp: new Date().toISOString()
         });
         isConnectingRef.current = false;
-        
+
         // Show error - no fake matching, wait for real backend
         handleConnectionError();
       };
-      
+
     } catch (error) {
       console.error("Failed to create WebSocket:", error);
       isConnectingRef.current = false;
@@ -230,13 +254,13 @@ export default function RandomChat() {
           }
         }
         break;
-        
+
       case "QUEUE_STATUS":
         // Queue status update - still looking for match
         if (data.onlineCount) setOnlineUsers(data.onlineCount);
         if (data.lookingCount) setLookingCount(data.lookingCount);
         break;
-        
+
       case "MATCHED":
       case "ROOM_CREATED":
         // Matched with a stranger! Backend decides the chat mode
@@ -247,11 +271,11 @@ export default function RandomChat() {
         setChatState("connected");
         setChatCount((prev) => prev + 1);
         setMessages([]);
-        
+
         // Backend decides the chat mode - update client state accordingly
         const backendChatMode = data.chatMode?.toLowerCase() || "text";
         setChatMode(backendChatMode as ChatMode);
-        
+
         // If video mode (decided by backend) and we're the initiator, create WebRTC offer
         if (backendChatMode === "video" && (data.isInitiator || data.payload === "initiator")) {
           // Initialize video stream if not already done
@@ -264,22 +288,22 @@ export default function RandomChat() {
           }
         }
         break;
-        
+
       case "OFFER":
         // Received WebRTC offer from partner
         handleWebRTCOffer(data);
         break;
-        
+
       case "ANSWER":
         // Received WebRTC answer from partner
         handleWebRTCAnswer(data);
         break;
-        
+
       case "ICE_CANDIDATE":
         // Received ICE candidate from partner
         handleIceCandidate(data);
         break;
-        
+
       case "CHAT_MESSAGE":
         // Received chat message from partner
         setMessages((prev) => [
@@ -292,7 +316,7 @@ export default function RandomChat() {
           },
         ]);
         break;
-        
+
       case "DISCONNECTED":
         // Partner disconnected
         setChatState("disconnected");
@@ -300,17 +324,17 @@ export default function RandomChat() {
         cleanupWebRTC();
         addSystemMessage("Stranger has disconnected.");
         break;
-        
+
       case "ERROR":
         console.error("Server error:", data.content);
         addSystemMessage(data.content || "An error occurred.");
         break;
-        
+
       case "ONLINE_COUNT":
         if (data.onlineCount) setOnlineUsers(data.onlineCount);
         if (data.lookingCount) setLookingCount(data.lookingCount);
         break;
-        
+
       case "MUTE_VIDEO":
       case "UNMUTE_VIDEO":
       case "MUTE_AUDIO":
@@ -323,16 +347,16 @@ export default function RandomChat() {
   // Create WebRTC offer (initiator side)
   const createWebRTCOffer = useCallback(async () => {
     if (!localStreamRef.current) return;
-    
+
     try {
       const pc = new RTCPeerConnection({ iceServers: ICE_SERVERS });
       peerConnectionRef.current = pc;
-      
+
       // Add local tracks to peer connection
       localStreamRef.current.getTracks().forEach(track => {
         pc.addTrack(track, localStreamRef.current!);
       });
-      
+
       // Handle incoming tracks (remote video)
       pc.ontrack = (event) => {
         console.log("Received remote track");
@@ -340,7 +364,7 @@ export default function RandomChat() {
           remoteVideoRef.current.srcObject = event.streams[0];
         }
       };
-      
+
       // Handle ICE candidates
       pc.onicecandidate = (event) => {
         if (event.candidate && wsRef.current?.readyState === WebSocket.OPEN) {
@@ -351,7 +375,7 @@ export default function RandomChat() {
           }));
         }
       };
-      
+
       // Monitor connection state
       pc.onconnectionstatechange = () => {
         console.log("WebRTC connection state:", pc.connectionState);
@@ -361,11 +385,11 @@ export default function RandomChat() {
           setConnectionQuality("poor");
         }
       };
-      
+
       // Create and send offer
       const offer = await pc.createOffer();
       await pc.setLocalDescription(offer);
-      
+
       if (wsRef.current?.readyState === WebSocket.OPEN) {
         wsRef.current.send(JSON.stringify({
           type: "OFFER",
@@ -374,7 +398,7 @@ export default function RandomChat() {
         }));
         console.log("Sent WebRTC offer");
       }
-      
+
     } catch (error) {
       console.error("Failed to create WebRTC offer:", error);
     }
@@ -383,18 +407,18 @@ export default function RandomChat() {
   // Handle incoming WebRTC offer (receiver side)
   const handleWebRTCOffer = useCallback(async (data: any) => {
     if (!localStreamRef.current) return;
-    
+
     try {
       const offer = JSON.parse(data.payload);
-      
+
       const pc = new RTCPeerConnection({ iceServers: ICE_SERVERS });
       peerConnectionRef.current = pc;
-      
+
       // Add local tracks
       localStreamRef.current.getTracks().forEach(track => {
         pc.addTrack(track, localStreamRef.current!);
       });
-      
+
       // Handle incoming tracks
       pc.ontrack = (event) => {
         console.log("Received remote track");
@@ -402,7 +426,7 @@ export default function RandomChat() {
           remoteVideoRef.current.srcObject = event.streams[0];
         }
       };
-      
+
       // Handle ICE candidates
       pc.onicecandidate = (event) => {
         if (event.candidate && wsRef.current?.readyState === WebSocket.OPEN) {
@@ -413,12 +437,12 @@ export default function RandomChat() {
           }));
         }
       };
-      
+
       // Set remote description and create answer
       await pc.setRemoteDescription(new RTCSessionDescription(offer));
       const answer = await pc.createAnswer();
       await pc.setLocalDescription(answer);
-      
+
       if (wsRef.current?.readyState === WebSocket.OPEN) {
         wsRef.current.send(JSON.stringify({
           type: "ANSWER",
@@ -427,7 +451,7 @@ export default function RandomChat() {
         }));
         console.log("Sent WebRTC answer");
       }
-      
+
     } catch (error) {
       console.error("Failed to handle WebRTC offer:", error);
     }
@@ -504,16 +528,16 @@ export default function RandomChat() {
   // Initialize session on mount
   useEffect(() => {
     let mounted = true;
-    
+
     const initSession = async () => {
       try {
         const response = await authApi.createAnonymousSession();
         if (mounted) {
           setSessionId(response.sessionId);
-          
+
           // Register as online user with both services
           const registerPromises = [
-            videoChatApi.registerOnline({ sessionId: response.sessionId }).catch(() => 
+            videoChatApi.registerOnline({ sessionId: response.sessionId }).catch(() =>
               authFetch('/api/video-chat/online', {
                 method: 'POST',
                 body: JSON.stringify({ sessionId: response.sessionId }),
@@ -526,14 +550,14 @@ export default function RandomChat() {
               })
             )
           ];
-          
+
           await Promise.allSettled(registerPromises);
         }
       } catch (error) {
         if (mounted) {
           const localSessionId = `anon-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
           setSessionId(localSessionId);
-          
+
           // Register with both services
           Promise.allSettled([
             authFetch('/api/video-chat/online', {
@@ -544,18 +568,18 @@ export default function RandomChat() {
               method: 'POST',
               body: JSON.stringify({ sessionId: localSessionId }),
             })
-          ]).catch(() => {});
+          ]).catch(() => { });
         }
       }
     };
-    
+
     initSession();
-    
+
     return () => {
       mounted = false;
     };
   }, []);
-  
+
   // Fetch online users count from both services
   useEffect(() => {
     const fetchOnlineCount = async () => {
@@ -565,20 +589,20 @@ export default function RandomChat() {
           videoChatApi.getStats(),
           randomChatApi.getStats()
         ]);
-        
+
         let totalOnline = 0;
         let totalLooking = 0;
-        
+
         if (videoStats.status === "fulfilled") {
           totalOnline += videoStats.value.onlineUsers || 0;
           totalLooking += (videoStats.value.lookingForVideo || 0) + (videoStats.value.lookingForText || 0);
         }
-        
+
         if (chatStats.status === "fulfilled") {
           totalOnline += chatStats.value.onlineUsers || 0;
           totalLooking += chatStats.value.lookingForMatch || 0;
         }
-        
+
         if (totalOnline > 0) {
           setOnlineUsers(totalOnline);
           setLookingCount(totalLooking);
@@ -588,22 +612,22 @@ export default function RandomChat() {
             authFetch('/api/video-chat/stats'),
             authFetch('/api/random-chat/stats')
           ]);
-          
+
           let localOnline = 0;
           let localLooking = 0;
-          
+
           if (videoRes.status === "fulfilled" && videoRes.value.ok) {
             const videoData = await videoRes.value.json();
             localOnline += videoData.onlineUsers || 0;
             localLooking += videoData.lookingForVideo || 0;
           }
-          
+
           if (chatRes.status === "fulfilled" && chatRes.value.ok) {
             const chatData = await chatRes.value.json();
             localOnline += chatData.onlineUsers || 0;
             localLooking += chatData.lookingForMatch || 0;
           }
-          
+
           setOnlineUsers(localOnline > 0 ? localOnline : Math.max(50, onlineUsers));
           setLookingCount(localLooking);
         }
@@ -621,7 +645,7 @@ export default function RandomChat() {
   // Heartbeat to keep session alive - always use video-chat service since backend handles both
   useEffect(() => {
     if (!sessionId) return;
-    
+
     const heartbeatInterval = setInterval(async () => {
       // Send heartbeat to video-chat service (which handles both video and text)
       try {
@@ -630,7 +654,7 @@ export default function RandomChat() {
         authFetch('/api/video-chat/heartbeat', {
           method: 'POST',
           body: JSON.stringify({ sessionId }),
-        }).catch(() => {});
+        }).catch(() => { });
       }
     }, 60000);
 
@@ -642,7 +666,7 @@ export default function RandomChat() {
   // Cleanup on component unmount only
   useEffect(() => {
     if (!sessionId) return;
-    
+
     return () => {
       // Close WebSocket on unmount
       if (wsRef.current?.readyState === WebSocket.OPEN) {
@@ -657,7 +681,7 @@ export default function RandomChat() {
     if (chatState === "searching" && sessionId) {
       connectToVideoService();
     }
-    
+
     return () => {
       if (chatState !== "searching" && wsRef.current) {
         // Don't close if we just got connected
@@ -666,32 +690,32 @@ export default function RandomChat() {
   }, [chatState, sessionId, connectToVideoService]);
 
   // Initialize local video stream
- const initializeLocalStream = useCallback(async () => {
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: true,
-      audio: true,
-    });
+  const initializeLocalStream = useCallback(async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true,
+      });
 
-    localStreamRef.current = stream;
+      localStreamRef.current = stream;
 
-    // Attach to local video preview
-     if (localVideoRef.current) {
-  localVideoRef.current.srcObject = stream;
-  localVideoRef.current.muted = true;
-  localVideoRef.current.playsInline = true;
-  // Let autoplay attribute handle it, or:
-  await localVideoRef.current.play().catch(err => {
-    console.warn("Autoplay blocked:", err);
-  });
-}
+      // Attach to local video preview
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = stream;
+        localVideoRef.current.muted = true;
+        localVideoRef.current.playsInline = true;
+        // Let autoplay attribute handle it, or:
+        await localVideoRef.current.play().catch(err => {
+          console.warn("Autoplay blocked:", err);
+        });
+      }
 
-    return stream;
-  } catch (error) {
-    console.error("Failed to get media devices:", error);
-    return null;
-  }
-}, []);
+      return stream;
+    } catch (error) {
+      console.error("Failed to get media devices:", error);
+      return null;
+    }
+  }, []);
 
 
   // Stop local stream
@@ -710,7 +734,7 @@ export default function RandomChat() {
       if (videoTrack) {
         videoTrack.enabled = !videoTrack.enabled;
         setIsCameraOn(videoTrack.enabled);
-        
+
         // Notify partner
         if (wsRef.current?.readyState === WebSocket.OPEN) {
           wsRef.current.send(JSON.stringify({
@@ -729,7 +753,7 @@ export default function RandomChat() {
       if (audioTrack) {
         audioTrack.enabled = !audioTrack.enabled;
         setIsMicOn(audioTrack.enabled);
-        
+
         // Notify partner
         if (wsRef.current?.readyState === WebSocket.OPEN) {
           wsRef.current.send(JSON.stringify({
@@ -787,7 +811,7 @@ export default function RandomChat() {
     }
     wsRef.current = null;
     isConnectingRef.current = false;
-    
+
     setChatState("idle");
     setChatMode(null);
     setMessages([]);
@@ -798,22 +822,22 @@ export default function RandomChat() {
   const handleSkipStranger = () => {
     // Send skip message
     if (wsRef.current?.readyState === WebSocket.OPEN) {
-      wsRef.current.send(JSON.stringify({ 
-        type: "SKIP", 
+      wsRef.current.send(JSON.stringify({
+        type: "SKIP",
         sessionId
       }));
     }
 
     cleanupWebRTC();
     setChatState("disconnected");
-    
+
     addSystemMessage("Chat ended. Finding a new stranger...");
-    
+
     setTimeout(() => {
       setChatState("searching");
       setRoomId(null);
       setChatMode(null); // Reset mode - backend will decide again
-      
+
       // Reconnect to find new match - backend decides mode
       connectToVideoService();
     }, 1000);
@@ -836,7 +860,7 @@ export default function RandomChat() {
     };
 
     setMessages((prev) => [...prev, newMessage]);
-    
+
     // Send via WebSocket to backend
     wsRef.current.send(JSON.stringify({
       type: "CHAT_MESSAGE",
@@ -850,7 +874,7 @@ export default function RandomChat() {
     setChatState("searching");
     cleanupWebRTC();
     setChatMode(null); // Reset mode - backend will decide again
-    
+
     // Reconnect to find new match - backend decides mode
     connectToVideoService();
   };
@@ -864,14 +888,14 @@ export default function RandomChat() {
         category: selectedReportReason,
         description: reportDetails || undefined,
       });
-      
+
       console.log("Report submitted successfully");
     } catch (error) {
       console.error("Failed to submit report:", error);
     }
-    
+
     setReportSubmitted(true);
-    
+
     setTimeout(() => {
       setShowReportDialog(false);
       setReportSubmitted(false);
@@ -933,9 +957,9 @@ export default function RandomChat() {
           <Shuffle className="w-5 h-5 mr-2" />
           Start Random Chat
         </Button>
-        
+
         <p className="text-xs text-muted-foreground text-center">
-          You'll be matched with a random stranger.<br/>
+          You'll be matched with a random stranger.<br />
           Chat mode (video or text) is decided automatically.
         </p>
       </div>
@@ -971,7 +995,7 @@ export default function RandomChat() {
       <Badge variant="outline" className="mb-4">
         Auto-matching
       </Badge>
-      
+
       {lookingCount > 0 && (
         <p className="text-xs text-muted-foreground mb-4">
           {lookingCount} {lookingCount === 1 ? "person" : "people"} looking for match
@@ -1014,12 +1038,12 @@ export default function RandomChat() {
         {/* Remote Video (Stranger) - Full screen */}
         <div className="absolute inset-0 bg-muted flex items-center justify-center">
           <video
-  ref={remoteVideoRef}
-  autoPlay
-  playsInline
-  muted={isStrangerMuted}
-  className="w-full h-full object-cover"
-/>
+            ref={remoteVideoRef}
+            autoPlay
+            playsInline
+            muted={isStrangerMuted}
+            className="w-full h-full object-cover"
+          />
           {/* Placeholder when no remote video */}
           {!remoteVideoRef.current?.srcObject && (
             <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-muted to-muted-foreground/20">
@@ -1037,18 +1061,17 @@ export default function RandomChat() {
               </div>
             </div>
           )}
-          
+
           {/* Connection Quality Indicator */}
           <div className="absolute top-4 right-4">
-            <Badge 
+            <Badge
               variant="secondary"
-              className={`text-xs ${
-                connectionQuality === "good" 
-                  ? "bg-green-500/20 text-green-500" 
-                  : connectionQuality === "fair"
+              className={`text-xs ${connectionQuality === "good"
+                ? "bg-green-500/20 text-green-500"
+                : connectionQuality === "fair"
                   ? "bg-yellow-500/20 text-yellow-500"
                   : "bg-red-500/20 text-red-500"
-              }`}
+                }`}
             >
               {connectionQuality === "good" && "●●●"}
               {connectionQuality === "fair" && "●●○"}
@@ -1205,13 +1228,12 @@ export default function RandomChat() {
               </Avatar>
             )}
             <div
-              className={`max-w-[75%] rounded-2xl px-4 py-2 ${
-                msg.id.startsWith("system")
-                  ? "bg-muted/50 text-muted-foreground text-center text-xs italic mx-auto"
-                  : msg.isMe
+              className={`max-w-[75%] rounded-2xl px-4 py-2 ${msg.id.startsWith("system")
+                ? "bg-muted/50 text-muted-foreground text-center text-xs italic mx-auto"
+                : msg.isMe
                   ? "bg-gradient-primary text-white"
                   : "bg-muted text-foreground"
-              }`}
+                }`}
             >
               <p className="text-sm">{msg.content}</p>
             </div>
@@ -1328,13 +1350,12 @@ export default function RandomChat() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div
-              className={`w-2 h-2 rounded-full ${
-                chatState === "connected"
-                  ? "bg-green-500"
-                  : chatState === "searching"
+              className={`w-2 h-2 rounded-full ${chatState === "connected"
+                ? "bg-green-500"
+                : chatState === "searching"
                   ? "bg-yellow-500 animate-pulse"
                   : "bg-muted-foreground"
-              }`}
+                }`}
             />
             <span className="text-sm text-muted-foreground">
               {chatState === "idle" && "Ready to chat"}
@@ -1408,11 +1429,10 @@ export default function RandomChat() {
                   {REPORT_REASONS.map((reason) => (
                     <div
                       key={reason.id}
-                      className={`flex items-start space-x-3 p-3 rounded-lg border transition-colors cursor-pointer ${
-                        selectedReportReason === reason.id
-                          ? "border-primary bg-primary/5"
-                          : "border-border hover:border-primary/50"
-                      }`}
+                      className={`flex items-start space-x-3 p-3 rounded-lg border transition-colors cursor-pointer ${selectedReportReason === reason.id
+                        ? "border-primary bg-primary/5"
+                        : "border-border hover:border-primary/50"
+                        }`}
                       onClick={() => setSelectedReportReason(reason.id)}
                     >
                       <RadioGroupItem value={reason.id} id={reason.id} className="mt-0.5" />
