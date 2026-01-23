@@ -13,9 +13,9 @@ const isNativeApp = () => {
   if (typeof window === 'undefined') return false;
   const userAgent = window.navigator.userAgent;
   return userAgent.includes('Median') ||
-         userAgent.includes('WebView') ||
-         userAgent.includes('wv') ||
-         window.ReactNativeWebView !== undefined;
+    userAgent.includes('WebView') ||
+    userAgent.includes('wv') ||
+    window.ReactNativeWebView !== undefined;
 };
 import Home from "@/pages/Home";
 import Events from "@/pages/Events";
@@ -79,11 +79,11 @@ import ShotDetail from "@/pages/ShotDetail";
 function ProtectedRoute({ component: Component }: { component: React.ComponentType }) {
   const [, setLocation] = useLocation();
   const [isChecking, setIsChecking] = useState(true);
-  
+
   useEffect(() => {
     const hasVisited = localStorage.getItem("nearly_has_visited");
     const isAuthenticated = localStorage.getItem("nearly_onboarding_complete");
-    
+
     if (!hasVisited) {
       // First time visitor - show splash
       localStorage.setItem("nearly_has_visited", "true");
@@ -118,7 +118,7 @@ function Router() {
       <Route path="/forgot-password" component={ForgotPassword} />
       <Route path="/verify-otp" component={VerifyOtp} />
       <Route path="/reset-password" component={ResetPassword} />
-      
+
       {/* Main app routes */}
       <Route path="/">{() => <ProtectedRoute component={Home} />}</Route>
       <Route path="/events" component={Events} />
@@ -189,7 +189,7 @@ function App() {
         <TooltipProvider>
           <div className={`max-w-md mx-auto bg-background min-h-screen ${isNative ? 'native-app' : ''}`}>
             <NotificationBanner />
-            <NetworkStatus />
+            {/* <NetworkStatus /> */}
             <Toaster />
             <Router />
           </div>
