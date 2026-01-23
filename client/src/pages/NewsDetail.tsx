@@ -170,16 +170,7 @@ export default function NewsDetail() {
   // Comment mutation - supports replies with parentCommentId
   const commentMutation = useMutation({
     mutationFn: async ({ content, parentCommentId }: { content: string; parentCommentId?: string }) => {
-      const response = await fetch(`/api/news/${newsId}/comments`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('nearly_access_token')}`,
-          'X-User-Id': currentUserId,
-        },
-        body: JSON.stringify({ content, parentCommentId }),
-      });
-      return response.json();
+      return await newsApi.addComment(newsId, content, parentCommentId);
     },
     onSuccess: () => {
       setComment("");
