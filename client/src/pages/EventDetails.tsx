@@ -77,14 +77,38 @@ export default function EventDetails() {
     enabled: !!eventId,
   });
 
-  // Organize comments into threads
+  // Get all unique user IDs from comments and replies
+  const userIds = [...new Set(
+    rawComments.flatMap((c: any) => [c.userId, ...(c.replies?.map((r: any) => r.userId) || [])])
+  )].filter(Boolean) as string[];
+
+  // Fetch users for comments
+  const { data: users = [] } = useQuery({
+    queryKey: ['users', userIds],
+    queryFn: async () => {
+      if (userIds.length === 0) return [];
+      // Fetch users one by one since we don't have a bulk endpoint yet
+      // In a real app, this should be a bulk fetch or users should be included in comments
+      const promises = userIds.map(id => api.getUser(id).catch(() => null));
+      const results = await Promise.all(promises);
+      return results.filter(Boolean);
+    },
+    enabled: userIds.length > 0,
+  });
+
+  const usersMap = new Map(users.map((u: any) => [u.id, u]));
+
+  // Organize comments into threads with user data
   const organizedComments = (() => {
     const parentComments: EventComment[] = [];
     const repliesMap: Record<string, EventComment[]> = {};
 
     rawComments.forEach((c: any) => {
+      const user = usersMap.get(c.userId);
       const comment: EventComment = {
         ...c,
+        userName: c.userName || user?.username || user?.name || 'User',
+        userAvatar: c.userAvatar || user?.avatarUrl,
         replies: [],
       };
 
@@ -139,7 +163,15 @@ export default function EventDetails() {
   const handleReply = (commentId: string, userName: string) => {
     setReplyingTo({ id: commentId, userName });
     setComment(`@${userName} `);
-    setTimeout(() => commentInputRef.current?.focus(), 100);
+    setTimeout(() => {
+      const input = commentInputRef.current;
+      if (input) {
+        input.focus();
+        // Set cursor at the end of the text
+        const length = input.value.length;
+        input.setSelectionRange(length, length);
+      }
+    }, 100);
   };
 
   const cancelReply = () => {
@@ -424,7 +456,7 @@ export default function EventDetails() {
                         {(c.likesCount || 0) > 0 && (
                           <span className="text-xs text-muted-foreground">{c.likesCount} likes</span>
                         )}
-                        <button 
+                        <button
                           onClick={() => handleReply(c.id, c.userName || 'User')}
                           className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1"
                         >
@@ -456,7 +488,7 @@ export default function EventDetails() {
                               {(reply.likesCount || 0) > 0 && (
                                 <span className="text-xs text-muted-foreground">{reply.likesCount} likes</span>
                               )}
-                              <button 
+                              <button
                                 onClick={() => handleReply(c.id, reply.userName || 'User')}
                                 className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1"
                               >
