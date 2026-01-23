@@ -51,10 +51,33 @@ export default function PollDetail() {
     }
   }, [pollId]);
 
-  // Fetch poll
+  // Fetch poll with options normalization
   const { data: poll, isLoading } = useQuery({
     queryKey: ["poll", pollId],
-    queryFn: () => api.getPoll(pollId),
+    queryFn: async () => {
+      const p = await api.getPoll(pollId) as any;
+
+      // Handle legacy/malformed optionsJson
+      if ((!p.options || p.options.length === 0) && p.optionsJson) {
+        try {
+          // Try standard JSON parse first
+          p.options = JSON.parse(p.optionsJson);
+        } catch {
+          // Fallback for stringified format: [{text=val}, ...]
+          // Regex to capture text value between "text=" and "}" or ","
+          const matches = [...p.optionsJson.matchAll(/text=([^},\]]+)/g)];
+          if (matches.length > 0) {
+            p.options = matches.map((m: any, idx: number) => ({
+              id: `opt-${idx}`, // Generate simple ID
+              text: m[1].trim(),
+              votesCount: 0,
+              votes: []
+            }));
+          }
+        }
+      }
+      return p;
+    },
     enabled: !!pollId,
   });
 
