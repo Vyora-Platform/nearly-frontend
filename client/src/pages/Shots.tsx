@@ -239,6 +239,9 @@ const ShotReel = memo(function ShotReel({
     if (mediaIdentifier && (isActive || shouldPreload)) {
       streamingApi.getVideoInfo(mediaIdentifier)
         .then(info => {
+
+          console.log('[UPLOAD] play shots', info);
+
           // HLS for adaptive streaming (primary)
           if (info.hlsUrl) {
             setHlsUrl(info.hlsUrl);
