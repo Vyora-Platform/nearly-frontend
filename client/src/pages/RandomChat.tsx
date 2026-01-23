@@ -1068,18 +1068,7 @@ export default function RandomChat({ onFullScreenChange }: RandomChatProps) {
           {/* Placeholder when no remote video */}
           {!remoteVideoRef.current?.srcObject && (
             <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-muted to-muted-foreground/20">
-              <div className="text-center">
-                <Avatar className="w-24 h-24 mx-auto mb-4">
-                  <AvatarFallback className="bg-muted-foreground/30 text-4xl">?</AvatarFallback>
-                </Avatar>
-                <p className="text-muted-foreground text-sm">{partnerUsername} connected</p>
-                {isInitiator && (
-                  <p className="text-xs text-muted-foreground mt-2">
-                    <Loader2 className="w-3 h-3 inline animate-spin mr-1" />
-                    Establishing video connection...
-                  </p>
-                )}
-              </div>
+              <div className="text-center" />
             </div>
           )}
 
@@ -1134,14 +1123,14 @@ export default function RandomChat({ onFullScreenChange }: RandomChatProps) {
         `}</style>
 
         {/* Floating Chat Overlay - Max 3 Messages, Fade after 8s */}
-        <div className="absolute bottom-12 left-4 z-20 w-[80%] flex flex-col justify-end space-y-1 pointer-events-none">
+        <div className="absolute bottom-32 left-4 z-20 w-[80%] flex flex-col justify-end space-y-1 pointer-events-none">
           {messages.slice(-3).map((msg) => (
             <div
               key={msg.id}
               className="flex justify-start animate-in slide-in-from-bottom-2 duration-300"
               style={{ animation: "fadeOut 0.5s ease-in 8s forwards" }}
             >
-              <div className={`px-2 py-0.5 text-xs text-white font-medium break-words max-w-full drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] ${msg.id.startsWith('system') ? 'italic text-white/70' : ''
+              <div className={`px-2 py-0.5 text-xs text-white font-medium break-words max-w-full drop-shadow-[0_1px_3px_rgba(0,0,0,1)] ${msg.id.startsWith('system') ? 'italic text-white/70' : ''
                 }`}>
                 {!msg.id.startsWith('system') && (
                   <span className={`font-bold mr-2 uppercase tracking-wide ${msg.isMe ? "text-blue-300" : "text-yellow-300"}`}>
