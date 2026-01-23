@@ -374,6 +374,11 @@ const ShotReel = memo(function ShotReel({
     if (isActive && isVisible && !isPaused) {
       video.play().catch((err) => {
         console.log("[SHOT] Autoplay blocked:", err.name);
+                console.log("[SHOT] Autoplay blocked isActive:",isActive);
+                console.log("[SHOT] Autoplay blocked: isPaused",isPaused);
+        console.log("[SHOT] Autoplay blocked: isVisible",isVisible);
+
+
       });
       setIsPlaying(true);
 
