@@ -270,10 +270,12 @@ const MomentReel = memo(function MomentReel({
           if (info.mp4Url) {
             setMp4FallbackUrl(info.mp4Url);
           }
+          console.log('[MOMENTS] Upload resultt:', info);
+
           // Direct URL
-          if (info.url) {
-            setEffectiveMediaUrl(info.url);
-          }
+          // if (info.url) {
+          //   setEffectiveMediaUrl(info.url);
+          // }
           // Transcode status for showing processing state
           if (info.transcodeStatus) {
             setTranscodeStatus(info.transcodeStatus);
