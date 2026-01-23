@@ -80,9 +80,14 @@ const REPORT_REASONS: ReportReason[] = [
   { id: "other", label: "Other", description: "Other violations not listed above" },
 ];
 
-export default function RandomChat() {
+interface RandomChatProps {
+  onFullScreenChange?: (isFullScreen: boolean) => void;
+}
+
+export default function RandomChat({ onFullScreenChange }: RandomChatProps) {
   const [chatMode, setChatMode] = useState<ChatMode | null>(null);
   const [chatState, setChatState] = useState<ChatState>("idle");
+  const [isChatExpanded, setIsChatExpanded] = useState(false); // New state for chat expansion
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState("");
   const [searchDots, setSearchDots] = useState("");
@@ -784,6 +789,7 @@ export default function RandomChat() {
 
   // Start random chat - backend decides if it's video or text based on matching
   const handleStartRandomChat = async () => {
+    onFullScreenChange?.(true);
     // Pre-initialize camera/mic so we're ready if backend assigns video mode
     const stream = await initializeLocalStream().catch(() => null);
     if (!stream) {
@@ -796,12 +802,14 @@ export default function RandomChat() {
 
   // Legacy functions kept for backward compatibility with UI buttons
   const handleStartTextChat = async () => {
+    onFullScreenChange?.(true);
     // Don't set mode - backend decides
     setChatMode(null);
     setChatState("searching");
   };
 
   const handleStartVideoChat = async () => {
+    onFullScreenChange?.(true);
     // Pre-initialize camera/mic so we're ready if backend assigns video mode
     const stream = await initializeLocalStream();
     if (!stream) {
@@ -813,6 +821,7 @@ export default function RandomChat() {
   };
 
   const handleStopChat = () => {
+    onFullScreenChange?.(false);
     // Send disconnect message
     if (wsRef.current?.readyState === WebSocket.OPEN) {
       wsRef.current.send(JSON.stringify({ type: "disconnect", sessionId }));
@@ -1043,7 +1052,7 @@ export default function RandomChat() {
   const renderVideoChat = () => (
     <div className="flex flex-col h-full">
       {/* Video Grid */}
-      <div className="flex-1 relative bg-black min-h-[400px]">
+      <div className="flex-1 relative bg-black min-h-[400px] w-full h-full mx-auto aspect-[9/16] shadow-2xl overflow-hidden">
         {/* Remote Video (Stranger) - Full screen */}
         <div className="absolute inset-0 bg-muted flex items-center justify-center">
           <video
@@ -1089,8 +1098,8 @@ export default function RandomChat() {
           </div>
         </div>
 
-        {/* Local Video (You) - Picture in Picture */}
-        <div className="absolute bottom-4 right-4 w-32 h-24 rounded-xl overflow-hidden border-2 border-background shadow-lg">
+        {/* Local Video (You) - Picture in Picture - Moved to Top Left */}
+        <div className="absolute top-14 left-4 w-32 h-24 rounded-xl overflow-hidden border-2 border-background shadow-lg z-10 transition-all hover:scale-105">
           <video
             ref={localVideoRef}
             autoPlay
@@ -1108,105 +1117,129 @@ export default function RandomChat() {
           </div>
         </div>
 
-        {/* Anonymous Overlay */}
-        <div className="absolute top-4 left-4">
+        {/* Anonymous Overlay - Moved to bottom right */}
+        <div className="absolute bottom-4 right-4">
           <Badge variant="secondary" className="bg-black/50 text-white border-0">
             <EyeOff className="w-3 h-3 mr-1" />
             Anonymous
           </Badge>
         </div>
+
+        {/* Video Control Buttons Overlay Removed */}
+
+        {/* Chat List Overlay Removed */}
       </div>
 
       {/* Video Controls */}
-      <div className="p-4 border-t border-border bg-background">
-        <div className="flex items-center justify-center gap-3 mb-3">
-          {/* Camera Toggle */}
-          <Button
-            onClick={toggleCamera}
-            variant={isCameraOn ? "outline" : "destructive"}
-            size="icon"
-            className="w-12 h-12 rounded-full"
-            data-testid="toggle-camera"
-          >
-            {isCameraOn ? <Camera className="w-5 h-5" /> : <VideoOff className="w-5 h-5" />}
-          </Button>
+      {/* Controls Area */}
+      <div className="flex-shrink-0 flex flex-col border-t border-border bg-background">
+        {/* Chat List */}
+        {messages.length > 0 && (
+          <div className="h-20 overflow-y-auto px-4 py-2 space-y-1.5 border-b border-border/50">
+            {messages.map((msg) => (
+              <div
+                key={msg.id}
+                className="flex justify-start"
+              >
+                <div
+                  className={`px-2.5 py-1.5 rounded-lg text-xs max-w-full break-words shadow-sm ${msg.id.startsWith('system')
+                    ? 'bg-transparent text-muted-foreground w-full italic'
+                    : msg.isMe
+                      ? 'bg-primary/10 text-primary border border-primary/20'
+                      : 'bg-muted/50 text-foreground border border-border/50'
+                    }`}
+                >
+                  {!msg.id.startsWith('system') && (
+                    <span className="font-semibold mr-1.5 opacity-90">
+                      {msg.isMe ? "You:" : "Stranger:"}
+                    </span>
+                  )}
+                  {msg.content}
+                </div>
+              </div>
+            ))}
+            <div ref={messagesEndRef} />
+          </div>
+        )}
 
-          {/* Mic Toggle */}
-          <Button
-            onClick={toggleMic}
-            variant={isMicOn ? "outline" : "destructive"}
-            size="icon"
-            className="w-12 h-12 rounded-full"
-            data-testid="toggle-mic"
-          >
-            {isMicOn ? <Mic className="w-5 h-5" /> : <MicOff className="w-5 h-5" />}
-          </Button>
+        {/* Spacer to reserve space for fixed controls */}
+        <div className="h-[8rem] w-full bg-background shrink-0" />
 
-          {/* Skip Button */}
-          <Button
-            onClick={handleSkipStranger}
-            variant="outline"
-            size="icon"
-            className="w-12 h-12 rounded-full"
-            data-testid="skip-video"
-          >
-            <SkipForward className="w-5 h-5" />
-          </Button>
+        {/* Fixed Controls Area - Anchored to Viewport Bottom */}
+        <div className="fixed bottom-0 left-0 right-0 z-50 flex flex-col bg-background border-t border-border/50 shadow-2xl safe-area-bottom">
+          {/* Top Row: Input and Small Toggles */}
+          <div className="flex items-center gap-2 p-2 px-3 bg-background/95 backdrop-blur-sm">
+            {/* Small Toggles */}
+            <div className="flex gap-1 shrink-0">
+              <Button
+                onClick={toggleCamera}
+                variant="ghost"
+                size="icon"
+                className={`w-9 h-9 rounded-full ${!isCameraOn && "text-destructive bg-destructive/10"}`}
+              >
+                {isCameraOn ? <Camera className="w-4 h-4" /> : <VideoOff className="w-4 h-4" />}
+              </Button>
+              <Button
+                onClick={toggleMic}
+                variant="ghost"
+                size="icon"
+                className={`w-9 h-9 rounded-full ${!isMicOn && "text-destructive bg-destructive/10"}`}
+              >
+                {isMicOn ? <Mic className="w-4 h-4" /> : <MicOff className="w-4 h-4" />}
+              </Button>
+              <Button
+                onClick={toggleStrangerMute}
+                variant="ghost"
+                size="icon"
+                className={`w-9 h-9 rounded-full ${isStrangerMuted && "text-destructive bg-destructive/10"}`}
+              >
+                {isStrangerMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+              </Button>
+            </div>
 
-          {/* End Call */}
-          <Button
-            onClick={handleStopChat}
-            variant="destructive"
-            size="icon"
-            className="w-14 h-14 rounded-full"
-            data-testid="end-video-call"
-          >
-            <PhoneOff className="w-6 h-6" />
-          </Button>
+            <div className="w-px h-6 bg-border mx-1 shrink-0" />
 
-          {/* Mute Stranger */}
-          <Button
-            onClick={toggleStrangerMute}
-            variant={isStrangerMuted ? "destructive" : "outline"}
-            size="icon"
-            className="w-12 h-12 rounded-full"
-            data-testid="mute-stranger"
-          >
-            {isStrangerMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
-          </Button>
+            {/* Input */}
+            <input
+              ref={inputRef}
+              type="text"
+              placeholder="Type message..."
+              value={inputMessage}
+              onChange={(e) => setInputMessage(e.target.value)}
+              onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
+              className="flex-1 bg-transparent text-sm focus:outline-none placeholder:text-muted-foreground min-w-0"
+            />
+            <Button
+              onClick={handleSendMessage}
+              disabled={!inputMessage.trim()}
+              size="icon"
+              variant="ghost"
+              className="w-9 h-9 text-primary disabled:opacity-50 shrink-0"
+            >
+              <Send className="w-5 h-5" />
+            </Button>
+          </div>
 
-          {/* Report Button */}
-          <Button
-            onClick={handleOpenReport}
-            variant="ghost"
-            size="icon"
-            className="w-12 h-12 rounded-full text-muted-foreground hover:text-destructive"
-            data-testid="report-video-user"
-          >
-            <Flag className="w-5 h-5" />
-          </Button>
-        </div>
-
-        {/* Text input for video chat */}
-        <div className="flex items-center gap-2">
-          <input
-            ref={inputRef}
-            type="text"
-            placeholder="Type a message..."
-            value={inputMessage}
-            onChange={(e) => setInputMessage(e.target.value)}
-            onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
-            className="flex-1 px-4 py-2.5 bg-muted rounded-full text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
-            data-testid="video-input-message"
-          />
-          <Button
-            onClick={handleSendMessage}
-            disabled={!inputMessage.trim()}
-            className="w-10 h-10 rounded-full bg-gradient-primary text-white p-0 disabled:opacity-50"
-            data-testid="video-send-message"
-          >
-            <Send className="w-5 h-5" />
-          </Button>
+          {/* Bottom Row: Big Action Buttons */}
+          <div className="flex h-16 border-t border-border/10">
+            <Button
+              onClick={handleStopChat}
+              variant="default"
+              className="flex-1 h-full rounded-none bg-red-500 hover:bg-red-600 text-white text-base font-bold tracking-wide transition-colors active:bg-red-700"
+            >
+              <PhoneOff className="w-5 h-5 mr-2" />
+              STOP
+            </Button>
+            <div className="w-px bg-black/10 z-10" />
+            <Button
+              onClick={handleSkipStranger}
+              variant="default"
+              className="flex-1 h-full rounded-none bg-blue-500 hover:bg-blue-600 text-white text-base font-bold tracking-wide transition-colors rounded-none active:bg-blue-700"
+            >
+              NEXT
+              <SkipForward className="w-5 h-5 ml-2" />
+            </Button>
+          </div>
         </div>
       </div>
     </div>
@@ -1354,9 +1387,11 @@ export default function RandomChat() {
 
   return (
     <div className="flex flex-col">
-      {/* Status Bar */}
-      <div className="px-4 py-3 border-b border-border bg-card/50">
-        <div className="flex items-center justify-between">
+      {/* Status Bar - Overlay in Video Mode */}
+      <div className={`${chatMode === "video"
+        ? "absolute top-0 left-0 right-0 z-20 bg-gradient-to-b from-black/80 to-transparent border-0 text-white"
+        : "border-b border-border bg-card/50"} px-4 py-3 transition-all duration-300 pointer-events-none`}>
+        <div className="flex items-center justify-between pointer-events-auto">
           <div className="flex items-center gap-2">
             <div
               className={`w-2 h-2 rounded-full ${chatState === "connected"
@@ -1366,13 +1401,13 @@ export default function RandomChat() {
                   : "bg-muted-foreground"
                 }`}
             />
-            <span className="text-sm text-muted-foreground">
+            <span className={`text-sm ${chatMode === "video" ? "text-white/90 shadow-sm" : "text-muted-foreground"}`}>
               {chatState === "idle" && "Ready to chat"}
               {chatState === "searching" && `Finding someone${searchDots}`}
               {chatState === "connected" && (
-                <span className="flex items-center gap-1">
+                <span className="flex items-center gap-1 font-medium">
                   Connected to {partnerUsername}
-                  {chatMode === "video" && <Video className="w-3 h-3" />}
+                  {chatMode === "video" && <Video className={`w-3 h-3 ${chatMode === "video" ? "text-white" : ""}`} />}
                   {chatMode === "text" && <MessageCircle className="w-3 h-3" />}
                   {!chatMode && <Shuffle className="w-3 h-3" />}
                 </span>
@@ -1381,11 +1416,11 @@ export default function RandomChat() {
             </span>
           </div>
           <div className="flex items-center gap-2">
-            <Badge variant="secondary" className="text-xs">
+            <Badge variant={chatMode === "video" ? "outline" : "secondary"} className={`text-xs ${chatMode === "video" ? "text-white border-white/20 bg-black/20 backdrop-blur-sm" : ""}`}>
               <Users className="w-3 h-3 mr-1" />
               {chatCount} chats today
             </Badge>
-            <Badge variant="outline" className="text-xs bg-green-500/10 text-green-600 border-green-500/20">
+            <Badge variant="outline" className={`text-xs ${chatMode === "video" ? "bg-green-500/20 text-green-400 border-green-400/30" : "bg-green-500/10 text-green-600 border-green-500/20"}`}>
               <div className="w-2 h-2 bg-green-500 rounded-full mr-1 animate-pulse" />
               {onlineUsers > 0 ? onlineUsers.toLocaleString() : "..."} online
             </Badge>

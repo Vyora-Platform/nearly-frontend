@@ -10,6 +10,7 @@ type ChatTab = "friends" | "groups" | "random";
 
 export default function Chat() {
   const [activeTab, setActiveTab] = useState<ChatTab>("friends");
+  const [isRandomFullScreen, setIsRandomFullScreen] = useState(false);
 
   const tabs = [
     { id: "friends" as ChatTab, icon: User, label: "Friends" },
@@ -18,44 +19,51 @@ export default function Chat() {
   ];
 
   return (
-    <div className="min-h-screen bg-background pb-20">
-      <TopBar title="Chat" showActions={false} />
+    <div className={`min-h-screen bg-background ${activeTab === "random" ? "" : "pb-20"}`}>
+      {/* Show Header & Tabs only if not in full screen mode */}
+      {!isRandomFullScreen && (
+        <>
+          <TopBar title="Chat" showActions={false} />
 
-      {/* Custom Tab Navigation */}
-      <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-border">
-        <div className="flex">
-          {tabs.map((tab) => {
-            const Icon = tab.icon;
-            const isActive = activeTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex-1 flex items-center justify-center gap-2 py-3.5 transition-all relative
+          {/* Custom Tab Navigation */}
+          <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-border">
+            <div className="flex">
+              {tabs.map((tab) => {
+                const Icon = tab.icon;
+                const isActive = activeTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`flex-1 flex items-center justify-center gap-2 py-3.5 transition-all relative
                   ${isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground/80"}`}
-                data-testid={`tab-${tab.id}`}
-              >
-                <Icon className={`w-4 h-4 ${isActive ? "text-primary" : ""}`} />
-                <span className={`text-sm font-medium ${isActive ? "font-semibold" : ""}`}>
-                  {tab.label}
-                </span>
-                {isActive && (
-                  <div className="absolute bottom-0 left-4 right-4 h-0.5 bg-gradient-primary rounded-full" />
-                )}
-              </button>
-            );
-          })}
-        </div>
-      </div>
+                    data-testid={`tab-${tab.id}`}
+                  >
+                    <Icon className={`w-4 h-4 ${isActive ? "text-primary" : ""}`} />
+                    <span className={`text-sm font-medium ${isActive ? "font-semibold" : ""}`}>
+                      {tab.label}
+                    </span>
+                    {isActive && (
+                      <div className="absolute bottom-0 left-4 right-4 h-0.5 bg-gradient-primary rounded-full" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </>
+      )}
 
       {/* Tab Content */}
-      <div className="max-w-md mx-auto">
+      <div className={`${activeTab === "random"
+        ? (isRandomFullScreen ? "fixed inset-0 z-50 bg-background h-screen w-screen" : "h-[calc(100vh-112px)]")
+        : "max-w-md mx-auto"}`}>
         {activeTab === "friends" && <FriendsChat />}
         {activeTab === "groups" && <GroupsDiscover />}
-        {activeTab === "random" && <RandomChat />}
+        {activeTab === "random" && <RandomChat onFullScreenChange={setIsRandomFullScreen} />}
       </div>
 
-      <BottomNav />
+      {activeTab !== "random" && !isRandomFullScreen && <BottomNav />}
     </div>
   );
 }
