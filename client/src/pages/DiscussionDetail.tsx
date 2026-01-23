@@ -61,10 +61,40 @@ export default function DiscussionDetail() {
     enabled: !!discussion?.userId,
   });
 
-  // Fetch comments
+  // Fetch comments and enrich with user data
   const { data: rawComments = [] } = useQuery({
     queryKey: ["discussion-comments", discussionId],
-    queryFn: () => api.getDiscussionComments(discussionId),
+    queryFn: async () => {
+      try {
+        const fetchedComments = await api.getDiscussionComments(discussionId);
+
+        // Enrich comments with user data
+        const enrichedComments = await Promise.all(
+          fetchedComments.map(async (c: any) => {
+            let userName = c.userName || 'User';
+            let userAvatar = c.userAvatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${c.userId}`;
+
+            // Fetch user data if not provided
+            if (!c.userName) {
+              try {
+                const userData = await api.getUser(c.userId);
+                userName = userData.name || userData.username || 'User';
+                userAvatar = userData.avatarUrl || userAvatar;
+              } catch { }
+            }
+
+            return {
+              ...c,
+              userName,
+              userAvatar,
+            };
+          })
+        );
+        return enrichedComments;
+      } catch {
+        return [];
+      }
+    },
     enabled: !!discussionId,
   });
 
@@ -91,9 +121,12 @@ export default function DiscussionDetail() {
 
     parentComments.forEach(parent => {
       parent.replies = repliesMap[parent.id] || [];
+      if (parent.replies) {
+        parent.replies.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+      }
     });
 
-    return parentComments;
+    return parentComments.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   })();
 
   // Track view on mount
@@ -102,7 +135,7 @@ export default function DiscussionDetail() {
       authFetch(`/api/discussions/${discussionId}/view`, {
         method: 'POST',
         body: JSON.stringify({ userId: currentUserId })
-      }).catch(() => {});
+      }).catch(() => { });
     }
   }, [discussionId, currentUserId]);
 
@@ -147,8 +180,14 @@ export default function DiscussionDetail() {
 
   const handleReply = (commentId: string, userName: string) => {
     setReplyingTo({ id: commentId, userName });
-    setComment(`@${userName} `);
-    setTimeout(() => commentInputRef.current?.focus(), 100);
+    const text = `@${userName} `;
+    setComment(text);
+    setTimeout(() => {
+      if (commentInputRef.current) {
+        commentInputRef.current.focus();
+        commentInputRef.current.setSelectionRange(text.length, text.length);
+      }
+    }, 100);
   };
 
   const cancelReply = () => {
@@ -292,7 +331,7 @@ export default function DiscussionDetail() {
 
         {/* Actions */}
         <div className="flex items-center justify-between py-3">
-          <button 
+          <button
             onClick={() => !hasLiked && likeMutation.mutate()}
             className={`flex items-center gap-2 ${hasLiked ? 'text-red-500' : 'text-muted-foreground'}`}
             disabled={hasLiked}
@@ -315,7 +354,7 @@ export default function DiscussionDetail() {
         {/* Comments Section */}
         <div className="space-y-4">
           <h3 className="font-semibold">Discuss ({rawComments.length})</h3>
-          
+
           {/* Add Comment */}
           <div className="space-y-2">
             {replyingTo && (
@@ -340,8 +379,8 @@ export default function DiscussionDetail() {
                 className="flex-1"
                 onKeyPress={(e) => e.key === 'Enter' && comment.trim() && handleSubmitComment()}
               />
-              <Button 
-                size="sm" 
+              <Button
+                size="sm"
                 onClick={handleSubmitComment}
                 disabled={!comment.trim() || commentMutation.isPending}
               >
@@ -372,7 +411,7 @@ export default function DiscussionDetail() {
                       {(c.likesCount || 0) > 0 && (
                         <span className="text-xs text-muted-foreground">{c.likesCount} likes</span>
                       )}
-                      <button 
+                      <button
                         onClick={() => handleReply(c.id, c.userName || 'User')}
                         className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1"
                       >
@@ -402,7 +441,7 @@ export default function DiscussionDetail() {
                             {(reply.likesCount || 0) > 0 && (
                               <span className="text-xs text-muted-foreground">{reply.likesCount} likes</span>
                             )}
-                            <button 
+                            <button
                               onClick={() => handleReply(c.id, reply.userName || 'User')}
                               className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1"
                             >

@@ -1,11 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRoute, useLocation } from "wouter";
-import { ArrowLeft, Heart, MessageCircle, Share, Bookmark, MoreHorizontal } from "lucide-react";
+import { ArrowLeft, Heart, MessageCircle, Share, Bookmark, MoreHorizontal, X, Reply } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
+import { authFetch } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
 // Helper to enrich post data with defaults
 const enrichPostData = (activity: any, user: any) => ({
@@ -32,7 +34,11 @@ export default function PostDetail() {
   const postId = params?.id;
 
   const [newComment, setNewComment] = useState("");
-  const [comments, setComments] = useState<any[]>([]);
+  const [replyingTo, setReplyingTo] = useState<{ id: string; userName: string } | null>(null);
+  const commentInputRef = useRef<HTMLTextAreaElement>(null);
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+  const currentUserId = localStorage.getItem('nearly_user_id') || '';
 
   // Fetch the activity/post
   const { data: activity, isLoading, error } = useQuery({
@@ -48,19 +54,70 @@ export default function PostDetail() {
     enabled: !!activity?.userId,
   });
 
-  // Fetch comments for the activity
-  const { data: commentsData } = useQuery({
+  // Fetch comments and enrich with user data
+  const { data: rawComments = [], refetch: refetchComments } = useQuery({
     queryKey: ['activity-comments', postId],
-    queryFn: () => api.getActivityComments(postId || ''),
+    queryFn: async () => {
+      try {
+        const fetchedComments = await api.getActivityComments(postId || '');
+        const enrichedComments = await Promise.all(
+          fetchedComments.map(async (c: any) => {
+            let userName = c.userName || 'User';
+            let userAvatar = c.userAvatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${c.userId}`;
+
+            if (!c.userName) {
+              try {
+                const userData = await api.getUser(c.userId);
+                userName = userData.name || userData.username || 'User';
+                userAvatar = userData.avatarUrl || userAvatar;
+              } catch { }
+            }
+
+            return {
+              ...c,
+              userName,
+              userAvatar,
+            };
+          })
+        );
+        return enrichedComments;
+      } catch {
+        return [];
+      }
+    },
     enabled: !!postId,
   });
 
-  // Update comments when data loads
-  useEffect(() => {
-    if (commentsData) {
-      setComments(commentsData);
-    }
-  }, [commentsData]);
+  // Organize comments into threads
+  const organizedComments = (() => {
+    const parentComments: any[] = [];
+    const repliesMap: Record<string, any[]> = {};
+
+    rawComments.forEach((c: any) => {
+      const comment = {
+        ...c,
+        userName: c.userName,
+        userAvatar: c.userAvatar,
+        replies: []
+      };
+
+      if (c.parentCommentId) {
+        if (!repliesMap[c.parentCommentId]) {
+          repliesMap[c.parentCommentId] = [];
+        }
+        repliesMap[c.parentCommentId].push(comment);
+      } else {
+        parentComments.push(comment);
+      }
+    });
+
+    parentComments.forEach(parent => {
+      parent.replies = repliesMap[parent.id] || [];
+      parent.replies.sort((a: any, b: any) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+    });
+
+    return parentComments.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  })();
 
   // Enrich post data
   const post = activity ? enrichPostData(activity, activityUser) : null;
@@ -96,25 +153,48 @@ export default function PostDetail() {
     console.log("Like post:", postId);
   };
 
+  // Comment mutation
+  const commentMutation = useMutation({
+    mutationFn: async ({ content, parentId }: { content: string; parentId?: string }) => {
+      const res = await authFetch(`/api/activities/${postId}/comments`, {
+        method: 'POST',
+        body: JSON.stringify({ content, userId: currentUserId, parentCommentId: parentId })
+      });
+      return res.json();
+    },
+    onSuccess: () => {
+      setNewComment("");
+      setReplyingTo(null);
+      refetchComments();
+      queryClient.invalidateQueries({ queryKey: ["activity", postId] });
+      toast({ title: "Comment posted!" });
+    },
+    onError: () => toast({ title: "Failed", variant: "destructive" }),
+  });
+
+  const handleReply = (commentId: string, userName: string) => {
+    setReplyingTo({ id: commentId, userName });
+    const text = `@${userName} `;
+    setNewComment(text);
+    setTimeout(() => {
+      if (commentInputRef.current) {
+        commentInputRef.current.focus();
+        commentInputRef.current.setSelectionRange(text.length, text.length);
+      }
+    }, 100);
+  };
+
+  const cancelReply = () => {
+    setReplyingTo(null);
+    setNewComment("");
+  };
+
   const handleComment = () => {
     if (!newComment.trim()) return;
-
-    const currentUserId = localStorage.getItem('nearly_user_id') || '';
-    const currentUsername = localStorage.getItem('nearly_username') || 'user';
-    
-    const comment = {
-      id: Date.now().toString(),
-      userId: currentUserId,
-      username: currentUsername,
-      name: currentUsername,
-      avatarUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUserId}`,
+    commentMutation.mutate({
       content: newComment,
-      createdAt: new Date().toISOString(),
-      likesCount: 0,
-    };
-
-    setComments(prev => [comment, ...prev]);
-    setNewComment("");
+      parentId: replyingTo?.id
+    });
   };
 
   const handleShare = () => {
@@ -251,61 +331,112 @@ export default function PostDetail() {
         {/* Comments */}
         <div className="p-4">
           <h3 className="font-medium text-sm mb-4">
-            Comments ({comments.length})
+            Comments ({rawComments.length})
           </h3>
 
           {/* Comment Input */}
-          <div className="flex gap-3 mb-4">
-            <Avatar className="w-8 h-8 flex-shrink-0">
-              <AvatarImage src="https://api.dicebear.com/7.x/avataaars/svg?seed=current" />
-              <AvatarFallback>U</AvatarFallback>
-            </Avatar>
-            <div className="flex-1 flex gap-2">
-              <Textarea
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-                placeholder="Add a comment..."
-                className="min-h-[40px] resize-none"
-                rows={1}
-              />
-              <Button
-                onClick={handleComment}
-                disabled={!newComment.trim()}
-                size="sm"
-                className="self-end"
-              >
-                Post
-              </Button>
+          <div className="space-y-2 mb-4">
+            {replyingTo && (
+              <div className="flex items-center justify-between bg-muted/50 px-3 py-2 rounded-lg text-sm mb-2">
+                <span className="text-muted-foreground">Replying to <span className="font-semibold text-foreground">@{replyingTo.userName}</span></span>
+                <button onClick={cancelReply} className="text-muted-foreground hover:text-foreground">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            )}
+            <div className="flex gap-3">
+              <Avatar className="w-8 h-8 flex-shrink-0">
+                <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUserId}`} />
+                <AvatarFallback>U</AvatarFallback>
+              </Avatar>
+              <div className="flex-1 flex gap-2">
+                <Textarea
+                  ref={commentInputRef}
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                  placeholder={replyingTo ? `Reply to @${replyingTo.userName}...` : "Add a comment..."}
+                  className="min-h-[40px] resize-none"
+                  rows={1}
+                />
+                <Button
+                  onClick={handleComment}
+                  disabled={!newComment.trim() || commentMutation.isPending}
+                  size="sm"
+                  className="self-end"
+                >
+                  Post
+                </Button>
+              </div>
             </div>
           </div>
 
           {/* Comments List */}
           <div className="space-y-4">
-            {comments.map((comment) => (
-              <div key={comment.id} className="flex gap-3">
-                <Avatar className="w-8 h-8 flex-shrink-0">
-                  <AvatarImage src={comment.avatarUrl} />
-                  <AvatarFallback>{comment.name?.[0]}</AvatarFallback>
-                </Avatar>
-                <div className="flex-1">
-                  <p className="text-sm">
-                    <span className="font-medium mr-2">{comment.username}</span>
-                    {comment.content}
-                  </p>
-                  <div className="flex items-center gap-3 mt-1">
-                    <span className="text-xs text-muted-foreground">
-                      {new Date(comment.createdAt).toLocaleDateString()}
-                    </span>
-                    <button className="text-xs text-muted-foreground hover:text-foreground">
-                      {comment.likesCount} likes
-                    </button>
-                    <button className="text-xs text-muted-foreground hover:text-foreground">
-                      Reply
-                    </button>
+            {organizedComments.length === 0 ? (
+              <p className="text-muted-foreground text-center text-sm py-4">No comments yet</p>
+            ) : (
+              organizedComments.map((comment: any) => (
+                <div key={comment.id} className="space-y-3">
+                  {/* Parent */}
+                  <div className="flex gap-3">
+                    <Avatar className="w-8 h-8 flex-shrink-0">
+                      <AvatarImage src={comment.userAvatar} />
+                      <AvatarFallback>{comment.userName?.[0] || 'U'}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1">
+                      <p className="text-sm">
+                        <span className="font-medium mr-2">{comment.userName}</span>
+                        {comment.content}
+                      </p>
+                      <div className="flex items-center gap-3 mt-1">
+                        <span className="text-xs text-muted-foreground">
+                          {new Date(comment.createdAt).toLocaleDateString()}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          {comment.likesCount || 0} likes
+                        </span>
+                        <button
+                          onClick={() => handleReply(comment.id, comment.userName)}
+                          className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1"
+                        >
+                          <Reply className="w-3 h-3" /> Reply
+                        </button>
+                      </div>
+                    </div>
                   </div>
+                  {/* Replies */}
+                  {comment.replies && comment.replies.length > 0 && (
+                    <div className="ml-11 space-y-3 border-l-2 border-muted pl-4">
+                      {comment.replies.map((reply: any) => (
+                        <div key={reply.id} className="flex gap-3">
+                          <Avatar className="w-6 h-6 flex-shrink-0">
+                            <AvatarImage src={reply.userAvatar} />
+                            <AvatarFallback>{reply.userName?.[0] || 'U'}</AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1">
+                            <p className="text-sm">
+                              <span className="font-medium mr-2">{reply.userName}</span>
+                              {reply.content}
+                            </p>
+                            <div className="flex items-center gap-3 mt-1">
+                              <span className="text-xs text-muted-foreground">
+                                {new Date(reply.createdAt).toLocaleDateString()}
+                              </span>
+                              <button
+                                onClick={() => handleReply(comment.id, reply.userName)}
+                                className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1"
+                              >
+                                <Reply className="w-3 h-3" /> Reply
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
       </div>

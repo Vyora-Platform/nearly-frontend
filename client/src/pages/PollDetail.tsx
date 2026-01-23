@@ -65,14 +65,38 @@ export default function PollDetail() {
     enabled: !!poll?.userId,
   });
 
-  // Fetch comments
-  const { data: rawComments = [] } = useQuery({
+  // Fetch comments and enrich with user data
+  const { data: comments = [] } = useQuery({
     queryKey: ["poll-comments", pollId],
     queryFn: async () => {
       try {
         const res = await authFetch(`/api/polls/${pollId}/comments`);
         if (!res.ok) return [];
-        return res.json();
+        const fetchedComments = await res.json();
+
+        // Enrich comments with user data
+        const enrichedComments = await Promise.all(
+          fetchedComments.map(async (c: any) => {
+            let userName = c.userName || 'User';
+            let userAvatar = c.userAvatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${c.userId}`;
+
+            // Fetch user data if not provided
+            if (!c.userName) {
+              try {
+                const userData = await api.getUser(c.userId);
+                userName = userData.name || userData.username || 'User';
+                userAvatar = userData.avatarUrl || userAvatar;
+              } catch { }
+            }
+
+            return {
+              ...c,
+              userName,
+              userAvatar,
+            };
+          })
+        );
+        return enrichedComments;
       } catch {
         return [];
       }
@@ -85,7 +109,7 @@ export default function PollDetail() {
     const parentComments: PollComment[] = [];
     const repliesMap: Record<string, PollComment[]> = {};
 
-    rawComments.forEach((c: any) => {
+    comments.forEach((c: any) => {
       const comment: PollComment = {
         id: c.id,
         pollId: c.pollId,
@@ -112,9 +136,13 @@ export default function PollDetail() {
     // Attach replies to parent comments
     parentComments.forEach(parent => {
       parent.replies = repliesMap[parent.id] || [];
+      if (parent.replies) {
+        parent.replies.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+      }
     });
 
-    return parentComments;
+    // Sort parent comments by date desc
+    return parentComments.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   })();
 
   // Track view on mount
@@ -123,7 +151,7 @@ export default function PollDetail() {
       authFetch(`/api/polls/${pollId}/view`, {
         method: 'POST',
         body: JSON.stringify({ userId: currentUserId })
-      }).catch(() => {});
+      }).catch(() => { });
     }
   }, [pollId, currentUserId]);
 
@@ -169,8 +197,14 @@ export default function PollDetail() {
 
   const handleReply = (commentId: string, userName: string) => {
     setReplyingTo({ id: commentId, userName });
-    setComment(`@${userName} `);
-    setTimeout(() => commentInputRef.current?.focus(), 100);
+    const text = `@${userName} `;
+    setComment(text);
+    setTimeout(() => {
+      if (commentInputRef.current) {
+        commentInputRef.current.focus();
+        commentInputRef.current.setSelectionRange(text.length, text.length);
+      }
+    }, 100);
   };
 
   const cancelReply = () => {
@@ -319,22 +353,21 @@ export default function PollDetail() {
                 key={optionId}
                 onClick={() => !hasVoted && voteMutation.mutate(optionId)}
                 disabled={hasVoted}
-                className={`w-full relative overflow-hidden rounded-xl p-4 text-left transition-all border ${
-                  isSelected 
-                    ? "border-primary bg-primary/10" 
-                    : hasVoted 
+                className={`w-full relative overflow-hidden rounded-xl p-4 text-left transition-all border ${isSelected
+                  ? "border-primary bg-primary/10"
+                  : hasVoted
                     ? "border-border bg-muted/30"
                     : "border-border bg-card hover:bg-muted/50"
-                }`}
+                  }`}
               >
                 {/* Progress bar background */}
                 {hasVoted && (
-                  <div 
+                  <div
                     className={`absolute inset-0 ${isSelected ? 'bg-primary/20' : 'bg-muted/50'} transition-all`}
                     style={{ width: `${percentage}%` }}
                   />
                 )}
-                
+
                 <div className="relative flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     {isSelected && <Check className="w-4 h-4 text-primary" />}
@@ -369,8 +402,8 @@ export default function PollDetail() {
 
         {/* Comments Section */}
         <div className="space-y-4">
-          <h3 className="font-semibold">Discuss ({rawComments.length})</h3>
-          
+          <h3 className="font-semibold">Discuss ({comments.length})</h3>
+
           {/* Add Comment */}
           <div className="space-y-2">
             {replyingTo && (
@@ -395,8 +428,8 @@ export default function PollDetail() {
                 className="flex-1"
                 onKeyPress={(e) => e.key === 'Enter' && comment.trim() && handleSubmitComment()}
               />
-              <Button 
-                size="sm" 
+              <Button
+                size="sm"
                 onClick={handleSubmitComment}
                 disabled={!comment.trim() || commentMutation.isPending}
               >
@@ -427,7 +460,7 @@ export default function PollDetail() {
                       {c.likesCount > 0 && (
                         <span className="text-xs text-muted-foreground">{c.likesCount} likes</span>
                       )}
-                      <button 
+                      <button
                         onClick={() => handleReply(c.id, c.userName || 'User')}
                         className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1"
                       >
@@ -457,7 +490,7 @@ export default function PollDetail() {
                             {reply.likesCount > 0 && (
                               <span className="text-xs text-muted-foreground">{reply.likesCount} likes</span>
                             )}
-                            <button 
+                            <button
                               onClick={() => handleReply(c.id, reply.userName || 'User')}
                               className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1"
                             >
