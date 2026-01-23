@@ -84,7 +84,7 @@ export default function FriendsChat() {
   // Transform following to friends
   const friends: Friend[] = following.map((user: any) => {
     const conversation = conversations.find((c: any) =>
-      c.userId === user.id || c.recipientId === user.id
+      c.participantIds && c.participantIds.includes(user.id) && !c.groupId
     );
     return {
       id: user.id,
