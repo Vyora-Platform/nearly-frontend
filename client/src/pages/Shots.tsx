@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback, memo } from "react";
 import { useLocation } from "wouter";
-import { 
-  Plus, Heart, Send, Volume2, VolumeX, 
+import {
+  Plus, Heart, Send, Volume2, VolumeX,
   Play, Pause, MessageCircle, Share2, X,
   MoreHorizontal, Bookmark, Flag, Trash2,
   ChevronUp, ChevronDown, Music2, Video, AlertTriangle, Loader2
@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { shotsApi, userApi, notificationApi, streamingApi } from "@/lib/gateway-api";
+import { buildGatewayUrl } from "@/lib/config";
 import { cn } from "@/lib/utils";
 import BottomNav from "@/components/BottomNav";
 import { useToast } from "@/hooks/use-toast";
@@ -77,7 +78,7 @@ interface Shot {
 const enrichShotWithUser = async (shot: Shot): Promise<Shot> => {
   const likedShots = JSON.parse(localStorage.getItem('nearly_liked_shots') || '[]');
   const savedShots = JSON.parse(localStorage.getItem('nearly_saved_shots') || '[]');
-  
+
   try {
     const user = await userApi.getUser(shot.userId);
     return {
@@ -171,7 +172,7 @@ const ShotReel = memo(function ShotReel({
   const [hasViewed, setHasViewed] = useState(false);
   const [hlsUrl, setHlsUrl] = useState<string | undefined>(undefined);
   const [effectiveVideoUrl, setEffectiveVideoUrl] = useState<string>(shot.videoUrl);
-  
+
   // Video player state
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
@@ -186,7 +187,7 @@ const ShotReel = memo(function ShotReel({
   const [mp4Urls, setMp4Urls] = useState<Record<string, string> | undefined>(undefined);
   const [transcodeStatus, setTranscodeStatus] = useState<'UPLOADED' | 'TRANSCODING' | 'READY' | 'FAILED' | undefined>(undefined);
   const [thumbnailUrl, setThumbnailUrl] = useState<string | undefined>(shot.thumbnailUrl);
-  
+
   // Refs
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -195,8 +196,8 @@ const ShotReel = memo(function ShotReel({
   const tapTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Check if video URL is valid
-  const isValidVideoUrl = effectiveVideoUrl && 
-    !effectiveVideoUrl.startsWith('blob:') && 
+  const isValidVideoUrl = effectiveVideoUrl &&
+    !effectiveVideoUrl.startsWith('blob:') &&
     (effectiveVideoUrl.startsWith('http://') || effectiveVideoUrl.startsWith('https://'));
 
   // IntersectionObserver for scroll-based pause
@@ -211,7 +212,7 @@ const ShotReel = memo(function ShotReel({
           // Video should play if at least 60% is visible (scrolled less than 40% away)
           const visible = entry.isIntersecting && entry.intersectionRatio >= 0.6;
           setIsVisible(visible);
-          
+
           // Auto-pause when scrolled more than 40% out of view (less than 60% visible)
           if (!visible && videoRef.current && !videoRef.current.paused) {
             videoRef.current.pause();
@@ -242,16 +243,30 @@ const ShotReel = memo(function ShotReel({
 
           console.log('[UPLOAD] play shots', info);
 
+          // Helper to sanitize URLs (handle frontend vs backend domain mismatch)
+          const safeUrl = (url: string) => {
+            if (!url) return '';
+            // If URL points to frontend domain's API path (common issue), rewrite to API domain
+            if (url.includes('https://nearlyapp.in/api')) {
+              return url.replace('https://nearlyapp.in/api', 'https://api.nearlyapp.in/api');
+            }
+            return url.startsWith('http') ? url : buildGatewayUrl(url);
+          };
+
           // HLS for adaptive streaming (primary)
           if (info.hlsUrl) {
-            setHlsUrl(info.hlsUrl);
+            setHlsUrl(safeUrl(info.hlsUrl));
           }
           // MP4 fallbacks for Safari and legacy browsers
           if (info.mp4Urls) {
-            setMp4Urls(info.mp4Urls);
+            const absoluteMp4Urls: Record<string, string> = {};
+            Object.entries(info.mp4Urls).forEach(([k, v]) => {
+              absoluteMp4Urls[k] = safeUrl(v);
+            });
+            setMp4Urls(absoluteMp4Urls);
           }
           if (info.mp4Url) {
-            setMp4FallbackUrl(info.mp4Url);
+            setMp4FallbackUrl(safeUrl(info.mp4Url));
           }
           // Direct URL
           // if (info.url) {
@@ -331,7 +346,7 @@ const ShotReel = memo(function ShotReel({
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
         setIsLoading(false);
         if (isActive && isVisible && !isPaused) {
-          video.play().catch(() => {});
+          video.play().catch(() => { });
         }
       });
 
@@ -341,16 +356,16 @@ const ShotReel = memo(function ShotReel({
 
           // Detailed logging for debugging production issues
           if (data.type === Hls.ErrorTypes.NETWORK_ERROR || data.details === 'levelParsingError') {
-             // @ts-ignore - response indicates the response object if available in the error data
-            const response = data.response; 
+            // @ts-ignore - response indicates the response object if available in the error data
+            const response = data.response;
             if (response) {
-               console.error("[HLS] Error Response URL:", response.url);
-               console.error("[HLS] Error Response Status:", response.code);
-               console.error("[HLS] Error Response Text:", response.text);
+              console.error("[HLS] Error Response URL:", response.url);
+              console.error("[HLS] Error Response Status:", response.code);
+              console.error("[HLS] Error Response Text:", response.text);
             }
-             // @ts-ignore - loader context might have info
+            // @ts-ignore - loader context might have info
             if (data.context) {
-                console.error("[HLS] Error Context:", data.context);
+              console.error("[HLS] Error Context:", data.context);
             }
           }
 
@@ -390,9 +405,9 @@ const ShotReel = memo(function ShotReel({
     if (isActive && isVisible && isPaused) {
       video.play().catch((err) => {
         console.log("[SHOT] Autoplay blocked:", err.name);
-                console.log("[SHOT] Autoplay blocked isActive:",isActive);
-                console.log("[SHOT] Autoplay blocked: isPaused",isPaused);
-        console.log("[SHOT] Autoplay blocked: isVisible",isVisible);
+        console.log("[SHOT] Autoplay blocked isActive:", isActive);
+        console.log("[SHOT] Autoplay blocked: isPaused", isPaused);
+        console.log("[SHOT] Autoplay blocked: isVisible", isVisible);
 
 
       });
@@ -447,7 +462,7 @@ const ShotReel = memo(function ShotReel({
 
     video.addEventListener('timeupdate', updateProgress);
     video.addEventListener('progress', updateBuffered);
-    
+
     return () => {
       video.removeEventListener('timeupdate', updateProgress);
       video.removeEventListener('progress', updateBuffered);
@@ -458,7 +473,7 @@ const ShotReel = memo(function ShotReel({
   useEffect(() => {
     if (isActive && shot.id && !hasViewed) {
       setHasViewed(true);
-      shotsApi.viewShot(shot.id).catch(() => {});
+      shotsApi.viewShot(shot.id).catch(() => { });
     }
   }, [isActive, shot.id, hasViewed]);
 
@@ -487,7 +502,7 @@ const ShotReel = memo(function ShotReel({
     if (video) {
       video.currentTime = 0;
       if (isActive) {
-        video.play().catch(() => {});
+        video.play().catch(() => { });
       }
     }
   }, [isActive]);
@@ -520,13 +535,13 @@ const ShotReel = memo(function ShotReel({
       setLikesCount(prev => prev + 1);
       setShowHeart(true);
       setTimeout(() => setShowHeart(false), 1000);
-      
+
       const likedShots = JSON.parse(localStorage.getItem('nearly_liked_shots') || '[]');
       if (!likedShots.includes(shot.id)) {
         likedShots.push(shot.id);
         localStorage.setItem('nearly_liked_shots', JSON.stringify(likedShots));
       }
-      
+
       onLike();
     }
   }, [isLiked, onLike, shot.id]);
@@ -536,7 +551,7 @@ const ShotReel = memo(function ShotReel({
     if (!video) return;
 
     if (video.paused) {
-      video.play().catch(() => {});
+      video.play().catch(() => { });
       setIsPaused(false);
       setIsPlaying(true);
     } else {
@@ -638,11 +653,11 @@ const ShotReel = memo(function ShotReel({
 
           {/* Progress Bar */}
           <div className="absolute top-0 left-0 right-0 h-1 bg-white/20 z-30">
-            <div 
+            <div
               className="absolute h-full bg-white/30 transition-all duration-300"
               style={{ width: `${buffered}%` }}
             />
-            <div 
+            <div
               className="absolute h-full bg-white transition-all duration-100"
               style={{ width: `${progress}%` }}
             />
@@ -908,7 +923,7 @@ function CommentsSheet({
             </button>
           </div>
         </DialogHeader>
-        
+
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {parentComments.length === 0 ? (
             <div className="text-center py-12">
@@ -920,12 +935,12 @@ function CommentsSheet({
             parentComments.map((comment) => {
               const replies = repliesMap[comment.id] || [];
               const isExpanded = expandedReplies.has(comment.id);
-              
+
               return (
                 <div key={comment.id} className="space-y-3">
                   {/* Parent comment */}
                   <div className="flex gap-3">
-                    <Avatar 
+                    <Avatar
                       className="w-10 h-10 flex-shrink-0 cursor-pointer"
                       onClick={() => setLocation(`/profile/${comment.userId}`)}
                     >
@@ -934,7 +949,7 @@ function CommentsSheet({
                     </Avatar>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <span 
+                        <span
                           className="font-semibold text-sm cursor-pointer hover:underline"
                           onClick={() => setLocation(`/profile/${comment.userId}`)}
                         >
@@ -953,7 +968,7 @@ function CommentsSheet({
                           )} />
                           {comment.likesCount > 0 && comment.likesCount}
                         </button>
-                        <button 
+                        <button
                           className="text-xs font-medium text-muted-foreground hover:text-foreground"
                           onClick={() => handleReply(comment.id, comment.userName)}
                         >
@@ -982,7 +997,7 @@ function CommentsSheet({
                       {/* Replies list */}
                       {isExpanded && replies.map((reply) => (
                         <div key={reply.id} className="flex gap-3">
-                          <Avatar 
+                          <Avatar
                             className="w-8 h-8 flex-shrink-0 cursor-pointer"
                             onClick={() => setLocation(`/profile/${reply.userId}`)}
                           >
@@ -991,7 +1006,7 @@ function CommentsSheet({
                           </Avatar>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2">
-                              <span 
+                              <span
                                 className="font-semibold text-sm cursor-pointer hover:underline"
                                 onClick={() => setLocation(`/profile/${reply.userId}`)}
                               >
@@ -1010,7 +1025,7 @@ function CommentsSheet({
                                 )} />
                                 {reply.likesCount > 0 && reply.likesCount}
                               </button>
-                              <button 
+                              <button
                                 className="text-xs font-medium text-muted-foreground hover:text-foreground"
                                 onClick={() => handleReply(comment.id, reply.userName)}
                               >
@@ -1091,16 +1106,16 @@ function ShareDialog({
     toast({ title: "Link copied to clipboard!" });
     onOpenChange(false);
     if (shot) {
-      shotsApi.shareShot(shot.id).catch(() => {});
+      shotsApi.shareShot(shot.id).catch(() => { });
     }
   };
 
   const shareToSocial = (platform: string) => {
     if (!shot) return;
-    
+
     let url = '';
     const text = shot.caption || 'Check out this shot!';
-    
+
     switch (platform) {
       case 'twitter':
         url = `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(text)}`;
@@ -1112,10 +1127,10 @@ function ShareDialog({
         url = `https://api.whatsapp.com/send?text=${encodeURIComponent(text + ' ' + shareUrl)}`;
         break;
     }
-    
+
     window.open(url, '_blank');
     onOpenChange(false);
-    shotsApi.shareShot(shot.id).catch(() => {});
+    shotsApi.shareShot(shot.id).catch(() => { });
   };
 
   return (
@@ -1125,7 +1140,7 @@ function ShareDialog({
           <DialogTitle className="text-center">Share Shot</DialogTitle>
         </DialogHeader>
         <div className="grid grid-cols-4 gap-4 py-4">
-          <button 
+          <button
             onClick={() => shareToSocial('whatsapp')}
             className="flex flex-col items-center gap-2"
           >
@@ -1134,7 +1149,7 @@ function ShareDialog({
             </div>
             <span className="text-xs">WhatsApp</span>
           </button>
-          <button 
+          <button
             onClick={() => shareToSocial('twitter')}
             className="flex flex-col items-center gap-2"
           >
@@ -1143,7 +1158,7 @@ function ShareDialog({
             </div>
             <span className="text-xs">Twitter</span>
           </button>
-          <button 
+          <button
             onClick={() => shareToSocial('facebook')}
             className="flex flex-col items-center gap-2"
           >
@@ -1152,7 +1167,7 @@ function ShareDialog({
             </div>
             <span className="text-xs">Facebook</span>
           </button>
-          <button 
+          <button
             onClick={copyLink}
             className="flex flex-col items-center gap-2"
           >
@@ -1231,7 +1246,7 @@ export default function Shots() {
     mutationFn: async (shotId: string) => {
       const shot = shots.find(s => s.id === shotId);
       await shotsApi.likeShot(shotId);
-      
+
       // Send notification to shot owner
       if (shot && shot.userId !== userId) {
         await notificationApi.createNotification({
@@ -1255,7 +1270,7 @@ export default function Shots() {
     mutationFn: async ({ shotId, content, parentCommentId }: { shotId: string; content: string; parentCommentId?: string }) => {
       const result = await shotsApi.addComment(shotId, content, parentCommentId);
       const shot = shots.find(s => s.id === shotId);
-      
+
       // Send notification to shot owner
       if (shot && shot.userId !== userId) {
         await notificationApi.createNotification({
@@ -1268,7 +1283,7 @@ export default function Shots() {
           actionUrl: '/shots',
         });
       }
-      
+
       // If replying, also notify the parent comment owner
       if (parentCommentId) {
         const parentComment = comments.find(c => c.id === parentCommentId);
@@ -1284,7 +1299,7 @@ export default function Shots() {
           });
         }
       }
-      
+
       return result;
     },
     onSuccess: (result) => {
@@ -1314,23 +1329,23 @@ export default function Shots() {
   const openComments = async (shot: Shot) => {
     setSelectedShot(shot);
     setShowComments(true);
-    
+
     try {
       const fetchedComments = await shotsApi.getComments(shot.id);
       const mappedComments: Comment[] = await Promise.all(
         fetchedComments.map(async (c: any) => {
           let userName = c.userName || 'User';
           let userAvatar = c.userAvatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${c.userId}`;
-          
+
           // Fetch user data if not provided
           if (!c.userName) {
             try {
               const userData = await userApi.getUser(c.userId);
               userName = userData.name || userData.username || 'User';
               userAvatar = userData.avatarUrl || userAvatar;
-            } catch {}
+            } catch { }
           }
-          
+
           return {
             id: c.id,
             userId: c.userId,
@@ -1397,11 +1412,11 @@ export default function Shots() {
           <div className="w-28 h-28 rounded-full bg-rose-500 flex items-center justify-center mx-auto mb-8">
             <Video className="w-14 h-14 text-white" />
           </div>
-          
+
           <h2 className="text-white text-2xl font-bold mb-3">No Shots Yet</h2>
           <p className="text-white/60 text-base mb-2">Share short videos with your community.</p>
           <p className="text-white/60 text-base mb-8">Only video files are supported.</p>
-          
+
           {/* Upload button with gradient ring */}
           <button
             onClick={() => setLocation('/create-shot')}
@@ -1413,8 +1428,8 @@ export default function Shots() {
               </div>
             </div>
           </button>
-          
-          <button 
+
+          <button
             onClick={() => setLocation('/create-shot')}
             className="text-primary font-medium text-lg hover:underline"
           >
@@ -1451,7 +1466,7 @@ export default function Shots() {
           {shots.map((shot, index) => {
             // Pre-load next 2 and previous 1 shots for instant playback
             const shouldPreload = Math.abs(index - currentIndex) <= 2 && index !== currentIndex;
-            
+
             return (
               <div key={shot.id} className="h-full w-full snap-start">
                 <ShotReel
@@ -1462,7 +1477,7 @@ export default function Shots() {
                   onOpenComments={() => openComments(shot)}
                   onShare={() => openShare(shot)}
                   onUserClick={() => setLocation(`/profile/${shot.user?.username || shot.userId}`)}
-                  onSave={() => {}}
+                  onSave={() => { }}
                 />
               </div>
             );

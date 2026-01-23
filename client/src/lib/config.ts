@@ -20,23 +20,23 @@ interface Config {
 // Environment-specific configurations
 const configs: Record<string, Partial<Config>> = {
   development: {
-  // Use Vite proxy - requests to same origin are proxied to Java gateway at 9002
-  API_BASE_URL: '',  
-  WSS_BASE_URL: 'wss://api.nearlyapp.in',
+    // Use Vite proxy - requests to same origin are proxied to Java gateway at 9002
+    API_BASE_URL: '',
+    WSS_BASE_URL: 'wss://api.nearlyapp.in',
 
-  // Microservices Gateway - proxied via Vite dev server
-  GATEWAY_URL: '',  
-  GATEWAY_WSS_URL: 'wss://api.nearlyapp.in',
+    // Microservices Gateway - proxied via Vite dev server
+    GATEWAY_URL: '',
+    GATEWAY_WSS_URL: 'wss://api.nearlyapp.in',
 
-  ENVIRONMENT: 'development',
-  FEATURES: {
-    ENABLE_NOTIFICATIONS: true,
-    ENABLE_CHAT: true,
-    ENABLE_ANALYTICS: false,
-    ENABLE_RANDOM_CHAT: true,
-    ENABLE_VIDEO_CHAT: true,
+    ENVIRONMENT: 'development',
+    FEATURES: {
+      ENABLE_NOTIFICATIONS: true,
+      ENABLE_CHAT: true,
+      ENABLE_ANALYTICS: false,
+      ENABLE_RANDOM_CHAT: true,
+      ENABLE_VIDEO_CHAT: true,
+    },
   },
-},
 
   staging: {
     API_BASE_URL: import.meta.env.VITE_API_BASE_URL || 'https://api.nearlyapp.in',
@@ -91,6 +91,11 @@ const getEnvironment = (): string => {
   // Check for explicit environment variable
   if (import.meta.env.PROD) return 'production';
   if (import.meta.env.VITE_ENV) return import.meta.env.VITE_ENV;
+
+  // Robustly detect production by hostname
+  if (typeof window !== 'undefined' && window.location.hostname === 'nearlyapp.in') {
+    return 'production';
+  }
 
   // Check for Replit environment
   if (import.meta.env.REPL_ID) return 'production';
