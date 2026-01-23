@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link, useLocation } from "wouter";
-import { 
-  Search, Plus, Users, Globe, Lock, 
-  Sparkles, Code, Dumbbell, Gamepad2, Music, 
+import {
+  Search, Plus, Users, Globe, Lock,
+  Sparkles, Code, Dumbbell, Gamepad2, Music,
   Camera, BookOpen, Palette, Utensils, Plane,
-  Heart, Briefcase, Film, Mic2
+  Heart, Briefcase, Film, Mic2, ChevronRight, Check
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -76,7 +76,7 @@ export default function GroupsDiscover() {
             const data = await res.json();
             return Array.isArray(data) ? data : [];
           }
-        } catch {}
+        } catch { }
         return [];
       }
     },
@@ -106,7 +106,7 @@ export default function GroupsDiscover() {
             const data = await res.json();
             return Array.isArray(data) ? data : [];
           }
-        } catch {}
+        } catch { }
         return [];
       }
     },
@@ -178,6 +178,9 @@ export default function GroupsDiscover() {
   };
 
   const formatMemberCount = (count: number) => {
+    if (count >= 1000000) {
+      return `${(count / 1000000).toFixed(1)}M`;
+    }
     if (count >= 1000) {
       return `${(count / 1000).toFixed(1)}k`;
     }
@@ -200,63 +203,69 @@ export default function GroupsDiscover() {
   };
 
   return (
-    <div className="flex flex-col">
-      {/* Header with Search and Create */}
-      <div className="p-4 space-y-4">
+    <div className="flex flex-col min-h-screen bg-background">
+      {/* Native Header with Search and Create */}
+      <div className="px-4 py-3 space-y-3 sticky top-0 bg-background/95 backdrop-blur-lg z-10">
         <div className="flex items-center gap-3">
+          {/* Search */}
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-muted-foreground" />
             <input
               type="text"
               placeholder="Search groups..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-muted rounded-full text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+              className="w-full pl-11 pr-4 py-3 bg-muted/60 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 border-0 transition-all duration-200"
               data-testid="input-search-groups"
             />
           </div>
+
+          {/* Create Button */}
           <Button
             onClick={() => setIsCreateDialogOpen(true)}
-            className="bg-gradient-primary text-white rounded-full w-10 h-10 p-0 flex-shrink-0"
+            className="w-11 h-11 rounded-xl bg-gradient-primary text-white p-0 flex-shrink-0"
             data-testid="button-create-group"
           >
             <Plus className="w-5 h-5" />
           </Button>
         </div>
 
-        {/* Section Toggle */}
-        <div className="flex gap-2">
+        {/* Native Segment Control */}
+        <div className="relative bg-muted/50 p-1 rounded-xl flex">
+          {/* Active indicator */}
+          <div
+            className={`absolute top-1 h-[calc(100%-8px)] w-[calc(50%-4px)] bg-gradient-primary rounded-lg transition-all duration-300 ease-out shadow-sm ${activeSection === "discover" ? "left-[calc(50%+2px)]" : "left-1"
+              }`}
+          />
           <button
             onClick={() => setActiveSection("my")}
-            className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all
-              ${activeSection === "my"
-                ? "bg-gradient-primary text-white shadow-md"
-                : "bg-muted text-muted-foreground hover:bg-muted/80"
+            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 z-10 ${activeSection === "my"
+                ? "text-white"
+                : "text-muted-foreground"
               }`}
             data-testid="section-my-groups"
           >
             <Users className="w-4 h-4" />
-            My Groups
+            <span>My Groups</span>
           </button>
           <button
             onClick={() => setActiveSection("discover")}
-            className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all
-              ${activeSection === "discover"
-                ? "bg-gradient-primary text-white shadow-md"
-                : "bg-muted text-muted-foreground hover:bg-muted/80"
+            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 z-10 ${activeSection === "discover"
+                ? "text-white"
+                : "text-muted-foreground"
               }`}
             data-testid="section-discover"
           >
             <Globe className="w-4 h-4" />
-            Discover
+            <span>Discover</span>
           </button>
         </div>
       </div>
 
-      {/* Category Filter - Only show in Discover */}
+      {/* Category Pills - Only show in Discover */}
       {activeSection === "discover" && (
-        <div className="px-4 pb-3">
-          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+        <div className="px-4 py-2 border-b border-border/50">
+          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
             {categories.map((category) => {
               const Icon = category.icon;
               const isActive = selectedCategory === category.id;
@@ -264,10 +273,9 @@ export default function GroupsDiscover() {
                 <button
                   key={category.id}
                   onClick={() => setSelectedCategory(category.id)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all
-                    ${isActive
-                      ? "bg-primary/10 text-primary border border-primary/30"
-                      : "bg-muted text-muted-foreground hover:bg-muted/80 border border-transparent"
+                  className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 flex-shrink-0 ${isActive
+                      ? "bg-gradient-primary text-white"
+                      : "bg-muted/60 text-muted-foreground hover:bg-muted"
                     }`}
                   data-testid={`category-${category.id}`}
                 >
@@ -282,155 +290,202 @@ export default function GroupsDiscover() {
 
       {/* Content */}
       {activeSection === "my" ? (
-        <div className="divide-y divide-border">
+        <div className="flex-1">
+          {/* Section Header */}
+          <div className="px-4 py-2.5 flex items-center justify-between border-b border-border/50">
+            <div className="flex items-center gap-2">
+              <h2 className="text-base font-bold text-foreground">Your Groups</h2>
+              <span className="text-sm text-muted-foreground">({myGroups.length})</span>
+            </div>
+            {myGroups.length > 0 && (
+              <button
+                onClick={() => setActiveSection("discover")}
+                className="flex items-center gap-1 text-xs font-medium text-primary"
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                Discover more
+              </button>
+            )}
+          </div>
+
           {isLoading ? (
-            <div className="flex items-center justify-center py-20">
-              <p className="text-muted-foreground">Loading groups...</p>
+            <div className="flex flex-col items-center justify-center py-16">
+              <div className="w-10 h-10 border-3 border-muted border-t-primary rounded-full animate-spin" />
+              <p className="mt-4 text-muted-foreground text-sm">Loading groups...</p>
             </div>
           ) : myGroups.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 px-4">
-              <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
-                <Users className="w-8 h-8 text-muted-foreground" />
+            <div className="flex flex-col items-center justify-center py-16 px-6">
+              <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mb-4">
+                <Users className="w-9 h-9 text-muted-foreground" />
               </div>
-              <p className="text-muted-foreground text-center">
-                You haven't joined any groups yet
-              </p>
-              <p className="text-sm text-muted-foreground text-center mt-1">
-                Discover groups based on your interests!
+              <h3 className="text-lg font-bold text-foreground mb-1">Join your first group</h3>
+              <p className="text-muted-foreground text-sm text-center max-w-[260px]">
+                Discover communities that match your interests
               </p>
               <Button
                 onClick={() => setActiveSection("discover")}
-                className="mt-4 bg-gradient-primary text-white"
+                className="mt-5 bg-gradient-primary text-white rounded-xl px-6 py-5 font-semibold"
               >
                 <Globe className="w-4 h-4 mr-2" />
-                Discover Groups
+                Explore Groups
               </Button>
             </div>
           ) : (
-            myGroups.map((group) => (
-              <Link
-                key={group.id}
-                href={`/group/${group.id}/chat`}
-                className="flex items-center gap-3 p-4 hover:bg-muted/50 active:bg-muted transition-colors"
-                data-testid={`my-group-${group.id}`}
-              >
-                <Avatar className="w-14 h-14 flex-shrink-0">
-                  <AvatarImage src={group.imageUrl || ""} />
-                  <AvatarFallback className="bg-gradient-primary text-white font-semibold text-lg">
-                    {group.name.charAt(0)}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between mb-1">
-                    <div className="flex items-center gap-1.5">
-                      <p className="text-sm font-semibold text-foreground truncate">
-                        {group.name}
-                      </p>
-                      {group.groupType === "Private" && (
-                        <Lock className="w-3 h-3 text-muted-foreground flex-shrink-0" />
-                      )}
-                    </div>
-                    <span className="text-xs text-muted-foreground flex-shrink-0">
-                      {formatTime(group.lastMessageTime)}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <p className="text-xs text-muted-foreground truncate pr-4">
-                      {group.lastMessage ? group.lastMessage : (
-                        <span className="text-primary italic">Start conversation</span>
-                      )}
-                    </p>
-                    {group.unreadCount && group.unreadCount > 0 && (
-                      <span className="flex-shrink-0 w-5 h-5 bg-gradient-primary text-white text-xs rounded-full flex items-center justify-center font-semibold">
-                        {group.unreadCount > 9 ? "9+" : group.unreadCount}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </Link>
-            ))
-          )}
-        </div>
-      ) : (
-        <div className="px-4 pb-4 grid gap-3">
-          {filteredDiscoverGroups.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20">
-              <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
-                <Search className="w-8 h-8 text-muted-foreground" />
-              </div>
-              <p className="text-muted-foreground">No groups found</p>
-              <p className="text-sm text-muted-foreground text-center mt-1">
-                Try a different search or category
-              </p>
-            </div>
-          ) : (
-            filteredDiscoverGroups.map((group) => {
-              const isJoined = localJoinedGroups.has(group.id);
-              const CategoryIcon = categories.find((c) => c.id === group.category)?.icon || Users;
-              
-              return (
-                <div
+            <div>
+              {myGroups.map((group) => (
+                <Link
                   key={group.id}
-                  className="bg-card rounded-2xl p-4 border border-border"
-                  data-testid={`discover-group-${group.id}`}
+                  href={`/group/${group.id}/chat`}
+                  className="flex items-center gap-3.5 px-4 py-3.5 hover:bg-muted/40 active:bg-muted/60 transition-colors border-b border-border/30"
+                  data-testid={`my-group-${group.id}`}
                 >
-                  <div className="flex items-start gap-3">
-                    <Avatar className="w-14 h-14 flex-shrink-0">
-                      <AvatarImage src={group.imageUrl || ""} />
-                      <AvatarFallback className="bg-primary/20 text-primary font-semibold text-lg">
+                  {/* Avatar */}
+                  <div className="relative flex-shrink-0">
+                    <Avatar className="w-14 h-14 rounded-xl">
+                      <AvatarImage src={group.imageUrl || ""} className="object-cover rounded-xl" />
+                      <AvatarFallback className="bg-gradient-primary text-white font-semibold text-lg rounded-xl">
                         {group.name.charAt(0)}
                       </AvatarFallback>
                     </Avatar>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-1.5 mb-0.5">
-                        <p className="text-sm font-semibold text-foreground truncate">
+                    {group.unreadCount && group.unreadCount > 0 && (
+                      <div className="absolute -top-1 -right-1 min-w-5 h-5 bg-gradient-primary text-white text-[10px] rounded-full flex items-center justify-center font-bold px-1">
+                        {group.unreadCount > 99 ? "99+" : group.unreadCount}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Content */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between mb-0.5">
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <p className="text-[15px] font-semibold text-foreground truncate">
                           {group.name}
                         </p>
                         {group.groupType === "Private" && (
-                          <Lock className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+                          <Lock className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
                         )}
                       </div>
-                      <p className="text-xs text-muted-foreground line-clamp-2 mb-2">
-                        {group.description}
+                      <span className="text-xs text-muted-foreground flex-shrink-0 ml-3">
+                        {formatTime(group.lastMessageTime)}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm text-muted-foreground truncate pr-3">
+                        {group.lastMessage ? group.lastMessage : (
+                          <span className="text-primary/70 italic">Start the conversation</span>
+                        )}
                       </p>
-                      <div className="flex items-center gap-3">
-                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                          <Users className="w-3.5 h-3.5" />
-                          {formatMemberCount(group.membersCount || 0)} members
+                      <ChevronRight className="w-4 h-4 text-muted-foreground/50 flex-shrink-0" />
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="px-4 py-3 space-y-3">
+          {/* Section Header */}
+          <div className="flex items-center gap-2">
+            <h2 className="text-base font-bold text-foreground">Discover Groups</h2>
+            <span className="text-sm text-muted-foreground">({filteredDiscoverGroups.length})</span>
+          </div>
+
+          {filteredDiscoverGroups.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16">
+              <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mb-4">
+                <Search className="w-9 h-9 text-muted-foreground" />
+              </div>
+              <h3 className="text-lg font-bold text-foreground mb-1">No groups found</h3>
+              <p className="text-sm text-muted-foreground text-center max-w-[260px]">
+                Try adjusting your search or explore different categories
+              </p>
+            </div>
+          ) : (
+            <div className="grid gap-3">
+              {filteredDiscoverGroups.map((group) => {
+                const isJoined = localJoinedGroups.has(group.id);
+                const CategoryIcon = categories.find((c) => c.id === group.category)?.icon || Users;
+
+                return (
+                  <div
+                    key={group.id}
+                    className="rounded-xl border border-border bg-card overflow-hidden"
+                    data-testid={`discover-group-${group.id}`}
+                  >
+                    <div className="p-4">
+                      <div className="flex items-start gap-3.5">
+                        {/* Avatar */}
+                        <Avatar className="w-14 h-14 rounded-xl flex-shrink-0">
+                          <AvatarImage src={group.imageUrl || ""} className="object-cover rounded-xl" />
+                          <AvatarFallback className="bg-gradient-primary text-white font-semibold text-lg rounded-xl">
+                            {group.name.charAt(0)}
+                          </AvatarFallback>
+                        </Avatar>
+
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-1.5 mb-0.5">
+                            <p className="text-sm font-bold text-foreground truncate">
+                              {group.name}
+                            </p>
+                            {group.groupType === "Private" && (
+                              <Lock className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
+                            )}
+                          </div>
+                          <p className="text-xs text-muted-foreground line-clamp-2 mb-2 leading-relaxed">
+                            {group.description || "No description available"}
+                          </p>
+                          <div className="flex items-center gap-2.5 flex-wrap">
+                            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                              <Users className="w-3.5 h-3.5 text-primary" />
+                              <span>{formatMemberCount(group.membersCount || 0)} members</span>
+                            </div>
+                            <Badge variant="secondary" className="text-xs py-0.5 px-2 h-auto">
+                              <CategoryIcon className="w-3 h-3 mr-1" />
+                              {categories.find((c) => c.id === group.category)?.label || group.category || "General"}
+                            </Badge>
+                          </div>
                         </div>
-                        <Badge variant="secondary" className="text-xs py-0 px-2">
-                          <CategoryIcon className="w-3 h-3 mr-1" />
-                          {categories.find((c) => c.id === group.category)?.label || group.category}
-                        </Badge>
+                      </div>
+
+                      {/* Action Buttons */}
+                      <div className="mt-3.5 flex gap-2.5">
+                        <Button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleJoinGroup(group.id);
+                          }}
+                          className={`flex-1 h-10 rounded-xl font-semibold ${isJoined
+                              ? "bg-muted text-foreground hover:bg-muted/80"
+                              : "bg-gradient-primary text-white hover:opacity-90"
+                            }`}
+                          size="sm"
+                          data-testid={`join-${group.id}`}
+                        >
+                          {isJoined ? (
+                            <>
+                              <Check className="w-4 h-4 mr-1.5" />
+                              Joined
+                            </>
+                          ) : (
+                            "Join Group"
+                          )}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="px-4 h-10 rounded-xl border-border font-semibold"
+                          onClick={() => setLocation(`/group/${group.id}/chat`)}
+                          data-testid={`view-${group.id}`}
+                        >
+                          View
+                        </Button>
                       </div>
                     </div>
                   </div>
-                  <div className="mt-3 flex gap-2">
-                    <Button
-                      onClick={() => handleJoinGroup(group.id)}
-                      className={`flex-1 ${
-                        isJoined
-                          ? "bg-muted text-foreground hover:bg-muted/80"
-                          : "bg-gradient-primary text-white hover:opacity-90"
-                      }`}
-                      size="sm"
-                      data-testid={`join-${group.id}`}
-                    >
-                      {isJoined ? "Joined" : "Join Group"}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="px-3"
-                      onClick={() => setLocation(`/group/${group.id}/chat`)}
-                      data-testid={`view-${group.id}`}
-                    >
-                      View
-                    </Button>
-                  </div>
-                </div>
-              );
-            })
+                );
+              })}
+            </div>
           )}
         </div>
       )}
@@ -442,4 +497,3 @@ export default function GroupsDiscover() {
     </div>
   );
 }
-

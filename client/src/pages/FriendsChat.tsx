@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link, useLocation } from "wouter";
 import {
-  Search, Mail, Check, X, MessageCircle, Clock, UserX, MessageSquare
+  Search, Mail, Check, X, MessageCircle, Clock, UserX, MessageSquare, Sparkles, ChevronRight
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -180,78 +180,99 @@ export default function FriendsChat() {
   const filteredMessageRequests = pendingMessageRequests.filter((r) => !localRequests.has(r.id));
 
   return (
-    <div className="flex flex-col min-h-screen bg-black">
-      {/* Search Bar */}
-      <div className="p-4 sticky top-0 bg-black z-10">
+    <div className="flex flex-col min-h-screen bg-background">
+      {/* Native Search Bar */}
+      <div className="px-4 py-3 sticky top-0 bg-background/95 backdrop-blur-lg z-10">
         <div className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-muted-foreground" />
           <input
             type="text"
-            placeholder="Search"
+            placeholder="Search conversations..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 bg-zinc-900 rounded-xl text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-primary/50"
+            className="w-full pl-11 pr-4 py-3 bg-muted/60 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 border-0 transition-all duration-200"
           />
         </div>
       </div>
 
-      {/* Section Tabs */}
-      <div className="flex gap-2 px-4 pb-4">
-        <button
-          onClick={() => setActiveSection("chats")}
-          className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all
-            ${activeSection === "chats"
-              ? "bg-primary text-white"
-              : "bg-zinc-900 text-zinc-400 hover:bg-zinc-800"
-            }`}
-        >
-          <MessageCircle className="w-4 h-4" />
-          Messages
-        </button>
-        <button
-          onClick={() => setActiveSection("requests")}
-          className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all relative
-            ${activeSection === "requests"
-              ? "bg-primary text-white"
-              : "bg-zinc-900 text-zinc-400 hover:bg-zinc-800"
-            }`}
-        >
-          <Mail className="w-4 h-4" />
-          Requests
-          {filteredMessageRequests.length > 0 && (
-            <span className="absolute -top-1 -right-1 min-w-5 h-5 bg-white text-primary text-xs rounded-full flex items-center justify-center font-bold px-1 ring-2 ring-black">
-              {filteredMessageRequests.length}
-            </span>
-          )}
-        </button>
+      {/* Native Segment Control */}
+      <div className="px-4 pb-3">
+        <div className="relative bg-muted/50 p-1 rounded-xl flex">
+          {/* Active indicator */}
+          <div
+            className={`absolute top-1 h-[calc(100%-8px)] w-[calc(50%-4px)] bg-gradient-primary rounded-lg transition-all duration-300 ease-out shadow-sm ${activeSection === "requests" ? "left-[calc(50%+2px)]" : "left-1"
+              }`}
+          />
+          <button
+            onClick={() => setActiveSection("chats")}
+            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 z-10 ${activeSection === "chats"
+                ? "text-white"
+                : "text-muted-foreground"
+              }`}
+          >
+            <MessageCircle className="w-4 h-4" />
+            <span>Messages</span>
+          </button>
+          <button
+            onClick={() => setActiveSection("requests")}
+            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 relative z-10 ${activeSection === "requests"
+                ? "text-white"
+                : "text-muted-foreground"
+              }`}
+          >
+            <Mail className="w-4 h-4" />
+            <span>Requests</span>
+            {filteredMessageRequests.length > 0 && (
+              <span className={`absolute -top-1 right-6 min-w-5 h-5 text-xs rounded-full flex items-center justify-center font-bold px-1.5 ${activeSection === "requests"
+                  ? "bg-white text-primary"
+                  : "bg-primary text-white"
+                }`}>
+                {filteredMessageRequests.length}
+              </span>
+            )}
+          </button>
+        </div>
       </div>
 
       {/* Content */}
       {activeSection === "chats" ? (
         <div className="flex-1">
-          {/* Headline with total friends count */}
-          <div className="px-4 py-3 border-b border-zinc-800">
-            <h2 className="text-lg font-semibold text-white">
-              Friends ({friends.length})
-            </h2>
+          {/* Section Header */}
+          <div className="px-4 py-2.5 flex items-center justify-between border-b border-border/50">
+            <div className="flex items-center gap-2">
+              <h2 className="text-base font-bold text-foreground">
+                Friends
+              </h2>
+              <span className="text-sm text-muted-foreground">({friends.length})</span>
+            </div>
+            {friends.length > 0 && (
+              <button
+                onClick={() => setLocation("/discover")}
+                className="flex items-center gap-1 text-xs font-medium text-primary"
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                Find friends
+              </button>
+            )}
           </div>
 
           {/* Messages List */}
-          <div className="divide-y divide-zinc-800/50">
+          <div>
             {filteredFriends.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-20 px-4">
-                <div className="w-20 h-20 rounded-full bg-zinc-900 flex items-center justify-center mb-4">
-                  <MessageSquare className="w-10 h-10 text-zinc-600" />
+              <div className="flex flex-col items-center justify-center py-16 px-6">
+                <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mb-4">
+                  <MessageSquare className="w-9 h-9 text-muted-foreground" />
                 </div>
-                <p className="text-white font-semibold text-lg">Your messages</p>
-                <p className="text-zinc-500 text-sm text-center mt-1">
-                  {searchQuery ? "No results found" : "Send a message to start a chat"}
+                <h3 className="text-lg font-bold text-foreground mb-1">Start a conversation</h3>
+                <p className="text-muted-foreground text-sm text-center max-w-[260px]">
+                  {searchQuery ? "No results found for your search" : "Connect with friends to start messaging"}
                 </p>
                 <Button
                   onClick={() => setLocation("/discover")}
-                  className="mt-6 bg-primary hover:bg-primary/90 text-white rounded-xl px-6"
+                  className="mt-5 bg-gradient-primary text-white rounded-xl px-6 py-5 font-semibold"
                 >
-                  Send message
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Discover people
                 </Button>
               </div>
             ) : (
@@ -259,38 +280,48 @@ export default function FriendsChat() {
                 <Link
                   key={friend.id}
                   href={`/chat/${friend.username}`}
-                  className="flex items-center gap-3 p-4 hover:bg-zinc-900/50 active:bg-zinc-900 transition-colors"
+                  className="flex items-center gap-3.5 px-4 py-3.5 hover:bg-muted/40 active:bg-muted/60 transition-colors border-b border-border/30"
                 >
-                  <div className="relative">
+                  {/* Avatar */}
+                  <div className="relative flex-shrink-0">
                     <Avatar className="w-14 h-14">
-                      <AvatarImage src={friend.avatarUrl} />
-                      <AvatarFallback className="bg-primary text-white font-semibold">
+                      <AvatarImage src={friend.avatarUrl} className="object-cover" />
+                      <AvatarFallback className="bg-gradient-primary text-white font-semibold text-lg">
                         {friend.name.charAt(0)}
                       </AvatarFallback>
                     </Avatar>
                     {friend.isOnline && (
-                      <div className="absolute bottom-0 right-0 w-4 h-4 bg-green-500 rounded-full border-2 border-black" />
+                      <div className="absolute bottom-0.5 right-0.5 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-background" />
                     )}
                   </div>
+
+                  {/* Content */}
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between">
-                      <p className={`text-sm font-semibold ${friend.unreadCount ? "text-white" : "text-zinc-300"}`}>
+                    <div className="flex items-center justify-between mb-0.5">
+                      <p className={`text-[15px] font-semibold truncate ${friend.unreadCount ? "text-foreground" : "text-foreground/90"
+                        }`}>
                         {friend.name}
                       </p>
-                      <span className={`text-xs ${friend.unreadCount ? "text-white" : "text-zinc-500"}`}>
+                      <span className={`text-xs flex-shrink-0 ml-3 ${friend.unreadCount ? "text-primary font-medium" : "text-muted-foreground"
+                        }`}>
                         {formatTime(friend.lastMessageTime)}
                       </span>
                     </div>
-                    <div className="flex items-center justify-between mt-0.5">
-                      <p className={`text-sm truncate pr-4 ${friend.unreadCount ? "text-white font-medium" : "text-zinc-500"}`}>
+                    <div className="flex items-center justify-between">
+                      <p className={`text-sm truncate pr-3 ${friend.unreadCount
+                          ? "text-foreground font-medium"
+                          : "text-muted-foreground"
+                        }`}>
                         {friend.lastMessage ? friend.lastMessage : (
-                          <span className="text-primary italic">Start conversation</span>
+                          <span className="text-primary/70 italic font-normal">Tap to start chatting</span>
                         )}
                       </p>
-                      {friend.unreadCount && friend.unreadCount > 0 && (
-                        <span className="flex-shrink-0 w-5 h-5 bg-primary text-white text-xs rounded-full flex items-center justify-center font-bold">
-                          {friend.unreadCount > 9 ? "9+" : friend.unreadCount}
+                      {friend.unreadCount && friend.unreadCount > 0 ? (
+                        <span className="flex-shrink-0 min-w-5 h-5 bg-gradient-primary text-white text-xs rounded-full flex items-center justify-center font-bold px-1.5">
+                          {friend.unreadCount > 99 ? "99+" : friend.unreadCount}
                         </span>
+                      ) : (
+                        <ChevronRight className="w-4 h-4 text-muted-foreground/50 flex-shrink-0" />
                       )}
                     </div>
                   </div>
@@ -298,37 +329,37 @@ export default function FriendsChat() {
               ))
             )}
           </div>
-
         </div>
       ) : (
-        <div className="px-4 pb-4 space-y-3">
-          {/* Headline with requests count */}
-          <h2 className="text-lg font-semibold text-white pt-2">
-            Requests ({filteredMessageRequests.length})
-          </h2>
+        <div className="px-4 pb-6 space-y-3">
+          {/* Section Header */}
+          <div className="flex items-center gap-2 pt-1">
+            <h2 className="text-base font-bold text-foreground">
+              Requests
+            </h2>
+            <span className="text-sm text-muted-foreground">({filteredMessageRequests.length})</span>
+          </div>
 
-          {/* Info banner */}
-          <div className="bg-zinc-900 rounded-2xl p-4 border border-zinc-800">
-            <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                <UserX className="w-5 h-5 text-primary" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-white">Message Requests</p>
-                <p className="text-xs text-zinc-500 mt-1">
-                  These are messages from people you don't follow. They won't know you've seen their request until you accept.
-                </p>
-              </div>
+          {/* Info Banner */}
+          <div className="rounded-xl border border-border bg-card p-3.5 flex items-start gap-3">
+            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+              <UserX className="w-5 h-5 text-primary" />
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-foreground">Message Requests</p>
+              <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
+                Messages from people you don't follow. They won't know you've seen their request until you accept.
+              </p>
             </div>
           </div>
 
           {filteredMessageRequests.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-16">
-              <div className="w-20 h-20 rounded-full bg-zinc-900 flex items-center justify-center mb-4">
-                <Mail className="w-10 h-10 text-zinc-600" />
+            <div className="flex flex-col items-center justify-center py-14">
+              <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mb-4">
+                <Mail className="w-9 h-9 text-muted-foreground" />
               </div>
-              <p className="text-white font-semibold">No message requests</p>
-              <p className="text-sm text-zinc-500 text-center mt-1">
+              <h3 className="text-lg font-bold text-foreground mb-1">No requests yet</h3>
+              <p className="text-sm text-muted-foreground text-center max-w-[260px]">
                 Messages from people you don't follow will appear here
               </p>
             </div>
@@ -336,59 +367,65 @@ export default function FriendsChat() {
             filteredMessageRequests.map((request) => (
               <div
                 key={request.id}
-                className="bg-zinc-900 rounded-2xl p-4 border border-zinc-800"
+                className="rounded-xl border border-border bg-card overflow-hidden"
               >
-                <div className="flex items-start gap-3">
-                  <Avatar
-                    className="w-14 h-14 cursor-pointer ring-2 ring-primary ring-offset-2 ring-offset-black"
-                    onClick={() => setLocation(`/profile/${request.senderUsername}`)}
-                  >
-                    <AvatarImage src={request.senderAvatar} />
-                    <AvatarFallback className="bg-primary text-white font-semibold">
-                      {request.senderName.charAt(0)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p
-                          className="text-sm font-semibold text-white cursor-pointer hover:underline"
-                          onClick={() => setLocation(`/profile/${request.senderUsername}`)}
-                        >
-                          {request.senderName}
-                        </p>
-                        <p className="text-xs text-zinc-500">@{request.senderUsername}</p>
+                <div className="p-4">
+                  <div className="flex items-start gap-3">
+                    {/* Avatar */}
+                    <Avatar
+                      className="w-12 h-12 cursor-pointer ring-2 ring-primary/20"
+                      onClick={() => setLocation(`/profile/${request.senderUsername}`)}
+                    >
+                      <AvatarImage src={request.senderAvatar} className="object-cover" />
+                      <AvatarFallback className="bg-gradient-primary text-white font-semibold">
+                        {request.senderName.charAt(0)}
+                      </AvatarFallback>
+                    </Avatar>
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p
+                            className="text-sm font-semibold text-foreground cursor-pointer"
+                            onClick={() => setLocation(`/profile/${request.senderUsername}`)}
+                          >
+                            {request.senderName}
+                          </p>
+                          <p className="text-xs text-muted-foreground">@{request.senderUsername}</p>
+                        </div>
+                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                          <Clock className="w-3 h-3" />
+                          {formatTime(request.createdAt)}
+                        </div>
                       </div>
-                      <div className="flex items-center gap-1 text-xs text-zinc-500">
-                        <Clock className="w-3 h-3" />
-                        {formatTime(request.createdAt)}
-                      </div>
+                      {request.message && (
+                        <div className="mt-2.5 p-3 bg-muted/50 rounded-lg">
+                          <p className="text-sm text-foreground/90 leading-relaxed line-clamp-3">
+                            {request.message}
+                          </p>
+                        </div>
+                      )}
                     </div>
-                    {request.message && (
-                      <div className="mt-3 p-3 bg-zinc-800 rounded-xl">
-                        <p className="text-sm text-zinc-300 line-clamp-3">
-                          {request.message}
-                        </p>
-                      </div>
-                    )}
                   </div>
-                </div>
-                <div className="flex gap-2 mt-4">
-                  <Button
-                    onClick={() => handleAcceptRequest(request.id)}
-                    className="flex-1 bg-primary hover:bg-primary/90 text-white rounded-xl h-11"
-                  >
-                    <Check className="w-4 h-4 mr-2" />
-                    Accept
-                  </Button>
-                  <Button
-                    onClick={() => handleDeclineRequest(request.id)}
-                    variant="outline"
-                    className="flex-1 border-zinc-700 text-zinc-300 hover:bg-zinc-800 rounded-xl h-11"
-                  >
-                    <X className="w-4 h-4 mr-2" />
-                    Delete
-                  </Button>
+
+                  {/* Action Buttons */}
+                  <div className="flex gap-2.5 mt-4">
+                    <Button
+                      onClick={() => handleAcceptRequest(request.id)}
+                      className="flex-1 bg-gradient-primary text-white rounded-xl h-11 font-semibold"
+                    >
+                      <Check className="w-4 h-4 mr-2" />
+                      Accept
+                    </Button>
+                    <Button
+                      onClick={() => handleDeclineRequest(request.id)}
+                      variant="outline"
+                      className="flex-1 border-border text-foreground rounded-xl h-11 font-semibold"
+                    >
+                      <X className="w-4 h-4 mr-2" />
+                      Delete
+                    </Button>
+                  </div>
                 </div>
               </div>
             ))

@@ -82,9 +82,10 @@ const REPORT_REASONS: ReportReason[] = [
 
 interface RandomChatProps {
   onFullScreenChange?: (isFullScreen: boolean) => void;
+  onChatStateChange?: (state: ChatState) => void;
 }
 
-export default function RandomChat({ onFullScreenChange }: RandomChatProps) {
+export default function RandomChat({ onFullScreenChange, onChatStateChange }: RandomChatProps) {
   const [chatMode, setChatMode] = useState<ChatMode | null>(null);
   const [chatState, setChatState] = useState<ChatState>("idle");
   const [isChatExpanded, setIsChatExpanded] = useState(false); // New state for chat expansion
@@ -136,6 +137,11 @@ export default function RandomChat({ onFullScreenChange }: RandomChatProps) {
       return () => clearInterval(interval);
     }
   }, [chatState]);
+
+  // Notify parent of chat state changes
+  useEffect(() => {
+    onChatStateChange?.(chatState);
+  }, [chatState, onChatStateChange]);
 
   // Connect to Java Microservice via WebSocket (Single service handles both Video/Text)
   // Backend decides the chat mode based on matching logic
@@ -939,73 +945,59 @@ export default function RandomChat({ onFullScreenChange }: RandomChatProps) {
 
   // Render the mode selection screen
   const renderModeSelection = () => (
-    <div className="flex flex-col items-center justify-center h-full px-6 py-8">
+    <div className="flex flex-col items-center justify-center h-full px-6 py-4">
       {/* Animated Icon */}
-      <div className="relative mb-6">
-        <div className="w-24 h-24 rounded-full bg-gradient-primary opacity-20 animate-ping absolute" />
-        <div className="w-24 h-24 rounded-full bg-gradient-primary flex items-center justify-center relative">
-          <Shuffle className="w-10 h-10 text-white" />
+      <div className="relative mb-4">
+        <div className="w-20 h-20 rounded-full bg-gradient-primary opacity-20 animate-ping absolute" />
+        <div className="w-20 h-20 rounded-full bg-gradient-primary flex items-center justify-center relative">
+          <Shuffle className="w-8 h-8 text-white" />
         </div>
       </div>
 
-      <h2 className="text-xl font-bold text-foreground mb-2">Random Chat</h2>
-      <p className="text-muted-foreground text-center text-sm mb-6 max-w-[280px]">
+      <h2 className="text-lg font-bold text-foreground mb-1">Random Chat</h2>
+      <p className="text-muted-foreground text-center text-sm mb-4 max-w-[280px]">
         Connect with random strangers anonymously. Your identity is completely hidden!
       </p>
 
       {/* Privacy Features */}
-      <div className="w-full max-w-[280px] space-y-2 mb-8">
-        <div className="flex items-center gap-3 text-sm text-muted-foreground">
-          <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
-            <EyeOff className="w-4 h-4" />
+      <div className="w-full max-w-[280px] space-y-1.5 mb-4">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <div className="w-7 h-7 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
+            <EyeOff className="w-3.5 h-3.5" />
           </div>
-          <span>100% Anonymous - No profile shared</span>
+          <span className="text-xs">100% Anonymous - No profile shared</span>
         </div>
-        <div className="flex items-center gap-3 text-sm text-muted-foreground">
-          <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
-            <Shield className="w-4 h-4" />
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <div className="w-7 h-7 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
+            <Shield className="w-3.5 h-3.5" />
           </div>
-          <span>Instant skip - Move to next anytime</span>
+          <span className="text-xs">Instant skip - Move to next anytime</span>
         </div>
-        <div className="flex items-center gap-3 text-sm text-muted-foreground">
-          <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
-            <Flag className="w-4 h-4" />
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <div className="w-7 h-7 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
+            <Flag className="w-3.5 h-3.5" />
           </div>
-          <span>Report & Block - Stay safe</span>
+          <span className="text-xs">Report & Block - Stay safe</span>
         </div>
       </div>
 
       {/* Single Random Chat Button - Backend decides video or text */}
-      <div className="w-full max-w-[280px] space-y-3">
+      <div className="w-full max-w-[280px]">
         <Button
           onClick={handleStartRandomChat}
-          className="w-full bg-gradient-primary text-white py-6 text-lg font-semibold"
+          className="w-full bg-gradient-primary text-white py-5 text-base font-semibold"
           data-testid="start-random-chat"
         >
           <Shuffle className="w-5 h-5 mr-2" />
           Start Random Chat
         </Button>
-
-        <p className="text-xs text-muted-foreground text-center">
-          You'll be matched with a random stranger.<br />
-          Chat mode (video or text) is decided automatically.
-        </p>
-      </div>
-
-      {/* Warning */}
-      <div className="mt-6 flex items-start gap-2 text-xs text-muted-foreground max-w-[280px]">
-        <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5 text-yellow-500" />
-        <span>
-          Be respectful. Inappropriate behavior will result in a ban.
-          You can report users at any time.
-        </span>
       </div>
     </div>
   );
 
   // Render searching state - backend decides chat mode
   const renderSearching = () => (
-    <div className="flex flex-col items-center justify-center h-full px-6">
+    <div className="flex flex-col items-center justify-start h-full px-6 pt-24">
       {/* Searching Animation */}
       <div className="relative mb-6">
         <div className="w-20 h-20 rounded-full border-4 border-muted border-t-primary animate-spin" />
@@ -1020,15 +1012,15 @@ export default function RandomChat({ onFullScreenChange }: RandomChatProps) {
       <p className="text-sm text-muted-foreground text-center mb-2">
         Please wait while we connect you with someone
       </p>
-      <Badge variant="outline" className="mb-4">
-        Auto-matching
-      </Badge>
-
-      {lookingCount > 0 && (
-        <p className="text-xs text-muted-foreground mb-4">
-          {lookingCount} {lookingCount === 1 ? "person" : "people"} looking for match
-        </p>
-      )}
+      <div className="flex items-center gap-2 mb-4">
+        <Badge variant="outline">
+          Auto-matching
+        </Badge>
+        <Badge variant="outline" className="bg-green-500/10 text-green-600 border-green-500/20">
+          <div className="w-2 h-2 bg-green-500 rounded-full mr-1 animate-pulse" />
+          {onlineUsers > 0 ? onlineUsers.toLocaleString() : "..."} online
+        </Badge>
+      </div>
 
       {/* Show local video preview while searching (ready for if backend assigns video mode) */}
       {localStreamRef.current && (
@@ -1398,8 +1390,8 @@ export default function RandomChat({ onFullScreenChange }: RandomChatProps) {
 
   return (
     <div className="flex flex-col">
-      {/* Status Bar - Overlay in Video Mode */}
-      <div className={`${chatMode === "video"
+      {/* Status Bar - Overlay in Video Mode - Hidden during searching */}
+      <div className={`${chatState === "searching" ? "hidden" : ""} ${chatMode === "video"
         ? "absolute top-0 left-0 right-0 z-20 bg-gradient-to-b from-black/80 to-transparent border-0 text-white"
         : "border-b border-border bg-card/50"} px-4 py-3 transition-all duration-300 pointer-events-none`}>
         <div className="flex items-center justify-between pointer-events-auto">
