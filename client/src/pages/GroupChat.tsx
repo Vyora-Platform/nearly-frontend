@@ -1,7 +1,7 @@
 import { useRoute, useLocation } from "wouter";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { 
-  ArrowLeft, Users, Send, Plus, Smile, ImageIcon, Mic, Camera, 
+import {
+  ArrowLeft, Users, Send, Plus, Smile, ImageIcon, Mic, Camera,
   Check, CheckCheck, BarChart2, X, Info,
   Share2, Crown
 } from "lucide-react";
@@ -11,6 +11,9 @@ import { useState, useEffect, useRef } from "react";
 import { api } from "@/lib/api";
 import { messagingApi, mediaApi } from "@/lib/gateway-api";
 import { authFetch } from "@/lib/queryClient";
+import { buildGatewayUrl } from "@/lib/config";
+import SockJS from "sockjs-client";
+import { Client } from "@stomp/stompjs";
 import { format, isToday, isYesterday } from "date-fns";
 
 interface Message {
@@ -107,8 +110,127 @@ export default function GroupChat() {
       }
     },
     enabled: !!groupId,
-    refetchInterval: 2000,
   });
+
+  // WebSocket Connection
+  useEffect(() => {
+    if (!groupId) return;
+
+    // Polyfill global for SockJS if needed (important for some environments)
+    if (typeof window !== 'undefined' && !(window as any).global) {
+      (window as any).global = window;
+    }
+
+    // Use relative URL to leverage Vite proxy
+    const socketUrl = 'https://api.nearlyapp.in/ws/messaging';
+
+    // Create new SockJS instance
+    const socket = new SockJS(socketUrl);
+
+    // Create Stomp client
+    const client = new Client({
+      webSocketFactory: () => socket,
+      debug: (str) => {
+        console.log('[WS Debug]:', str);
+      },
+      reconnectDelay: 5000,
+      heartbeatIncoming: 4000,
+      heartbeatOutgoing: 4000,
+    });
+
+    client.onConnect = (frame) => {
+      console.log('Connected to WebSocket:', frame);
+
+      client.subscribe(`/topic/group/${groupId}`, (message) => {
+        try {
+          const payload = JSON.parse(message.body);
+
+          queryClient.setQueryData(["groupMessages", groupId], (oldData: Message[] | undefined) => {
+            const currentMessages = oldData || [];
+
+            // Handle different event types
+            if (payload.type === "REACTION_UPDATE") {
+              return currentMessages.map(msg => {
+                if (msg.id === payload.messageId) {
+                  const reactions = msg.reactions || [];
+                  const existingIdx = reactions.findIndex(r => r.userId === payload.reaction.userId);
+                  let newReactions = [...reactions];
+                  if (existingIdx >= 0) {
+                    newReactions[existingIdx] = payload.reaction;
+                  } else {
+                    newReactions.push(payload.reaction);
+                  }
+                  return { ...msg, reactions: newReactions };
+                }
+                return msg;
+              });
+            } else if (payload.type === "REACTION_REMOVED") {
+              return currentMessages.map(msg => {
+                if (msg.id === payload.messageId) {
+                  return {
+                    ...msg,
+                    reactions: (msg.reactions || []).filter(r => r.userId !== payload.userId)
+                  };
+                }
+                return msg;
+              });
+            } else if (payload.type === "POLL_VOTE_UPDATE") {
+              return currentMessages.map(msg => {
+                if (msg.id === payload.messageId && msg.poll) {
+                  const currentUserId = payload.userId;
+                  const optionId = payload.optionId;
+
+                  const newOptions = msg.poll.options.map(opt => ({
+                    ...opt,
+                    votes: opt.id === optionId
+                      ? (opt.votes.includes(currentUserId) ? opt.votes : [...opt.votes, currentUserId])
+                      : opt.votes.filter(v => v !== currentUserId)
+                  }));
+
+                  const newTotal = newOptions.reduce((acc, opt) => acc + opt.votes.length, 0);
+
+                  return {
+                    ...msg,
+                    poll: {
+                      ...msg.poll,
+                      options: newOptions,
+                      totalVotes: newTotal
+                    }
+                  };
+                }
+                return msg;
+              });
+            } else {
+              // Assume it's a new message
+              const newMessage = payload;
+              if (!newMessage.id) return currentMessages;
+              if (!newMessage.seenBy) newMessage.seenBy = [];
+
+              if (currentMessages.some(m => m.id === newMessage.id)) return currentMessages;
+              return [...currentMessages, newMessage];
+            }
+          });
+        } catch (e) {
+          console.error("Error parsing WebSocket message:", e);
+        }
+      });
+    };
+
+    client.onStompError = (frame) => {
+      console.error('Broker reported error: ' + frame.headers['message']);
+      console.error('Additional details: ' + frame.body);
+    };
+
+    client.activate();
+
+    return () => {
+      // Deactivate client on unmount
+      if (client.active) {
+        client.deactivate();
+      }
+    };
+  }, [groupId, queryClient]);
+
 
   // Fetch group members with real user data
   const { data: members = [] } = useQuery<GroupMember[]>({
@@ -142,7 +264,7 @@ export default function GroupChat() {
       authFetch(`/api/groups/${groupId}/messages/mark-seen`, {
         method: "POST",
         body: JSON.stringify({ userId: currentUserId }),
-      }).catch(() => {});
+      }).catch(() => { });
     }
   }, [messages, groupId, currentUserId]);
 
@@ -153,9 +275,9 @@ export default function GroupChat() {
 
   // Send message mutation
   const sendMutation = useMutation({
-    mutationFn: async ({ content, mediaUrl, messageType, poll }: { 
-      content: string; 
-      mediaUrl?: string; 
+    mutationFn: async ({ content, mediaUrl, messageType, poll }: {
+      content: string;
+      mediaUrl?: string;
       messageType?: string;
       poll?: Poll;
     }) => {
@@ -226,7 +348,7 @@ export default function GroupChat() {
 
   const handleCreatePoll = () => {
     if (!pollQuestion.trim() || pollOptions.filter(o => o.trim()).length < 2) return;
-    
+
     const poll: Poll = {
       id: `poll-${Date.now()}`,
       question: pollQuestion,
@@ -344,7 +466,7 @@ export default function GroupChat() {
         >
           <ArrowLeft className="w-6 h-6 text-white" />
         </button>
-        
+
         <button
           onClick={() => setLocation(`/group/${groupId}/details`)}
           className="flex items-center gap-3 flex-1"
@@ -364,13 +486,13 @@ export default function GroupChat() {
         </button>
 
         <div className="flex items-center gap-2">
-          <button 
+          <button
             onClick={handleShareGroup}
             className="p-2 hover:bg-zinc-800 rounded-full transition-colors"
           >
             <Share2 className="w-5 h-5 text-white" />
           </button>
-          <button 
+          <button
             onClick={() => setLocation(`/group/${groupId}/details`)}
             className="p-2 hover:bg-zinc-800 rounded-full transition-colors"
           >
@@ -403,7 +525,7 @@ export default function GroupChat() {
                   {formatDateDivider(new Date(grp.date))}
                 </span>
               </div>
-              
+
               {grp.messages.map((msg, idx) => {
                 const isMe = msg.senderId === currentUserId;
                 const sender = getMemberById(msg.senderId);
@@ -413,7 +535,7 @@ export default function GroupChat() {
                 // Poll message
                 if (msg.messageType === "poll" && msg.poll) {
                   const hasVoted = msg.poll.options.some(o => o.votes.includes(currentUserId));
-                  
+
                   return (
                     <div key={msg.id} className="my-4">
                       <div className="bg-zinc-900 rounded-2xl p-4 max-w-md mx-auto border border-zinc-800">
@@ -424,13 +546,13 @@ export default function GroupChat() {
                             {msg.poll.totalVotes} votes
                           </span>
                         </div>
-                        
+
                         <p className="text-white font-medium mb-4">{msg.poll.question}</p>
-                        
+
                         <div className="space-y-2">
                           {msg.poll.options.map((option) => {
-                            const votePercentage = msg.poll!.totalVotes > 0 
-                              ? (option.votes.length / msg.poll!.totalVotes) * 100 
+                            const votePercentage = msg.poll!.totalVotes > 0
+                              ? (option.votes.length / msg.poll!.totalVotes) * 100
                               : 0;
                             const isMyVote = option.votes.includes(currentUserId);
 
@@ -439,14 +561,13 @@ export default function GroupChat() {
                                 key={option.id}
                                 onClick={() => !hasVoted && voteMutation.mutate({ messageId: msg.id, optionId: option.id })}
                                 disabled={hasVoted}
-                                className={`w-full relative overflow-hidden rounded-xl p-3 text-left transition-all ${
-                                  hasVoted 
-                                    ? "bg-zinc-800" 
-                                    : "bg-zinc-800 hover:bg-zinc-700 active:scale-[0.98]"
-                                }`}
+                                className={`w-full relative overflow-hidden rounded-xl p-3 text-left transition-all ${hasVoted
+                                  ? "bg-zinc-800"
+                                  : "bg-zinc-800 hover:bg-zinc-700 active:scale-[0.98]"
+                                  }`}
                               >
                                 {hasVoted && (
-                                  <div 
+                                  <div
                                     className="absolute inset-0 bg-gradient-to-r from-purple-500/30 to-pink-500/30 transition-all"
                                     style={{ width: `${votePercentage}%` }}
                                   />
@@ -465,7 +586,7 @@ export default function GroupChat() {
                             );
                           })}
                         </div>
-                        
+
                         <p className="text-xs text-zinc-500 mt-3">
                           Created by {sender?.name || "Unknown"} • {formatMessageTime(msg.createdAt)}
                         </p>
@@ -506,21 +627,19 @@ export default function GroupChat() {
 
                       {/* Message Bubble */}
                       <div
-                        className={`relative group ${
-                          msg.messageType === "image" ? "" : "px-4 py-2.5"
-                        } ${
-                          isMe
+                        className={`relative group ${msg.messageType === "image" ? "" : "px-4 py-2.5"
+                          } ${isMe
                             ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-3xl rounded-br-md"
                             : "bg-zinc-800 text-white rounded-3xl rounded-bl-md"
-                        }`}
+                          }`}
                         onDoubleClick={() => !isMe && handleReaction(msg.id, "❤️")}
                         onClick={() => setSelectedMessageId(isSelected ? null : msg.id)}
                       >
                         {/* Media Content */}
                         {msg.messageType === "image" && msg.mediaUrl && (
-                          <img 
-                            src={msg.mediaUrl} 
-                            alt="Shared" 
+                          <img
+                            src={msg.mediaUrl}
+                            alt="Shared"
                             className="rounded-2xl max-w-full max-h-64 object-cover"
                           />
                         )}
@@ -734,7 +853,7 @@ export default function GroupChat() {
           >
             <Plus className="w-6 h-6 text-white" />
           </button>
-          
+
           <div className="flex-1 flex items-center gap-2 bg-zinc-800 rounded-full px-4 py-2">
             <input
               ref={inputRef}
