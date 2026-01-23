@@ -109,6 +109,7 @@ export default function RandomChat() {
   const [roomId, setRoomId] = useState<string | null>(null);
   const [isInitiator, setIsInitiator] = useState(false);
   const wsRef = useRef<WebSocket | null>(null);
+  const [streamReady, setStreamReady] = useState(false); // Force re-render when stream is ready
   const isConnectingRef = useRef<boolean>(false);
 
   // Refs
@@ -518,12 +519,19 @@ export default function RandomChat() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Focus input when connected
+  // Ensure local video stream is attached to video element when it mounts or stream changes
   useEffect(() => {
-    if (chatState === "connected" && chatMode === "text") {
+    if (localVideoRef.current && localStreamRef.current) {
+      localVideoRef.current.srcObject = localStreamRef.current;
+    }
+  }, [localStreamRef.current, chatState]); // Re-run when chatState changes (re-mounting video element)
+
+  // Focus input when connected (Video or Text)
+  useEffect(() => {
+    if (chatState === "connected") {
       inputRef.current?.focus();
     }
-  }, [chatState, chatMode]);
+  }, [chatState]);
 
   // Initialize session on mount
   useEffect(() => {
@@ -710,6 +718,7 @@ export default function RandomChat() {
         });
       }
 
+      setStreamReady(true);
       return stream;
     } catch (error) {
       console.error("Failed to get media devices:", error);
