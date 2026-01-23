@@ -1,8 +1,8 @@
 import { useRoute, useLocation } from "wouter";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { 
-  ArrowLeft, Smile, ImageIcon, Mic, Send, 
-  Heart, Check, CheckCheck, Camera, Sticker, X, Info 
+import {
+  ArrowLeft, Smile, ImageIcon, Mic, Send,
+  Heart, Check, CheckCheck, Camera, Sticker, X, Info
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,9 @@ import { api } from "@/lib/api";
 import { messagingApi, mediaApi } from "@/lib/gateway-api";
 import { authFetch } from "@/lib/queryClient";
 import { format, isToday, isYesterday } from "date-fns";
+import SockJS from "sockjs-client";
+import { Client } from "@stomp/stompjs";
+import { buildGatewayUrl } from "@/lib/config";
 
 interface Message {
   id: string;
@@ -87,8 +90,69 @@ export default function DirectChat() {
       }
     },
     enabled: !!user?.id,
-    refetchInterval: 2000,
   });
+
+  // WebSocket Connection for Direct Messages
+  useEffect(() => {
+    if (!currentUserId) return;
+
+    // Use relative URL to leverage Vite proxy
+    const socketUrl = 'https://api.nearlyapp.in/ws/messaging';
+
+    // Create new SockJS instance
+    const socket = new SockJS(socketUrl);
+
+    // Create Stomp client
+    const client = new Client({
+      webSocketFactory: () => socket,
+      debug: (str) => {
+        console.log('[WS Debug]:', str);
+      },
+      reconnectDelay: 5000,
+      heartbeatIncoming: 4000,
+      heartbeatOutgoing: 4000,
+    });
+
+    client.onConnect = (frame) => {
+      console.log('Connected to WebSocket (Direct):', frame);
+
+      // Subscribe to my own user topic to receive messages sent to me
+      client.subscribe(`/topic/user/${currentUserId}`, (message) => {
+        try {
+          const payload = JSON.parse(message.body);
+
+          // Check if message belongs to current focused chat
+          // Either sent by 'user.id' (friend) OR sent by 'currentUserId' (me from another tab/device) to 'user.id'
+          const belongToChat =
+            (payload.senderId === user?.id) ||
+            (payload.senderId === currentUserId && payload.recipientId === user?.id);
+
+          if (!belongToChat) return;
+
+          queryClient.setQueryData(["directMessages", user?.id], (oldData: Message[] | undefined) => {
+            const currentMessages = oldData || [];
+            if (currentMessages.some(m => m.id === payload.id)) return currentMessages;
+            return [...currentMessages, { ...payload, status: payload.status || "delivered" }];
+          });
+        } catch (e) {
+          console.error("Error parsing WebSocket message:", e);
+        }
+      });
+    };
+
+    client.onStompError = (frame) => {
+      console.error('Broker reported error: ' + frame.headers['message']);
+      console.error('Additional details: ' + frame.body);
+    };
+
+    client.activate();
+
+    return () => {
+      if (client.active) {
+        client.deactivate();
+      }
+    };
+  }, [currentUserId, user?.id, queryClient]);
 
   // Mark messages as seen when viewing
   useEffect(() => {
@@ -100,11 +164,11 @@ export default function DirectChat() {
         // Mark as seen via API
         authFetch(`/api/messages/mark-seen`, {
           method: "POST",
-          body: JSON.stringify({ 
-            recipientId: currentUserId, 
-            senderId: user.id 
+          body: JSON.stringify({
+            recipientId: currentUserId,
+            senderId: user.id
           }),
-        }).catch(() => {});
+        }).catch(() => { });
       }
     }
   }, [messages, user?.id, currentUserId]);
@@ -272,7 +336,7 @@ export default function DirectChat() {
         >
           <ArrowLeft className="w-6 h-6 text-white" />
         </button>
-        
+
         <button
           onClick={() => setLocation(`/profile/${username}`)}
           className="flex items-center gap-3 flex-1"
@@ -293,7 +357,7 @@ export default function DirectChat() {
         </button>
 
         <div className="flex items-center gap-2">
-          <button 
+          <button
             onClick={() => setLocation(`/profile/${username}`)}
             className="p-2 hover:bg-zinc-800 rounded-full transition-colors"
           >
@@ -329,7 +393,7 @@ export default function DirectChat() {
                   {formatDateDivider(new Date(group.date))}
                 </span>
               </div>
-              
+
               {group.messages.map((msg, idx) => {
                 const isMe = msg.senderId === currentUserId;
                 const showAvatar = !isMe && (idx === 0 || group.messages[idx - 1]?.senderId !== msg.senderId);
@@ -357,13 +421,11 @@ export default function DirectChat() {
                     <div className={`flex flex-col ${isMe ? "items-end" : "items-start"} max-w-[75%]`}>
                       {/* Message Bubble */}
                       <div
-                        className={`relative group ${
-                          msg.messageType === "image" ? "" : "px-4 py-2.5"
-                        } ${
-                          isMe
+                        className={`relative group ${msg.messageType === "image" ? "" : "px-4 py-2.5"
+                          } ${isMe
                             ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-3xl rounded-br-md"
                             : "bg-zinc-800 text-white rounded-3xl rounded-bl-md"
-                        }`}
+                          }`}
                         onDoubleClick={() => !isMe && handleReaction(msg.id, "❤️")}
                         onClick={() => setSelectedMessageId(isSelected ? null : msg.id)}
                       >
@@ -376,9 +438,9 @@ export default function DirectChat() {
 
                         {/* Media Content */}
                         {msg.messageType === "image" && (msg.mediaUrl || msg.imageUrl) && (
-                          <img 
-                            src={msg.mediaUrl || msg.imageUrl || ""} 
-                            alt="Shared" 
+                          <img
+                            src={msg.mediaUrl || msg.imageUrl || ""}
+                            alt="Shared"
                             className="rounded-2xl max-w-full max-h-64 object-cover"
                           />
                         )}
@@ -532,7 +594,7 @@ export default function DirectChat() {
           >
             <Camera className="w-6 h-6 text-white" />
           </button>
-          
+
           <div className="flex-1 flex items-center gap-2 bg-zinc-800 rounded-full px-4 py-2">
             <input
               ref={inputRef}
