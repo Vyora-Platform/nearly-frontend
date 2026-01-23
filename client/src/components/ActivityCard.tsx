@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { useState, useRef, useEffect } from "react";
 import { api } from "@/lib/api";
-import { queryClient } from "@/lib/queryClient";
+import { queryClient, authFetch } from "@/lib/queryClient";
 import { useLocation } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
@@ -109,28 +109,28 @@ export default function ActivityCard({
 }: ActivityCardProps) {
   const [, setLocation] = useLocation();
   const currentUserId = localStorage.getItem('nearly_user_id');
-  
+
   // Initialize liked state from localStorage
   const [liked, setLiked] = useState(() => {
     const likedActivities = JSON.parse(localStorage.getItem('nearly_liked_activities') || '[]');
     return likedActivities.includes(id);
   });
   const [likes, setLikes] = useState(likesCount);
-  
+
   // Initialize following state from localStorage
   const [following, setFollowing] = useState(() => {
     if (isFollowing) return true;
     const followingList = JSON.parse(localStorage.getItem('nearly_following') || '[]');
     return author.id ? followingList.includes(author.id) : false;
   });
-  
+
   // Initialize pending state from localStorage
   const [pending, setPending] = useState(() => {
     if (isPending) return true;
     const pendingList = JSON.parse(localStorage.getItem('nearly_pending_follows') || '[]');
     return author.id ? pendingList.includes(author.id) : false;
   });
-  
+
   // Initialize saved state from localStorage
   const [saved, setSaved] = useState(() => {
     const savedPosts = JSON.parse(localStorage.getItem('nearly_saved_posts') || '[]');
@@ -144,7 +144,7 @@ export default function ActivityCard({
   const [replyingTo, setReplyingTo] = useState<{ commentId: string; userName: string } | null>(null);
   const commentInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
-  
+
   // Check if this is the current user's post
   const isCurrentUserPost = isOwnPost || (author.id && author.id === currentUserId);
 
@@ -155,18 +155,89 @@ export default function ActivityCard({
     enabled: !!currentUserId,
   });
 
-  // Fetch comments when dialog opens
-  const { data: commentsData, refetch: refetchComments } = useQuery({
+  // Fetch comments and enrich with user data - Direct enrichment pattern
+  const { data: rawComments = [], refetch: refetchComments } = useQuery({
     queryKey: ['activity-comments', id],
-    queryFn: () => api.getActivityComments(id),
+    queryFn: async () => {
+      try {
+        const fetchedComments = await api.getActivityComments(id);
+        // Enrich comments with user data if not provided
+        const enrichedComments = await Promise.all(
+          fetchedComments.map(async (c: any) => {
+            let userName = c.userName || 'User';
+            let userAvatar = c.userAvatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${c.userId}`;
+
+            // Fetch user data if not provided
+            if (!c.userName) {
+              try {
+                const userData = await api.getUser(c.userId);
+                userName = userData.name || userData.username || 'User';
+                userAvatar = userData.avatarUrl || userAvatar;
+              } catch { }
+            }
+
+            return {
+              ...c,
+              userName,
+              userAvatar,
+            };
+          })
+        );
+        return enrichedComments;
+      } catch {
+        return [];
+      }
+    },
     enabled: showComments,
   });
 
+  // Organize comments into threads
+  const organizedComments = (() => {
+    const parentComments: Comment[] = [];
+    const repliesMap: Record<string, Comment[]> = {};
+
+    rawComments.forEach((c: any) => {
+      const comment: Comment = {
+        id: c.id,
+        userId: c.userId,
+        userName: c.userName || 'User',
+        userAvatar: c.userAvatar,
+        content: c.content,
+        createdAt: c.createdAt,
+        likesCount: c.likesCount || 0,
+        replies: [],
+      };
+
+      if (c.parentCommentId) {
+        if (!repliesMap[c.parentCommentId]) {
+          repliesMap[c.parentCommentId] = [];
+        }
+        repliesMap[c.parentCommentId].push(comment);
+      } else {
+        parentComments.push(comment);
+      }
+    });
+
+    parentComments.forEach(parent => {
+      parent.replies = repliesMap[parent.id] || [];
+      // Sort replies by date
+      if (parent.replies) {
+        parent.replies.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+      }
+    });
+
+    // Sort parent comments by date desc (newest first)
+    return parentComments.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  })();
+
+  // Sync organized comments to legacy state if needed, or better, we replace usage of 'comments' with 'organizedComments'
+  // But for now, let's keep the useEffect to minimizing refactoring of the whole file,
+  // although NewsDetail uses organizedComments directly.
   useEffect(() => {
-    if (commentsData) {
-      setComments(commentsData);
+    if (organizedComments) {
+      setComments(organizedComments);
     }
-  }, [commentsData]);
+  }, [rawComments]); // Trigger when rawComments changes (which implies organizedComments re-calc)
 
   // Handle save functionality
   const handleSave = () => {
@@ -189,16 +260,16 @@ export default function ActivityCard({
       toast({ title: "Already liked", description: "You can only like once" });
       return;
     }
-    
+
     // Update UI optimistically
     setLiked(true);
     setLikes(likes + 1);
-    
+
     // Persist to localStorage
     const likedActivities = JSON.parse(localStorage.getItem('nearly_liked_activities') || '[]');
     likedActivities.push(id);
     localStorage.setItem('nearly_liked_activities', JSON.stringify(likedActivities));
-    
+
     try {
       await api.likeActivity(id, true);
       queryClient.invalidateQueries({ queryKey: ["/api/activities"] });
@@ -217,18 +288,18 @@ export default function ActivityCard({
     if (following) {
       setFollowing(false);
       setPending(false);
-      
+
       // Remove from localStorage
       if (author.id) {
         const followingList = JSON.parse(localStorage.getItem('nearly_following') || '[]');
         const filtered = followingList.filter((id: string) => id !== author.id);
         localStorage.setItem('nearly_following', JSON.stringify(filtered));
-        
+
         const pendingList = JSON.parse(localStorage.getItem('nearly_pending_follows') || '[]');
         const filteredPending = pendingList.filter((id: string) => id !== author.id);
         localStorage.setItem('nearly_pending_follows', JSON.stringify(filteredPending));
       }
-      
+
       if (author.id && currentUserId) {
         try {
           await api.unfollowUser(currentUserId, author.id);
@@ -291,43 +362,18 @@ export default function ActivityCard({
   // Comment mutation
   const commentMutation = useMutation({
     mutationFn: async ({ content, parentId }: { content: string; parentId?: string }) => {
-      return api.createActivityComment(id, content);
+      const res = await authFetch(`/api/activities/${id}/comments`, {
+        method: 'POST',
+        // Make sure to include userId if backend expects it in body, consistent with ActivityDetails
+        body: JSON.stringify({ content, userId: currentUserId, parentCommentId: parentId }),
+      });
+      return res.json();
     },
     onSuccess: () => {
-      if (replyingTo) {
-        setComments(prev => prev.map(comment => {
-          if (comment.id === replyingTo.commentId) {
-            return {
-              ...comment,
-              replies: [...(comment.replies || []), {
-                id: Date.now().toString(),
-                userId: currentUserId || '',
-                userName: currentUser?.name || 'You',
-                userAvatar: currentUser?.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUserId}`,
-                content: newComment,
-                createdAt: new Date().toISOString(),
-                likesCount: 0,
-              }]
-            };
-          }
-          return comment;
-        }));
-      } else {
-        setComments(prev => [{
-          id: Date.now().toString(),
-          userId: currentUserId || '',
-          userName: currentUser?.name || 'You',
-          userAvatar: currentUser?.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUserId}`,
-          content: newComment,
-          createdAt: new Date().toISOString(),
-          likesCount: 0,
-          replies: [],
-        }, ...prev]);
-        setLocalCommentsCount(prev => prev + 1);
-      }
       setNewComment("");
       setReplyingTo(null);
       refetchComments();
+      queryClient.invalidateQueries({ queryKey: ["/api/activities"] }); // Invalidate list to update counts if needed
       toast({ title: "Comment posted!" });
     },
     onError: () => {
@@ -341,9 +387,9 @@ export default function ActivityCard({
 
   const handlePostComment = () => {
     if (!newComment.trim()) return;
-    commentMutation.mutate({ 
-      content: newComment, 
-      parentId: replyingTo?.commentId 
+    commentMutation.mutate({
+      content: newComment,
+      parentId: replyingTo?.commentId
     });
   };
 
@@ -372,7 +418,7 @@ export default function ActivityCard({
     <>
       <div className="bg-background border-b border-border pb-4">
         <div className="flex items-center justify-between px-4 py-3">
-          <button 
+          <button
             className="flex items-center gap-3"
             onClick={() => !isCurrentUserPost && author.username && setLocation(`/profile/${author.username}`)}
           >
@@ -547,7 +593,7 @@ export default function ActivityCard({
           <DialogHeader className="p-4 border-b border-border">
             <DialogTitle className="text-center">Comments</DialogTitle>
           </DialogHeader>
-          
+
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
             {comments.length === 0 ? (
               <div className="text-center py-8">
@@ -560,7 +606,7 @@ export default function ActivityCard({
                 <div key={comment.id} className="space-y-3">
                   {/* Main comment */}
                   <div className="flex gap-3">
-                    <Avatar 
+                    <Avatar
                       className="w-9 h-9 flex-shrink-0 cursor-pointer"
                       onClick={() => setLocation(`/profile/${comment.userId}`)}
                     >
@@ -569,11 +615,11 @@ export default function ActivityCard({
                     </Avatar>
                     <div className="flex-1">
                       <p className="text-sm">
-                        <span 
+                        <span
                           className="font-semibold mr-2 cursor-pointer hover:underline"
                           onClick={() => setLocation(`/profile/${comment.userId}`)}
                         >
-                          {comment.userName || 'User'}
+                          {comment.userName || 'AMN'}
                         </span>
                         {comment.content}
                       </p>
@@ -586,7 +632,7 @@ export default function ActivityCard({
                             {comment.likesCount} likes
                           </button>
                         )}
-                        <button 
+                        <button
                           className="text-xs font-semibold text-muted-foreground hover:text-foreground"
                           onClick={() => handleReply(comment.id, comment.userName)}
                         >
@@ -604,7 +650,7 @@ export default function ActivityCard({
                     <div className="ml-12 space-y-3">
                       {comment.replies.map((reply) => (
                         <div key={reply.id} className="flex gap-3">
-                          <Avatar 
+                          <Avatar
                             className="w-7 h-7 flex-shrink-0 cursor-pointer"
                             onClick={() => setLocation(`/profile/${reply.userId}`)}
                           >
@@ -613,7 +659,7 @@ export default function ActivityCard({
                           </Avatar>
                           <div className="flex-1">
                             <p className="text-sm">
-                              <span 
+                              <span
                                 className="font-semibold mr-2 cursor-pointer hover:underline"
                                 onClick={() => setLocation(`/profile/${reply.userId}`)}
                               >
@@ -630,7 +676,7 @@ export default function ActivityCard({
                                   {reply.likesCount} likes
                                 </button>
                               )}
-                              <button 
+                              <button
                                 className="text-xs font-semibold text-muted-foreground hover:text-foreground"
                                 onClick={() => handleReply(comment.id, reply.userName)}
                               >
@@ -697,16 +743,16 @@ export default function ActivityCard({
             <DialogTitle className="text-center">Share Activity</DialogTitle>
           </DialogHeader>
           <div className="space-y-3">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className="w-full justify-start gap-3"
               onClick={copyLink}
             >
               <ShareIcon className="w-5 h-5" />
               Copy Link
             </Button>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className="w-full justify-start gap-3"
               onClick={() => {
                 window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(`${window.location.origin}/activity/${id}`)}&text=${encodeURIComponent(title)}`, '_blank');
@@ -715,8 +761,8 @@ export default function ActivityCard({
             >
               Share to Twitter
             </Button>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className="w-full justify-start gap-3"
               onClick={() => {
                 window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`${window.location.origin}/activity/${id}`)}`, '_blank');
@@ -725,8 +771,8 @@ export default function ActivityCard({
             >
               Share to Facebook
             </Button>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className="w-full justify-start gap-3"
               onClick={() => {
                 window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(`${title} - ${window.location.origin}/activity/${id}`)}`, '_blank');
