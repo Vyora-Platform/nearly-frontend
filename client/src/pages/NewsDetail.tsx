@@ -72,7 +72,30 @@ export default function NewsDetail() {
     queryKey: ["news-comments", newsId],
     queryFn: async () => {
       try {
-        return await newsApi.getComments(newsId);
+        const fetchedComments = await newsApi.getComments(newsId);
+        // Enrich comments with user data if not provided (similar to Shots.tsx)
+        const enrichedComments = await Promise.all(
+          fetchedComments.map(async (c: any) => {
+            let userName = c.userName || 'User';
+            let userAvatar = c.userAvatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${c.userId}`;
+
+            // Fetch user data if not provided
+            if (!c.userName) {
+              try {
+                const userData = await api.getUser(c.userId);
+                userName = userData.name || userData.username || 'User';
+                userAvatar = userData.avatarUrl || userAvatar;
+              } catch { }
+            }
+
+            return {
+              ...c,
+              userName,
+              userAvatar,
+            };
+          })
+        );
+        return enrichedComments;
       } catch {
         return [];
       }
@@ -120,7 +143,7 @@ export default function NewsDetail() {
   // Track view on mount
   useEffect(() => {
     if (newsId) {
-      newsApi.viewNews(newsId).catch(() => {});
+      newsApi.viewNews(newsId).catch(() => { });
     }
   }, [newsId]);
 
@@ -187,7 +210,15 @@ export default function NewsDetail() {
   const handleReply = (commentId: string, userName: string) => {
     setReplyingTo({ id: commentId, userName });
     setComment(`@${userName} `);
-    setTimeout(() => commentInputRef.current?.focus(), 100);
+    setTimeout(() => {
+      const input = commentInputRef.current;
+      if (input) {
+        input.focus();
+        // Set cursor at the end of the text
+        const length = input.value.length;
+        input.setSelectionRange(length, length);
+      }
+    }, 100);
   };
 
   const cancelReply = () => {
@@ -295,9 +326,9 @@ export default function NewsDetail() {
 
         {/* Image */}
         {news.imageUrl && (
-          <img 
-            src={news.imageUrl} 
-            alt={news.headline} 
+          <img
+            src={news.imageUrl}
+            alt={news.headline}
             className="w-full rounded-xl object-cover max-h-64"
           />
         )}
@@ -356,7 +387,7 @@ export default function NewsDetail() {
 
         {/* Actions */}
         <div className="flex items-center justify-between py-3">
-          <button 
+          <button
             onClick={() => !hasLiked && likeMutation.mutate()}
             className={`flex items-center gap-2 ${hasLiked ? 'text-red-500' : 'text-muted-foreground'}`}
             disabled={hasLiked}
@@ -379,7 +410,7 @@ export default function NewsDetail() {
         {/* Comments Section */}
         <div className="space-y-4">
           <h3 className="font-semibold">Discuss ({rawComments.length})</h3>
-          
+
           {/* Add Comment */}
           <div className="space-y-2">
             {replyingTo && (
@@ -404,8 +435,8 @@ export default function NewsDetail() {
                 className="flex-1"
                 onKeyPress={(e) => e.key === 'Enter' && comment.trim() && handleSubmitComment()}
               />
-              <Button 
-                size="sm" 
+              <Button
+                size="sm"
                 onClick={handleSubmitComment}
                 disabled={!comment.trim() || commentMutation.isPending}
               >
@@ -436,7 +467,7 @@ export default function NewsDetail() {
                       {c.likesCount > 0 && (
                         <span className="text-xs text-muted-foreground">{c.likesCount} likes</span>
                       )}
-                      <button 
+                      <button
                         onClick={() => handleReply(c.id, c.userName || 'User')}
                         className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1"
                       >
@@ -466,7 +497,7 @@ export default function NewsDetail() {
                             {reply.likesCount > 0 && (
                               <span className="text-xs text-muted-foreground">{reply.likesCount} likes</span>
                             )}
-                            <button 
+                            <button
                               onClick={() => handleReply(c.id, reply.userName || 'User')}
                               className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1"
                             >

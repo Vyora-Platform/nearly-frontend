@@ -127,7 +127,6 @@ async function gatewayRequest<T>(
   body?: any
 ): Promise<T> {
   const url = buildGatewayUrl(endpoint);
-  console.log("gatewayRequest",url)
   const startTime = Date.now();
 
   // Build headers - add auth headers for non-public endpoints
@@ -215,52 +214,52 @@ async function gatewayRequest<T>(
 export const userApi = {
   // Get all users
   getUsers: () => gatewayRequest<any[]>("GET", "/api/users"),
-  
+
   // Get current authenticated user's profile
   getCurrentUser: () => gatewayRequest<any>("GET", "/api/users/current"),
-  
+
   // Get user by ID
   getUser: (id: string) => gatewayRequest<any>("GET", `/api/users/${id}`),
-  
+
   // Get user by username
-  getUserByUsername: (username: string) => 
+  getUserByUsername: (username: string) =>
     gatewayRequest<any>("GET", `/api/users/username/${username}`),
-  
+
   // Create user (typically called by auth-service internally)
   createUser: (data: any) => gatewayRequest<any>("POST", "/api/users", data),
-  
+
   // Update user profile
-  updateUser: (id: string, data: any) => 
+  updateUser: (id: string, data: any) =>
     gatewayRequest<any>("PATCH", `/api/users/${id}`, data),
-  
+
   // Delete user
-  deleteUser: (id: string) => 
+  deleteUser: (id: string) =>
     gatewayRequest<{ success: boolean }>("DELETE", `/api/users/${id}`),
-  
+
   // Search users
-  searchUsers: (query: string) => 
+  searchUsers: (query: string) =>
     gatewayRequest<any[]>("GET", `/api/users/search?q=${encodeURIComponent(query)}`),
-  
+
   // Follow a user
   followUser: (followerId: string, followingId: string) =>
     gatewayRequest<{ success: boolean }>("POST", `/api/users/${followerId}/follow/${followingId}`),
-  
+
   // Unfollow a user
   unfollowUser: (followerId: string, followingId: string) =>
     gatewayRequest<{ success: boolean }>("DELETE", `/api/users/${followerId}/unfollow/${followingId}`),
-  
+
   // Get user's followers
-  getFollowers: (userId: string) => 
+  getFollowers: (userId: string) =>
     gatewayRequest<any[]>("GET", `/api/users/${userId}/followers`),
-  
+
   // Get users that a user is following
-  getFollowing: (userId: string) => 
+  getFollowing: (userId: string) =>
     gatewayRequest<any[]>("GET", `/api/users/${userId}/following`),
-  
+
   // Check if one user is following another
   isFollowing: (followerId: string, followingId: string) =>
     gatewayRequest<{ isFollowing: boolean }>("GET", `/api/users/${followerId}/following/${followingId}`),
-  
+
   // Change password (user-service handles password updates)
   changePassword: (userId: string, currentPassword: string, newPassword: string) =>
     gatewayRequest<{ success: boolean; message?: string }>("POST", `/api/users/${userId}/password`, {
@@ -273,25 +272,25 @@ export const userApi = {
 // ACTIVITY SERVICE
 // =====================
 export const activityApi = {
-  getActivities: (limit?: number) => 
+  getActivities: (limit?: number) =>
     gatewayRequest<any[]>("GET", limit ? `/api/activities?limit=${limit}` : "/api/activities"),
-  
+
   getActivity: (id: string) => gatewayRequest<any>("GET", `/api/activities/${id}`),
-  
+
   createActivity: (data: any) => gatewayRequest<any>("POST", "/api/activities", data),
-  
-  updateActivity: (id: string, data: any) => 
+
+  updateActivity: (id: string, data: any) =>
     gatewayRequest<any>("PATCH", `/api/activities/${id}`, data),
-  
-  deleteActivity: (id: string) => 
+
+  deleteActivity: (id: string) =>
     gatewayRequest<{ success: boolean }>("DELETE", `/api/activities/${id}`),
-  
+
   likeActivity: (id: string, increment: boolean) =>
     gatewayRequest<any>("POST", `/api/activities/${id}/like`, { increment }),
-  
+
   joinActivity: (id: string, userId: string) =>
     gatewayRequest<any>("POST", `/api/activities/${id}/join`, { userId }),
-  
+
   getUserActivities: (userId: string) =>
     gatewayRequest<any[]>("GET", `/api/activities/user/${userId}`),
 };
@@ -300,28 +299,28 @@ export const activityApi = {
 // EVENT SERVICE
 // =====================
 export const eventApi = {
-  getEvents: (limit?: number) => 
+  getEvents: (limit?: number) =>
     gatewayRequest<any[]>("GET", limit ? `/api/events?limit=${limit}` : "/api/events"),
-  
+
   getEvent: (id: string) => gatewayRequest<any>("GET", `/api/events/${id}`),
-  
+
   createEvent: (data: any) => gatewayRequest<any>("POST", "/api/events", data),
-  
-  updateEvent: (id: string, data: any) => 
+
+  updateEvent: (id: string, data: any) =>
     gatewayRequest<any>("PATCH", `/api/events/${id}`, data),
-  
-  deleteEvent: (id: string) => 
+
+  deleteEvent: (id: string) =>
     gatewayRequest<{ success: boolean }>("DELETE", `/api/events/${id}`),
-  
-  getGuests: (eventId: string) => 
+
+  getGuests: (eventId: string) =>
     gatewayRequest<any[]>("GET", `/api/events/${eventId}/guests`),
-  
+
   joinEvent: (eventId: string, userId: string, status = "attending") =>
     gatewayRequest<any>("POST", `/api/events/${eventId}/join`, { userId, status }),
-  
+
   getComments: (eventId: string) =>
     gatewayRequest<any[]>("GET", `/api/events/${eventId}/comments`),
-  
+
   addComment: (eventId: string, userId: string, content: string) =>
     gatewayRequest<any>("POST", `/api/events/${eventId}/comments`, { userId, content }),
 };
@@ -330,28 +329,28 @@ export const eventApi = {
 // GROUP SERVICE
 // =====================
 export const groupApi = {
-  getGroups: (limit?: number) => 
+  getGroups: (limit?: number) =>
     gatewayRequest<any[]>("GET", limit ? `/api/groups?limit=${limit}` : "/api/groups"),
-  
+
   getGroup: (id: string) => gatewayRequest<any>("GET", `/api/groups/${id}`),
-  
+
   createGroup: (data: any) => gatewayRequest<any>("POST", "/api/groups", data),
-  
-  updateGroup: (id: string, data: any) => 
+
+  updateGroup: (id: string, data: any) =>
     gatewayRequest<any>("PATCH", `/api/groups/${id}`, data),
-  
-  deleteGroup: (id: string) => 
+
+  deleteGroup: (id: string) =>
     gatewayRequest<{ success: boolean }>("DELETE", `/api/groups/${id}`),
-  
-  getMembers: (groupId: string) => 
+
+  getMembers: (groupId: string) =>
     gatewayRequest<any[]>("GET", `/api/groups/${groupId}/members`),
-  
+
   joinGroup: (groupId: string, userId: string) =>
     gatewayRequest<any>("POST", `/api/groups/${groupId}/join`, { userId }),
-  
+
   leaveGroup: (groupId: string, userId: string) =>
     gatewayRequest<void>("DELETE", `/api/groups/${groupId}/leave/${userId}`),
-  
+
   getUserGroups: (userId: string) =>
     gatewayRequest<any[]>("GET", `/api/groups/user/${userId}`),
 };
@@ -360,33 +359,33 @@ export const groupApi = {
 // NEWS SERVICE
 // =====================
 export const newsApi = {
-  getNews: (limit?: number) => 
+  getNews: (limit?: number) =>
     gatewayRequest<any[]>("GET", limit ? `/api/news?limit=${limit}` : "/api/news"),
-  
+
   getNewsItem: (id: string) => gatewayRequest<any>("GET", `/api/news/${id}`),
-  
+
   createNews: (data: any) => gatewayRequest<any>("POST", "/api/news", data),
-  
-  updateNews: (id: string, data: any) => 
+
+  updateNews: (id: string, data: any) =>
     gatewayRequest<any>("PATCH", `/api/news/${id}`, data),
-  
-  deleteNews: (id: string) => 
+
+  deleteNews: (id: string) =>
     gatewayRequest<{ success: boolean }>("DELETE", `/api/news/${id}`),
-  
+
   voteNews: (id: string, voteType: "true" | "fake", increment: boolean) =>
     gatewayRequest<any>("POST", `/api/news/${id}/vote`, { voteType, increment }),
-  
+
   likeNews: (id: string, increment: boolean) =>
     gatewayRequest<any>("POST", `/api/news/${id}/like`, { increment }),
-  
+
   viewNews: (id: string) =>
     gatewayRequest<any>("POST", `/api/news/${id}/view`),
-  
+
   getComments: (newsId: string) =>
     gatewayRequest<any[]>("GET", `/api/news/${newsId}/comments`),
-  
-  addComment: (newsId: string, content: string) =>
-    gatewayRequest<any>("POST", `/api/news/${newsId}/comments`, { content }),
+
+  addComment: (newsId: string, content: string, parentCommentId?: string) =>
+    gatewayRequest<any>("POST", `/api/news/${newsId}/comments`, { content, parentCommentId }),
 };
 
 // =====================
@@ -394,16 +393,16 @@ export const newsApi = {
 // =====================
 export const messagingApi = {
   sendMessage: (data: any) => gatewayRequest<any>("POST", "/api/messages", data),
-  
+
   getGroupMessages: (groupId: string) =>
     gatewayRequest<any[]>("GET", `/api/messages/group/${groupId}`),
-  
+
   getDirectMessages: (userId: string, withUserId: string) =>
     gatewayRequest<any[]>("GET", `/api/messages/direct/${userId}?withUserId=${withUserId}`),
-  
+
   getConversations: (userId: string) =>
     gatewayRequest<any[]>("GET", `/api/messages/conversations/${userId}`),
-  
+
   markAsRead: (recipientId: string) =>
     gatewayRequest<void>("POST", `/api/messages/read/${recipientId}`),
 };
@@ -418,33 +417,33 @@ export const momentsApi = {
     if (limit) params.append("limit", limit.toString());
     return gatewayRequest<any[]>("GET", `/api/moments?${params.toString()}`);
   },
-  
+
   getMoment: (id: string) => gatewayRequest<any>("GET", `/api/moments/${id}`),
-  
+
   createMoment: (data: any) => gatewayRequest<any>("POST", "/api/moments", data),
-  
-  deleteMoment: (id: string) => 
+
+  deleteMoment: (id: string) =>
     gatewayRequest<{ success: boolean }>("DELETE", `/api/moments/${id}`),
-  
+
   likeMoment: (id: string) => gatewayRequest<any>("POST", `/api/moments/${id}/like`),
-  
+
   viewMoment: (id: string) => gatewayRequest<any>("POST", `/api/moments/${id}/view`),
-  
+
   sendDirectMoment: (momentId: string, senderId: string, recipientId: string) =>
     gatewayRequest<any>("POST", `/api/moments/${momentId}/send`, { senderId, recipientId }),
-  
+
   getDirectMoments: (userId: string) =>
     gatewayRequest<any[]>("GET", `/api/moments/direct/${userId}`),
-  
+
   markDirectMomentViewed: (id: string) =>
     gatewayRequest<void>("POST", `/api/moments/direct/${id}/view`),
-  
+
   getStreaks: (userId: string) =>
     gatewayRequest<any[]>("GET", `/api/moments/streaks/${userId}`),
-  
+
   getComments: (momentId: string) =>
     gatewayRequest<any[]>("GET", `/api/moments/${momentId}/comments`),
-  
+
   addComment: (momentId: string, content: string, parentCommentId?: string) =>
     gatewayRequest<any>("POST", `/api/moments/${momentId}/comments`, { content, parentCommentId }),
 };
@@ -484,7 +483,7 @@ export const shotsApi = {
         // Handle different response structures from media service
         const url = result.url || result.data?.url || result.fileUrl || result.data?.fileUrl || '';
         const id = result.id || result.data?.id || result.fileId || result.data?.fileId || '';
-        
+
         if (url) {
           return { success: true, url, id };
         }
@@ -504,10 +503,10 @@ export const shotsApi = {
     if (userId) params.append("userId", userId);
     return gatewayRequest<any[]>("GET", `/api/shots?${params.toString()}`);
   },
-  
+
   // Get single shot
   getShot: (id: string) => gatewayRequest<any>("GET", `/api/shots/${id}`),
-  
+
   // Create a new shot (video upload should be done first via mediaApi)
   // Supports both mediaId (preferred) and videoUrl (legacy)
   createShot: (data: {
@@ -520,51 +519,51 @@ export const shotsApi = {
     duration?: number;
     visibility?: string;
   }) => gatewayRequest<any>("POST", "/api/shots", data),
-  
+
   // Delete shot
-  deleteShot: (id: string) => 
+  deleteShot: (id: string) =>
     gatewayRequest<{ success: boolean }>("DELETE", `/api/shots/${id}`),
-  
+
   // Track view
-  viewShot: (id: string) => 
+  viewShot: (id: string) =>
     gatewayRequest<{ success: boolean; viewsCount: number }>("POST", `/api/shots/${id}/view`),
-  
+
   // Like shot
-  likeShot: (id: string) => 
+  likeShot: (id: string) =>
     gatewayRequest<{ success: boolean; liked: boolean; likesCount: number }>("POST", `/api/shots/${id}/like`),
-  
+
   // Unlike shot
-  unlikeShot: (id: string) => 
+  unlikeShot: (id: string) =>
     gatewayRequest<{ success: boolean; liked: boolean; likesCount: number }>("DELETE", `/api/shots/${id}/like`),
-  
+
   // Check if liked
-  checkLiked: (id: string) => 
+  checkLiked: (id: string) =>
     gatewayRequest<{ liked: boolean }>("GET", `/api/shots/${id}/liked`),
-  
+
   // Get comments (with nested replies)
-  getComments: (shotId: string) => 
+  getComments: (shotId: string) =>
     gatewayRequest<any[]>("GET", `/api/shots/${shotId}/comments`),
-  
+
   // Add comment (supports replies with parentCommentId)
   addComment: (shotId: string, content: string, parentCommentId?: string) =>
     gatewayRequest<any>("POST", `/api/shots/${shotId}/comments`, { content, parentCommentId }),
-  
+
   // Delete comment
   deleteComment: (shotId: string, commentId: string) =>
     gatewayRequest<{ success: boolean }>("DELETE", `/api/shots/${shotId}/comments/${commentId}`),
-  
+
   // Like comment
   likeComment: (shotId: string, commentId: string) =>
     gatewayRequest<{ success: boolean; likesCount: number }>("POST", `/api/shots/${shotId}/comments/${commentId}/like`),
-  
+
   // Unlike comment
   unlikeComment: (shotId: string, commentId: string) =>
     gatewayRequest<{ success: boolean; likesCount: number }>("DELETE", `/api/shots/${shotId}/comments/${commentId}/like`),
-  
+
   // Share shot (increments share count)
-  shareShot: (id: string) => 
+  shareShot: (id: string) =>
     gatewayRequest<{ success: boolean; sharesCount: number }>("POST", `/api/shots/${id}/share`),
-  
+
   // Get user's shots
   getUserShots: (userId: string, limit?: number) => {
     const params = new URLSearchParams();
@@ -572,7 +571,7 @@ export const shotsApi = {
     if (limit) params.append("limit", limit.toString());
     return gatewayRequest<any[]>("GET", `/api/shots?${params.toString()}`);
   },
-  
+
   // Get trending shots
   getTrendingShots: (limit?: number) => {
     const params = new URLSearchParams();
@@ -580,7 +579,7 @@ export const shotsApi = {
     params.append("sort", "trending");
     return gatewayRequest<any[]>("GET", `/api/shots?${params.toString()}`);
   },
-  
+
   // Get following shots (shots from users you follow)
   getFollowingShots: (limit?: number) => {
     const params = new URLSearchParams();
@@ -588,15 +587,15 @@ export const shotsApi = {
     params.append("feed", "following");
     return gatewayRequest<any[]>("GET", `/api/shots?${params.toString()}`);
   },
-  
+
   // Save/bookmark shot
   saveShot: (id: string) =>
     gatewayRequest<{ success: boolean; saved: boolean }>("POST", `/api/shots/${id}/save`),
-  
+
   // Unsave/remove bookmark
   unsaveShot: (id: string) =>
     gatewayRequest<{ success: boolean; saved: boolean }>("DELETE", `/api/shots/${id}/save`),
-  
+
   // Get saved shots
   getSavedShots: (limit?: number) => {
     const params = new URLSearchParams();
@@ -615,17 +614,17 @@ export const jobsApi = {
     if (limit) params.append("limit", limit.toString());
     return gatewayRequest<any[]>("GET", `/api/jobs?${params.toString()}`);
   },
-  
+
   getJob: (id: string) => gatewayRequest<any>("GET", `/api/jobs/${id}`),
-  
+
   createJob: (data: any) => gatewayRequest<any>("POST", "/api/jobs", data),
-  
-  updateJob: (id: string, data: any) => 
+
+  updateJob: (id: string, data: any) =>
     gatewayRequest<any>("PATCH", `/api/jobs/${id}`, data),
-  
-  deleteJob: (id: string) => 
+
+  deleteJob: (id: string) =>
     gatewayRequest<{ success: boolean }>("DELETE", `/api/jobs/${id}`),
-  
+
   searchJobs: (query: string) =>
     gatewayRequest<any[]>("GET", `/api/jobs/search?q=${encodeURIComponent(query)}`),
 };
@@ -637,17 +636,17 @@ export const dealsApi = {
     if (limit) params.append("limit", limit.toString());
     return gatewayRequest<any[]>("GET", `/api/deals?${params.toString()}`);
   },
-  
+
   getDeal: (id: string) => gatewayRequest<any>("GET", `/api/deals/${id}`),
-  
+
   createDeal: (data: any) => gatewayRequest<any>("POST", "/api/deals", data),
-  
-  updateDeal: (id: string, data: any) => 
+
+  updateDeal: (id: string, data: any) =>
     gatewayRequest<any>("PATCH", `/api/deals/${id}`, data),
-  
-  deleteDeal: (id: string) => 
+
+  deleteDeal: (id: string) =>
     gatewayRequest<{ success: boolean }>("DELETE", `/api/deals/${id}`),
-  
+
   claimDeal: (id: string) => gatewayRequest<any>("POST", `/api/deals/${id}/claim`),
 };
 
@@ -659,15 +658,15 @@ export const placesApi = {
     if (limit) params.append("limit", limit.toString());
     return gatewayRequest<any[]>("GET", `/api/places?${params.toString()}`);
   },
-  
+
   getPlace: (id: string) => gatewayRequest<any>("GET", `/api/places/${id}`),
-  
+
   createPlace: (data: any) => gatewayRequest<any>("POST", "/api/places", data),
-  
-  updatePlace: (id: string, data: any) => 
+
+  updatePlace: (id: string, data: any) =>
     gatewayRequest<any>("PATCH", `/api/places/${id}`, data),
-  
-  deletePlace: (id: string) => 
+
+  deletePlace: (id: string) =>
     gatewayRequest<{ success: boolean }>("DELETE", `/api/places/${id}`),
 };
 
@@ -678,20 +677,20 @@ export const pagesApi = {
     if (limit) params.append("limit", limit.toString());
     return gatewayRequest<any[]>("GET", `/api/pages?${params.toString()}`);
   },
-  
+
   getPage: (id: string) => gatewayRequest<any>("GET", `/api/pages/${id}`),
-  
+
   getPageByUsername: (username: string) =>
     gatewayRequest<any>("GET", `/api/pages/username/${username}`),
-  
+
   createPage: (data: any) => gatewayRequest<any>("POST", "/api/pages", data),
-  
-  updatePage: (id: string, data: any) => 
+
+  updatePage: (id: string, data: any) =>
     gatewayRequest<any>("PATCH", `/api/pages/${id}`, data),
-  
-  deletePage: (id: string) => 
+
+  deletePage: (id: string) =>
     gatewayRequest<{ success: boolean }>("DELETE", `/api/pages/${id}`),
-  
+
   followPage: (id: string) => gatewayRequest<any>("POST", `/api/pages/${id}/follow`),
 };
 
@@ -705,22 +704,22 @@ export const notificationApi = {
       : `/api/notifications/${userId}`;
     return gatewayRequest<any[]>("GET", url);
   },
-  
+
   getUnreadNotifications: (userId: string) =>
     gatewayRequest<any[]>("GET", `/api/notifications/${userId}/unread`),
-  
+
   getUnreadCount: (userId: string) =>
     gatewayRequest<{ count: number }>("GET", `/api/notifications/${userId}/unread/count`),
-  
+
   createNotification: (data: any) =>
     gatewayRequest<any>("POST", "/api/notifications", data),
-  
+
   markAsRead: (id: string) =>
     gatewayRequest<any>("PATCH", `/api/notifications/${id}/read`),
-  
+
   markAllAsRead: (userId: string) =>
     gatewayRequest<void>("POST", `/api/notifications/${userId}/read-all`),
-  
+
   deleteNotification: (id: string) =>
     gatewayRequest<void>("DELETE", `/api/notifications/${id}`),
 };
@@ -738,10 +737,10 @@ export const searchApi = {
     if (limit) params.append("limit", limit.toString());
     return gatewayRequest<any[]>("GET", `/api/search?${params.toString()}`);
   },
-  
+
   getByType: (type: string, page = 0, size = 20) =>
     gatewayRequest<any[]>("GET", `/api/search/type/${type}?page=${page}&size=${size}`),
-  
+
   getTrendingSearches: (limit = 10) =>
     gatewayRequest<string[]>("GET", `/api/search/trending?limit=${limit}`),
 };
@@ -769,7 +768,7 @@ export const mediaApi = {
     if (!response.ok) throw new Error("Upload failed");
     return response.json();
   },
-  
+
   // userId is now extracted from JWT token via X-User-Id header on server
   uploadMultiple: async (files: File[], context: string, contextId?: string) => {
     const formData = new FormData();
@@ -791,7 +790,7 @@ export const mediaApi = {
     if (!response.ok) throw new Error("Upload failed");
     return response.json();
   },
-  
+
   // userId is now extracted from JWT token via X-User-Id header on server
   getPresignedUrl: (fileName: string, contentType: string, context: string, contextId?: string) =>
     gatewayRequest<any>("POST", "/api/media/presigned-url", {
@@ -801,18 +800,18 @@ export const mediaApi = {
       contextId,
       isPublic: true,
     }),
-  
+
   confirmUpload: (fileId: string, fileSize: number) =>
     gatewayRequest<void>("POST", `/api/media/${fileId}/confirm`, { fileSize }),
-  
+
   getMediaFile: (id: string) => gatewayRequest<any>("GET", `/api/media/${id}`),
-  
+
   getMediaByContext: (context: string, contextId: string) =>
     gatewayRequest<any[]>("GET", `/api/media/context/${context}/${contextId}`),
-  
+
   getMediaByUser: (userId: string) =>
     gatewayRequest<any[]>("GET", `/api/media/user/${userId}`),
-  
+
   deleteMedia: (id: string) => gatewayRequest<void>("DELETE", `/api/media/${id}`),
 };
 
@@ -837,16 +836,16 @@ export interface VideoInfo {
 
   // Direct streaming URL (for byte-range requests)
   streamUrl: string;
-  
+
   // Video metadata
   width: number;
   height: number;
   duration: number;
-  
+
   // Transcoding status
   transcoded: boolean;
   transcodeStatus?: 'UPLOADED' | 'TRANSCODING' | 'READY' | 'FAILED';
-  
+
   // Source info
   sourceFormat?: string;
   sourceCodec?: string;
@@ -1081,7 +1080,7 @@ export const randomChatApi = {
     gatewayRequest<{ count: number; online?: number; looking?: number; inChat?: number }>(
       "GET", "/api/random-chat/online"
     ),
-  
+
   // Get queue status
   getQueueStatus: () =>
     gatewayRequest<{
@@ -1090,7 +1089,7 @@ export const randomChatApi = {
       onlineUsers: number;
       activeRooms: number;
     }>("GET", "/api/random-chat/queue/status"),
-  
+
   // Check if user is in queue or room
   checkUserStatus: (sessionId: string) =>
     gatewayRequest<{
@@ -1100,11 +1099,11 @@ export const randomChatApi = {
       roomId?: string;
       status: "in_chat" | "looking" | "idle";
     }>("GET", `/api/random-chat/queue/${sessionId}`),
-  
+
   // Leave matching queue
   leaveQueue: (sessionId: string) =>
     gatewayRequest<{ success: boolean }>("DELETE", `/api/random-chat/queue/${sessionId}`),
-  
+
   // Register user online
   registerOnline: (data: { sessionId: string; userId?: number; username?: string }) =>
     gatewayRequest<{
@@ -1113,11 +1112,11 @@ export const randomChatApi = {
       onlineCount: number;
       lookingForMatch: number;
     }>("POST", "/api/random-chat/online", data),
-  
+
   // Unregister user
   unregisterOnline: (sessionId: string) =>
     gatewayRequest<{ success: boolean }>("DELETE", `/api/random-chat/online/${sessionId}`),
-  
+
   // Send heartbeat to keep session alive
   heartbeat: (sessionId: string) =>
     gatewayRequest<{
@@ -1125,7 +1124,7 @@ export const randomChatApi = {
       onlineCount: number;
       lookingForMatch: number;
     }>("POST", "/api/random-chat/heartbeat", { sessionId }),
-  
+
   // Get chat statistics
   getStats: () =>
     gatewayRequest<{
@@ -1135,7 +1134,7 @@ export const randomChatApi = {
       usersInChat: number;
       status: string;
     }>("GET", "/api/random-chat/stats"),
-  
+
   // Get room info by session
   getRoomBySession: (sessionId: string) =>
     gatewayRequest<{
@@ -1143,16 +1142,16 @@ export const randomChatApi = {
       roomId?: string;
       sessionId: string;
     }>("GET", `/api/random-chat/room/session/${sessionId}`),
-  
+
   // End room by session
   endRoom: (sessionId: string) =>
     gatewayRequest<{ success: boolean; partnerNotified: boolean }>(
       "DELETE", `/api/random-chat/room/session/${sessionId}`
     ),
-  
+
   // Get WebSocket URL for chat signaling (Legacy - use video-chat service)
   getWebSocketUrl: () => buildGatewayWsUrl("/ws/video"),
-  
+
   // Get direct WebSocket URL - use video-chat-service which handles both modes
   // Backend decides the chat mode (video or text) based on matching availability
   getDirectWebSocketUrl: () => {
@@ -1171,13 +1170,13 @@ export const videoChatApi = {
   // Get ICE servers for WebRTC connection
   getIceServers: () =>
     gatewayRequest<any[]>("GET", "/api/video-chat/ice-servers"),
-  
+
   // Get online users count
   getOnlineCount: () =>
     gatewayRequest<{ count: number; online?: number; looking?: number; inCall?: number }>(
       "GET", "/api/video-chat/online"
     ),
-  
+
   // Get queue status
   getQueueStatus: () =>
     gatewayRequest<{
@@ -1187,7 +1186,7 @@ export const videoChatApi = {
       onlineUsers: number;
       activeRooms: number;
     }>("GET", "/api/video-chat/queue/status"),
-  
+
   // Check if user is in queue or room
   checkUserStatus: (sessionId: string) =>
     gatewayRequest<{
@@ -1197,11 +1196,11 @@ export const videoChatApi = {
       roomId?: string;
       status: "in_call" | "looking" | "idle";
     }>("GET", `/api/video-chat/queue/${sessionId}`),
-  
+
   // Leave matching queue
   leaveQueue: (sessionId: string) =>
     gatewayRequest<{ success: boolean }>("DELETE", `/api/video-chat/queue/${sessionId}`),
-  
+
   // Register user online
   registerOnline: (data: { sessionId: string; userId?: number; username?: string }) =>
     gatewayRequest<{
@@ -1211,11 +1210,11 @@ export const videoChatApi = {
       lookingForVideo: number;
       lookingForText: number;
     }>("POST", "/api/video-chat/online", data),
-  
+
   // Unregister user
   unregisterOnline: (sessionId: string) =>
     gatewayRequest<{ success: boolean }>("DELETE", `/api/video-chat/online/${sessionId}`),
-  
+
   // Send heartbeat to keep session alive
   heartbeat: (sessionId: string) =>
     gatewayRequest<{
@@ -1224,7 +1223,7 @@ export const videoChatApi = {
       lookingForVideo: number;
       lookingForText: number;
     }>("POST", "/api/video-chat/heartbeat", { sessionId }),
-  
+
   // Get video chat statistics
   getStats: () =>
     gatewayRequest<{
@@ -1235,7 +1234,7 @@ export const videoChatApi = {
       usersInCall: number;
       status: string;
     }>("GET", "/api/video-chat/stats"),
-  
+
   // Get room info by session
   getRoomBySession: (sessionId: string) =>
     gatewayRequest<{
@@ -1245,16 +1244,16 @@ export const videoChatApi = {
       isInitiator?: boolean;
       chatMode?: string;
     }>("GET", `/api/video-chat/room/session/${sessionId}`),
-  
+
   // End room by session
   endRoom: (sessionId: string) =>
     gatewayRequest<{ success: boolean; partnerNotified: boolean }>(
       "DELETE", `/api/video-chat/room/session/${sessionId}`
     ),
-  
+
   // Get WebSocket URL for video chat signaling
   getWebSocketUrl: () => buildGatewayWsUrl("/ws/video"),
-  
+
   // Get direct WebSocket URL (bypassing gateway for lower latency)
   getDirectWebSocketUrl: () => {
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
@@ -1283,11 +1282,11 @@ export const paiMatchingApi = {
     matchScore?: number;
     roomId?: string;
   }>("POST", "/api/pai/match", data),
-  
+
   // Leave matching queue
   leaveQueue: (sessionId: string) =>
     gatewayRequest<{ success: boolean }>("DELETE", `/api/pai/queue/${sessionId}`),
-  
+
   // Get queue status
   getQueueStatus: (sessionId: string) =>
     gatewayRequest<{
@@ -1295,7 +1294,7 @@ export const paiMatchingApi = {
       position?: number;
       estimatedWaitTime?: number;
     }>("GET", `/api/pai/queue/${sessionId}/status`),
-  
+
   // Rate a match (for PAI learning)
   rateMatch: (data: {
     sessionId: string;
@@ -1386,7 +1385,7 @@ export const authApi = {
   // Anonymous Sessions (for Random Chat)
   createAnonymousSession: () =>
     gatewayRequest<{ sessionId: string; expiresAt: string }>("POST", "/api/auth/anonymous/session"),
-  
+
   validateSession: (sessionId: string) =>
     gatewayRequest<{ valid: boolean }>("GET", `/api/auth/anonymous/session/${sessionId}/validate`),
 
@@ -1422,4 +1421,5 @@ export const gatewayApi = {
 };
 
 export default gatewayApi;
+
 
