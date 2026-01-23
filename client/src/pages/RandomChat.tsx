@@ -326,11 +326,19 @@ export default function RandomChat({ onFullScreenChange }: RandomChatProps) {
         break;
 
       case "DISCONNECTED":
-        // Partner disconnected
+        // Partner disconnected - Auto Search
         setChatState("disconnected");
         setRoomId(null);
         cleanupWebRTC();
-        addSystemMessage("Stranger has disconnected.");
+        addSystemMessage("Stranger disconnected. Searching...");
+
+        // Automatically start searching for next stranger
+        setTimeout(() => {
+          setChatState("searching");
+          setRoomId(null);
+          setChatMode(null);
+          connectToVideoService();
+        }, 1000);
         break;
 
       case "ERROR":
