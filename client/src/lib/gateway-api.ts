@@ -127,6 +127,7 @@ async function gatewayRequest<T>(
   body?: any
 ): Promise<T> {
   const url = buildGatewayUrl(endpoint);
+  console.log("gatewayRequest",url)
   const startTime = Date.now();
 
   // Build headers - add auth headers for non-public endpoints
