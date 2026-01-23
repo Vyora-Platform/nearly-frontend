@@ -4,7 +4,7 @@ import {
   Shield, AlertTriangle, MessageCircle, Users,
   EyeOff, Flag, X, Video, VideoOff, Mic, MicOff,
   Phone, PhoneOff, Camera, Monitor, Volume2, VolumeX,
-  Loader2
+  Loader2, MoreVertical, MessageSquare
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -98,6 +98,8 @@ export default function RandomChat({ onFullScreenChange }: RandomChatProps) {
 
   // Video chat state
   const [isCameraOn, setIsCameraOn] = useState(true);
+  const [isInputVisible, setIsInputVisible] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isMicOn, setIsMicOn] = useState(true);
   const [isStrangerMuted, setIsStrangerMuted] = useState(false);
   const [connectionQuality, setConnectionQuality] = useState<"good" | "fair" | "poor">("good");
@@ -1052,7 +1054,8 @@ export default function RandomChat({ onFullScreenChange }: RandomChatProps) {
   const renderVideoChat = () => (
     <div className="flex flex-col h-full">
       {/* Video Grid */}
-      <div className="flex-1 relative bg-black min-h-[400px] w-full h-full mx-auto aspect-[9/16] shadow-2xl overflow-hidden">
+      {/* Video Grid - Full Screen Fixed */}
+      <div className="fixed inset-0 z-0 bg-black overflow-hidden">
         {/* Remote Video (Stranger) - Full screen */}
         <div className="absolute inset-0 bg-muted flex items-center justify-center">
           <video
@@ -1118,12 +1121,7 @@ export default function RandomChat({ onFullScreenChange }: RandomChatProps) {
         </div>
 
         {/* Anonymous Overlay - Moved to bottom right */}
-        <div className="absolute bottom-4 right-4">
-          <Badge variant="secondary" className="bg-black/50 text-white border-0">
-            <EyeOff className="w-3 h-3 mr-1" />
-            Anonymous
-          </Badge>
-        </div>
+        {/* Anonymous Overlay Removed */}
 
         {/* Video Control Buttons Overlay Removed */}
 
@@ -1162,90 +1160,101 @@ export default function RandomChat({ onFullScreenChange }: RandomChatProps) {
       <div className="flex-shrink-0 flex flex-col border-t border-border bg-background">
         {/* Chat List Removed - Moved to Overlay */}
 
-        {/* Spacer to reserve space for fixed controls */}
-        <div className="h-[8rem] w-full bg-background shrink-0" />
+        {/* Spacer Removed for Full Screen Transparency */}
 
-        {/* Fixed Controls Area - Anchored to Viewport Bottom */}
-        <div className="fixed bottom-0 left-0 right-0 z-[100] flex flex-col bg-background border-t border-border/50 shadow-2xl safe-area-bottom">
-          {/* Top Row: Input and Small Toggles */}
-          <div className="flex items-center gap-2 p-2 px-3 bg-background/95 backdrop-blur-sm">
-            {/* Small Toggles */}
-            <div className="flex gap-1 shrink-0">
-              <Button
-                onClick={toggleCamera}
-                variant="ghost"
-                size="icon"
-                className={`w-9 h-9 rounded-full ${!isCameraOn && "text-destructive bg-destructive/10"}`}
-              >
-                {isCameraOn ? <Camera className="w-4 h-4" /> : <VideoOff className="w-4 h-4" />}
-              </Button>
-              <Button
-                onClick={toggleMic}
-                variant="ghost"
-                size="icon"
-                className={`w-9 h-9 rounded-full ${!isMicOn && "text-destructive bg-destructive/10"}`}
-              >
-                {isMicOn ? <Mic className="w-4 h-4" /> : <MicOff className="w-4 h-4" />}
-              </Button>
-              <Button
-                onClick={toggleStrangerMute}
-                variant="ghost"
-                size="icon"
-                className={`w-9 h-9 rounded-full ${isStrangerMuted && "text-destructive bg-destructive/10"}`}
-              >
-                {isStrangerMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-              </Button>
-            </div>
-
-            <div className="w-px h-6 bg-border mx-1 shrink-0" />
-
-            {/* Input */}
-            <input
-              ref={inputRef}
-              type="text"
-              placeholder="Type message..."
-              value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  handleSendMessage();
-                }
-              }}
-              className="flex-1 bg-transparent text-sm focus:outline-none placeholder:text-muted-foreground min-w-0"
-            />
-            <Button
-              onClick={handleSendMessage}
-              disabled={!inputMessage.trim()}
-              size="icon"
-              variant="ghost"
-              className="w-9 h-9 text-primary disabled:opacity-50 shrink-0"
-            >
-              <Send className="w-5 h-5" />
+        {/* Fixed Controls Area - Transparent & Compact */}
+        {/* Right Vertical Action Bar - Insta Reels Style */}
+        {/* Right Vertical Action Bar - Insta Reels Style */}
+        {/* Right Vertical Action Bar - Insta Reels Style */}
+        <div className="fixed bottom-4 right-2 z-[100] flex flex-col items-center gap-4 pb-safe pointer-events-auto">
+          {/* Next Action */}
+          <div className="flex flex-col items-center gap-1">
+            <Button onClick={handleSkipStranger} variant="ghost" size="icon" className="w-10 h-10 rounded-full bg-blue-600 text-white shadow-lg hover:bg-blue-500 hover:scale-110 transition-all">
+              <SkipForward className="w-5 h-5 ml-0.5" />
             </Button>
+            <span className="text-[10px] font-medium text-white shadow-black drop-shadow-md">Next</span>
           </div>
 
-          {/* Bottom Row: Big Action Buttons */}
-          <div className="flex h-16 border-t border-border/10">
-            <Button
-              onClick={handleStopChat}
-              variant="default"
-              className="flex-1 h-full rounded-none bg-red-500 hover:bg-red-600 text-white text-base font-bold tracking-wide transition-colors active:bg-red-700"
-            >
-              <PhoneOff className="w-5 h-5 mr-2" />
-              STOP
+          {/* Stop Action */}
+          <div className="flex flex-col items-center gap-1">
+            <Button onClick={handleStopChat} variant="ghost" size="icon" className="w-10 h-10 rounded-full bg-red-600 text-white shadow-lg hover:bg-red-500 hover:scale-110 transition-all">
+              <PhoneOff className="w-4 h-4" />
             </Button>
-            <div className="w-px bg-black/10 z-10" />
+            <span className="text-[10px] font-medium text-white shadow-black drop-shadow-md">Stop</span>
+          </div>
+
+          {/* Chat Action - Toggle Input */}
+          <div className="flex flex-col items-center gap-1">
             <Button
-              onClick={handleSkipStranger}
-              variant="default"
-              className="flex-1 h-full rounded-none bg-blue-500 hover:bg-blue-600 text-white text-base font-bold tracking-wide transition-colors rounded-none active:bg-blue-700"
+              onClick={() => setIsInputVisible(!isInputVisible)}
+              variant="ghost"
+              size="icon"
+              className={`w-10 h-10 rounded-full text-white shadow-lg hover:bg-white/20 transition-all ${isInputVisible ? "bg-white/20" : "bg-black/40 backdrop-blur-md border border-white/10"}`}
             >
-              NEXT
-              <SkipForward className="w-5 h-5 ml-2" />
+              <MessageSquare className="w-5 h-5" />
             </Button>
+            <span className="text-[10px] font-medium text-white shadow-black drop-shadow-md">Chat</span>
+          </div>
+
+          {/* Settings Menu (Cam/Mic/Vol) - Moved to Bottom */}
+          <div className="relative flex flex-col items-center gap-1">
+            {isSettingsOpen && (
+              <div className="absolute bottom-full mb-2 right-0 flex flex-col gap-3 p-2 bg-black/60 backdrop-blur-md rounded-2xl border border-white/10 animate-in slide-in-from-bottom-5 fade-in duration-200">
+                <Button onClick={toggleCamera} variant="ghost" size="icon" className="w-10 h-10 rounded-full bg-white/10 text-white hover:bg-white/20">
+                  {isCameraOn ? <Camera className="w-5 h-5" /> : <VideoOff className="w-5 h-5" />}
+                </Button>
+                <Button onClick={toggleMic} variant="ghost" size="icon" className="w-10 h-10 rounded-full bg-white/10 text-white hover:bg-white/20">
+                  {isMicOn ? <Mic className="w-5 h-5" /> : <MicOff className="w-5 h-5" />}
+                </Button>
+                <Button onClick={toggleStrangerMute} variant="ghost" size="icon" className={`w-10 h-10 rounded-full hover:bg-white/20 ${isStrangerMuted ? "bg-red-500/50 text-white" : "bg-white/10 text-white"}`}>
+                  {isStrangerMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+                </Button>
+              </div>
+            )}
+            <Button
+              onClick={() => setIsSettingsOpen(!isSettingsOpen)}
+              variant="ghost"
+              size="icon"
+              className={`w-10 h-10 rounded-full text-white shadow-lg transition-all ${isSettingsOpen ? "bg-white/20" : "bg-black/40 backdrop-blur-md border border-white/10 hover:bg-white/20"}`}
+            >
+              <MoreVertical className="w-5 h-5" />
+            </Button>
+            <span className="text-[10px] font-medium text-white shadow-black drop-shadow-md">More</span>
           </div>
         </div>
+
+        {/* Bottom Input Area - Transparent - Conditionally Visible */}
+        {/* Bottom Input Area - Transparent - Conditionally Visible */}
+        {isInputVisible && (
+          <div className="fixed bottom-0 left-0 right-20 z-[100] p-3 pb-5 safe-area-bottom pointer-events-auto animate-in slide-in-from-bottom-10 duration-200 bg-gradient-to-t from-black/80 to-transparent">
+            <div className="flex items-center gap-3 bg-white/10 backdrop-blur-md rounded-full border border-white/10 px-4 py-2.5 shadow-lg">
+              <input
+                ref={inputRef}
+                type="text"
+                placeholder="Send a message..."
+                value={inputMessage}
+                onChange={(e) => setInputMessage(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSendMessage();
+                  }
+                }}
+                autoFocus
+                className="flex-1 bg-transparent text-sm text-white focus:outline-none placeholder:text-white/60 min-w-0"
+              />
+              <Button
+                onClick={handleSendMessage}
+                disabled={!inputMessage.trim()}
+                variant="ghost"
+                size="icon"
+                className="w-8 h-8 rounded-full text-white hover:bg-white/20 shrink-0"
+              >
+                <Send className="w-4 h-4 fill-current" />
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -1398,23 +1407,23 @@ export default function RandomChat({ onFullScreenChange }: RandomChatProps) {
         : "border-b border-border bg-card/50"} px-4 py-3 transition-all duration-300 pointer-events-none`}>
         <div className="flex items-center justify-between pointer-events-auto">
           <div className="flex items-center gap-2">
-            <div
-              className={`w-2 h-2 rounded-full ${chatState === "connected"
-                ? "bg-green-500"
-                : chatState === "searching"
+            {chatState !== "connected" && (
+              <div
+                className={`w-2 h-2 rounded-full ${chatState === "searching"
                   ? "bg-yellow-500 animate-pulse"
                   : "bg-muted-foreground"
-                }`}
-            />
+                  }`}
+              />
+            )}
             <span className={`text-sm ${chatMode === "video" ? "text-white/90 shadow-sm" : "text-muted-foreground"}`}>
               {chatState === "idle" && "Ready to chat"}
               {chatState === "searching" && `Finding someone${searchDots}`}
               {chatState === "connected" && (
-                <span className="flex items-center gap-1 font-medium">
-                  Connected to {partnerUsername}
-                  {chatMode === "video" && <Video className={`w-3 h-3 ${chatMode === "video" ? "text-white" : ""}`} />}
-                  {chatMode === "text" && <MessageCircle className="w-3 h-3" />}
-                  {!chatMode && <Shuffle className="w-3 h-3" />}
+                <span className="flex items-center gap-2 font-medium text-xs px-2.5 py-0.5 bg-gradient-to-r from-red-500/30 to-red-500/10 rounded-md border border-red-500/20 backdrop-blur-sm shadow-sm animate-in fade-in zoom-in duration-300">
+                  <div className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]" />
+                  Connected
+                  {chatMode === "text" && <MessageCircle className="w-3 h-3 text-white/80" />}
+                  {!chatMode && <Shuffle className="w-3 h-3 text-white/80" />}
                 </span>
               )}
               {chatState === "disconnected" && "Disconnected"}
