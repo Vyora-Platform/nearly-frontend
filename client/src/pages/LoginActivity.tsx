@@ -54,7 +54,6 @@ export default function LoginActivity() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["login-sessions"] });
-      toast({ title: "Success", description: "Device logged out successfully" });
     },
     onError: () => {
       toast({ title: "Error", description: "Failed to log out device", variant: "destructive" });
@@ -70,7 +69,7 @@ export default function LoginActivity() {
 
   const formatLastActive = (lastActive: string): string => {
     if (!lastActive) return 'Unknown';
-    
+
     const date = new Date(lastActive);
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();

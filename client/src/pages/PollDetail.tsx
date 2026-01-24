@@ -192,7 +192,6 @@ export default function PollDetail() {
         setHasVoted(true);
         setVotedOption(optionId);
         queryClient.invalidateQueries({ queryKey: ["poll", pollId] });
-        toast({ title: "Vote recorded!" });
       }
     },
   });
@@ -211,7 +210,6 @@ export default function PollDetail() {
       setReplyingTo(null);
       queryClient.invalidateQueries({ queryKey: ["poll-comments", pollId] });
       queryClient.invalidateQueries({ queryKey: ["poll", pollId] });
-      toast({ title: replyingTo ? "Reply added!" : "Comment added!" });
     },
     onError: () => {
       toast({ title: "Failed to post comment", variant: "destructive" });
@@ -249,12 +247,10 @@ export default function PollDetail() {
       const filtered = savedPolls.filter((id: string) => id !== pollId);
       localStorage.setItem('nearly_saved_polls', JSON.stringify(filtered));
       setHasSaved(false);
-      toast({ title: "Removed from saved" });
     } else {
       savedPolls.push(pollId);
       localStorage.setItem('nearly_saved_polls', JSON.stringify(savedPolls));
       setHasSaved(true);
-      toast({ title: "Saved!" });
     }
   };
 
@@ -265,11 +261,9 @@ export default function PollDetail() {
         await navigator.share({ title: poll?.question, url: shareUrl });
       } catch {
         navigator.clipboard.writeText(shareUrl);
-        toast({ title: "Link copied!" });
       }
     } else {
       navigator.clipboard.writeText(shareUrl);
-      toast({ title: "Link copied!" });
     }
   };
 

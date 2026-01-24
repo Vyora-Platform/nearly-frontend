@@ -62,6 +62,24 @@ export default function DirectChat() {
   const inputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Parse context from URL for pre-filled messages (e.g., from Activity Join)
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const contextParam = urlParams.get('context');
+    if (contextParam) {
+      try {
+        const context = JSON.parse(decodeURIComponent(contextParam));
+        if (context.defaultMessage) {
+          setMessage(context.defaultMessage);
+          // Clear the context from URL to prevent re-setting on refresh
+          window.history.replaceState({}, '', window.location.pathname);
+        }
+      } catch (e) {
+        console.error('Failed to parse context:', e);
+      }
+    }
+  }, []);
+
   // Fetch current user data for real name/avatar
   const { data: currentUser } = useQuery({
     queryKey: ["currentUser", currentUserId],

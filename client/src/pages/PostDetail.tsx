@@ -167,7 +167,6 @@ export default function PostDetail() {
       setReplyingTo(null);
       refetchComments();
       queryClient.invalidateQueries({ queryKey: ["activity", postId] });
-      toast({ title: "Comment posted!" });
     },
     onError: () => toast({ title: "Failed", variant: "destructive" }),
   });

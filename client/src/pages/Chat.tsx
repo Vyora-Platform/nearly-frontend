@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { User, Users, Shuffle } from "lucide-react";
 import TopBar from "@/components/TopBar";
 import BottomNav from "@/components/BottomNav";
@@ -13,6 +13,17 @@ export default function Chat() {
   const [activeTab, setActiveTab] = useState<ChatTab>("random");
   const [isRandomFullScreen, setIsRandomFullScreen] = useState(false);
   const [randomChatState, setRandomChatState] = useState<RandomChatState>("idle");
+
+  // Handle URL parameters for tab navigation (from sharing functionality)
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabParam = urlParams.get('tab');
+    if (tabParam === 'friends' || tabParam === 'groups') {
+      setActiveTab(tabParam);
+      // Clear the URL params after handling
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, []);
 
   const tabs = [
     { id: "random" as ChatTab, icon: Shuffle, label: "Random" },

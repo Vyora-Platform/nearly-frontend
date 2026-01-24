@@ -24,19 +24,19 @@ const ShotsIcon = ({ className }: { className?: string }) => (
     xmlns="http://www.w3.org/2000/svg"
   >
     {/* Camera body */}
-    <rect x="3" y="6" width="18" height="12" rx="3" fill="currentColor" opacity="0.9"/>
+    <rect x="3" y="6" width="18" height="12" rx="3" fill="currentColor" opacity="0.9" />
     {/* Lens */}
-    <circle cx="12" cy="12" r="3" fill="white"/>
+    <circle cx="12" cy="12" r="3" fill="white" />
     {/* Lens center */}
-    <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
+    <circle cx="12" cy="12" r="1.5" fill="currentColor" />
     {/* Flash */}
     <path
       d="M7 8L9 10H7V8Z"
       fill="white"
     />
     {/* Camera details */}
-    <rect x="16" y="9" width="2" height="1" rx="0.5" fill="white" opacity="0.7"/>
-    <rect x="6" y="9" width="2" height="1" rx="0.5" fill="white" opacity="0.7"/>
+    <rect x="16" y="9" width="2" height="1" rx="0.5" fill="white" opacity="0.7" />
+    <rect x="6" y="9" width="2" height="1" rx="0.5" fill="white" opacity="0.7" />
   </svg>
 );
 import {
@@ -80,28 +80,28 @@ export default function Discuss() {
   const [isMuted, setIsMuted] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [newComment, setNewComment] = useState("");
-  
+
   // Initialize liked shots from localStorage
   const [likedShots, setLikedShots] = useState<Set<string>>(() => {
     const liked = JSON.parse(localStorage.getItem('nearly_liked_shots') || '[]');
     return new Set(liked);
   });
-  
+
   // Initialize saved shots from localStorage
   const [savedShots, setSavedShots] = useState<Set<string>>(() => {
     const saved = JSON.parse(localStorage.getItem('nearly_saved_shots') || '[]');
     return new Set(saved);
   });
-  
+
   // Initialize followed users from localStorage
   const [followedUsers, setFollowedUsers] = useState<Set<string>>(() => {
     const followed = JSON.parse(localStorage.getItem('nearly_following') || '[]');
     return new Set(followed);
   });
-  
+
   const [showCreateShot, setShowCreateShot] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  
+
   // Caption dialog state for shot uploads
   const [showCaptionDialog, setShowCaptionDialog] = useState(false);
   const [selectedVideoFile, setSelectedVideoFile] = useState<File | null>(null);
@@ -165,19 +165,19 @@ export default function Discuss() {
 
   const getUserById = (userId: string) => {
     if (userId === currentUserId) {
-      return { 
-        id: userId, 
-        name: "You", 
+      return {
+        id: userId,
+        name: "You",
         username: "you",
-        avatarUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${userId}` 
+        avatarUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${userId}`
       };
     }
     const user = users.find((u: any) => u?.id === userId);
-    return user || { 
-      id: userId, 
-      name: "User", 
+    return user || {
+      id: userId,
+      name: "User",
       username: "user",
-      avatarUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${userId}` 
+      avatarUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${userId}`
     };
   };
 
@@ -187,7 +187,7 @@ export default function Discuss() {
       if (video) {
         if (index === currentShotIndex) {
           if (isPlaying) {
-            video.play().catch(() => {});
+            video.play().catch(() => { });
           } else {
             video.pause();
           }
@@ -251,7 +251,7 @@ export default function Discuss() {
   useEffect(() => {
     const shot = shots[currentShotIndex];
     if (shot?.id) {
-      shotsApi.viewShot(shot.id).catch(() => {});
+      shotsApi.viewShot(shot.id).catch(() => { });
     }
   }, [currentShotIndex, shots]);
 
@@ -326,7 +326,6 @@ export default function Discuss() {
       setReplyingTo(null);
       refetchComments();
       refetchShots();
-      toast({ title: "Comment added!" });
     },
   });
 
@@ -346,7 +345,6 @@ export default function Discuss() {
       return shotsApi.deleteShot(shotId);
     },
     onSuccess: () => {
-      toast({ title: "Shot deleted" });
       refetchShots();
       if (currentShotIndex >= shots.length - 1) {
         setCurrentShotIndex(Math.max(0, currentShotIndex - 1));
@@ -374,7 +372,7 @@ export default function Discuss() {
     setShotCaption("");
     setShowCaptionDialog(true);
     setShowCreateShot(false);
-    
+
     // Reset file input
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
@@ -407,7 +405,7 @@ export default function Discuss() {
 
       // Upload video to server
       let videoUrl = '';
-      
+
       // Try dedicated shotsApi upload first
       try {
         console.log('Uploading via shotsApi.uploadVideo...');
@@ -419,7 +417,7 @@ export default function Discuss() {
       } catch (shotErr) {
         console.log('shotsApi.uploadVideo failed, trying mediaApi...', shotErr);
       }
-      
+
       // Try mediaApi second
       if (!videoUrl) {
         try {
@@ -433,7 +431,7 @@ export default function Discuss() {
           console.log('mediaApi failed, trying fallback...', mediaErr);
         }
       }
-      
+
       // Fallback: try direct upload through api
       if (!videoUrl) {
         try {
@@ -476,7 +474,7 @@ export default function Discuss() {
       } catch (shotErr) {
         console.log('shotsApi.createShot failed, trying moment...', shotErr);
       }
-      
+
       // Fallback to moments API
       if (!shotCreated) {
         try {
@@ -499,7 +497,7 @@ export default function Discuss() {
       }
 
       queryClient.invalidateQueries({ queryKey: ["shots"] });
-      
+
       // Clean up
       setShowCaptionDialog(false);
       if (videoPreviewUrl) {
@@ -508,7 +506,7 @@ export default function Discuss() {
       setSelectedVideoFile(null);
       setVideoPreviewUrl(null);
       setShotCaption("");
-      
+
       toast({
         title: "Shot uploaded! 🎬",
         description: "Your shot is now live",
@@ -544,7 +542,7 @@ export default function Discuss() {
     try {
       // Track share on backend
       shareMutation.mutate(shot.id);
-      
+
       if (navigator.share) {
         await navigator.share({
           title: 'Check out this shot!',
@@ -553,10 +551,9 @@ export default function Discuss() {
         });
       } else {
         await navigator.clipboard.writeText(shareUrl);
-        toast({ title: "Link copied!" });
       }
     } catch {
-      toast({ title: "Share cancelled" });
+      // Share cancelled
     }
   };
 
@@ -591,7 +588,7 @@ export default function Discuss() {
   // Empty state
   if (shots.length === 0) {
     return (
-        <div className="min-h-screen bg-black pb-20">
+      <div className="min-h-screen bg-black pb-20">
         <TopBar title="Shots" />
         <div className="flex flex-col items-center justify-center h-[70vh] text-center px-8">
           <div className="w-24 h-24 rounded-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center mb-6">
@@ -599,7 +596,7 @@ export default function Discuss() {
           </div>
           <h2 className="text-2xl font-bold text-white mb-2">No Shots Yet</h2>
           <p className="text-white/60 mb-8 max-w-xs">Share short videos with your community. Only video files are supported.</p>
-          
+
           {/* Instagram-style upload button */}
           <button
             onClick={() => {
@@ -620,7 +617,7 @@ export default function Discuss() {
               <Plus className="w-10 h-10 text-white" />
             </div>
           </button>
-          
+
           <p className="text-blue-400 font-semibold text-sm cursor-pointer hover:text-blue-300" onClick={() => {
             const input = document.createElement('input');
             input.type = 'file';
@@ -635,7 +632,7 @@ export default function Discuss() {
           }}>
             Upload your first video
           </p>
-          
+
           <input
             ref={fileInputRef}
             type="file"
@@ -670,13 +667,12 @@ export default function Discuss() {
           return (
             <div
               key={shot.id}
-              className={`absolute inset-0 transition-transform duration-300 ${
-                index === currentShotIndex
+              className={`absolute inset-0 transition-transform duration-300 ${index === currentShotIndex
                   ? 'translate-y-0'
                   : index < currentShotIndex
-                  ? '-translate-y-full'
-                  : 'translate-y-full'
-              }`}
+                    ? '-translate-y-full'
+                    : 'translate-y-full'
+                }`}
             >
               {/* Video */}
               <video
@@ -770,10 +766,8 @@ export default function Discuss() {
                       const newSet = new Set(prev);
                       if (newSet.has(shot.id)) {
                         newSet.delete(shot.id);
-                        toast({ title: "Removed from saved" });
                       } else {
                         newSet.add(shot.id);
-                        toast({ title: "Saved!" });
                       }
                       // Persist to localStorage
                       localStorage.setItem('nearly_saved_shots', JSON.stringify([...newSet]));
@@ -833,11 +827,10 @@ export default function Discuss() {
                     <Button
                       size="sm"
                       variant="outline"
-                      className={`h-7 px-4 rounded-full text-xs ${
-                        followedUsers.has(shot.userId) 
-                          ? 'bg-white/20 border-white/50 text-white' 
+                      className={`h-7 px-4 rounded-full text-xs ${followedUsers.has(shot.userId)
+                          ? 'bg-white/20 border-white/50 text-white'
                           : 'bg-transparent border-white/50 text-white hover:bg-white/20'
-                      }`}
+                        }`}
                       onClick={(e) => {
                         e.stopPropagation();
                         if (!followedUsers.has(shot.userId)) {
@@ -849,7 +842,6 @@ export default function Discuss() {
                               localStorage.setItem('nearly_following', JSON.stringify([...newSet]));
                               return newSet;
                             });
-                            toast({ title: "Following!" });
                           }).catch(() => {
                             toast({ title: "Failed to follow", variant: "destructive" });
                           });
@@ -906,9 +898,8 @@ export default function Discuss() {
           {shots.slice(0, 10).map((_: any, index: number) => (
             <div
               key={index}
-              className={`w-1 rounded-full transition-all ${
-                index === currentShotIndex ? 'h-4 bg-white' : 'h-1 bg-white/40'
-              }`}
+              className={`w-1 rounded-full transition-all ${index === currentShotIndex ? 'h-4 bg-white' : 'h-1 bg-white/40'
+                }`}
             />
           ))}
         </div>
@@ -947,7 +938,7 @@ export default function Discuss() {
           <DialogHeader className="p-4 border-b border-border">
             <DialogTitle className="text-center">Comments</DialogTitle>
           </DialogHeader>
-          
+
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
             {comments.length === 0 ? (
               <div className="text-center py-8">
@@ -978,7 +969,7 @@ export default function Discuss() {
                             {comment.likesCount} likes
                           </span>
                         )}
-                        <button 
+                        <button
                           className="text-xs font-semibold text-muted-foreground hover:text-foreground"
                           onClick={() => handleReply(comment.id, comment.userName || 'User')}
                         >
@@ -1009,7 +1000,7 @@ export default function Discuss() {
                               <span className="text-xs text-muted-foreground">
                                 {getTimeAgo(reply.createdAt)}
                               </span>
-                              <button 
+                              <button
                                 className="text-xs font-semibold text-muted-foreground hover:text-foreground"
                                 onClick={() => handleReply(comment.id, reply.userName || 'User')}
                               >
@@ -1032,7 +1023,7 @@ export default function Discuss() {
               <span className="text-sm text-muted-foreground">
                 Replying to <span className="font-semibold text-foreground">@{replyingTo.userName}</span>
               </span>
-              <button 
+              <button
                 onClick={() => {
                   setReplyingTo(null);
                   setNewComment("");
@@ -1059,8 +1050,8 @@ export default function Discuss() {
                 className="flex-1 border-0 bg-muted focus-visible:ring-0"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && newComment.trim() && currentShot) {
-                    commentMutation.mutate({ 
-                      shotId: currentShot.id, 
+                    commentMutation.mutate({
+                      shotId: currentShot.id,
                       content: newComment,
                       parentCommentId: replyingTo?.commentId
                     });
@@ -1070,8 +1061,8 @@ export default function Discuss() {
               <button
                 onClick={() => {
                   if (newComment.trim() && currentShot) {
-                    commentMutation.mutate({ 
-                      shotId: currentShot.id, 
+                    commentMutation.mutate({
+                      shotId: currentShot.id,
                       content: newComment,
                       parentCommentId: replyingTo?.commentId
                     });
@@ -1108,7 +1099,7 @@ export default function Discuss() {
               {isUploading ? 'Posting...' : 'Share'}
             </button>
           </div>
-          
+
           {/* Video Preview - Instagram style */}
           <div className="flex-1 relative bg-black flex items-center justify-center overflow-hidden">
             {videoPreviewUrl ? (
@@ -1127,7 +1118,7 @@ export default function Discuss() {
                 <p>No video selected</p>
               </div>
             )}
-            
+
             {/* Upload progress overlay */}
             {isUploading && (
               <div className="absolute inset-0 bg-black/80 flex items-center justify-center">
@@ -1138,7 +1129,7 @@ export default function Discuss() {
               </div>
             )}
           </div>
-          
+
           {/* Caption Section - Instagram style */}
           <div className="bg-zinc-900 p-4 border-t border-white/10">
             <div className="flex gap-3">

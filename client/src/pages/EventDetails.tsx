@@ -137,7 +137,6 @@ export default function EventDetails() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["event", eventId] });
       queryClient.invalidateQueries({ queryKey: ["event-guests", eventId] });
-      toast({ title: "Joined!", description: "You've joined this event" });
     },
     onError: () => {
       toast({ title: "Error", description: "Failed to join event", variant: "destructive" });
@@ -175,7 +174,6 @@ export default function EventDetails() {
       queryClient.invalidateQueries({ queryKey: ["event", eventId] });
       setComment("");
       setReplyingTo(null);
-      toast({ title: replyingTo ? "Reply posted!" : "Comment posted!" });
     },
     onError: () => {
       toast({ title: "Error", description: "Failed to post comment", variant: "destructive" });
@@ -240,7 +238,6 @@ export default function EventDetails() {
 
   const handleSave = () => {
     setSaved(!saved);
-    toast({ title: saved ? "Removed from saved" : "Event saved!" });
   };
 
   const handleShare = async () => {
@@ -254,7 +251,6 @@ export default function EventDetails() {
         });
       } else {
         await navigator.clipboard.writeText(shareUrl);
-        toast({ title: "Link copied!", description: "Share link copied to clipboard" });
       }
     } catch (error) {
       console.log('Share cancelled');

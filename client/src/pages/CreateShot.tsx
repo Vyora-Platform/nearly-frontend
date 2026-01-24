@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useLocation } from "wouter";
-import { 
+import {
   ArrowLeft, Video, Upload, X, Music2,
   Type, Sparkles, Check, Loader2, Play,
   Pause, RotateCcw, Camera, AlertCircle
@@ -54,7 +54,7 @@ export default function CreateShot() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const { user } = useAuth();
-  
+
   // State
   const [step, setStep] = useState<'select' | 'preview' | 'details'>('select');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -73,7 +73,7 @@ export default function CreateShot() {
     transferRate: '0 B/s',
     estimatedTime: '--',
   });
-  
+
   // Refs
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -85,20 +85,20 @@ export default function CreateShot() {
 
     // Validate file type
     if (!file.type.startsWith('video/')) {
-      toast({ 
-        title: "Invalid file type", 
+      toast({
+        title: "Invalid file type",
         description: "Please select a video file",
-        variant: "destructive" 
+        variant: "destructive"
       });
       return;
     }
 
     // Validate file size
     if (file.size > MAX_FILE_SIZE) {
-      toast({ 
-        title: "File too large", 
+      toast({
+        title: "File too large",
         description: "Maximum file size is 500MB",
-        variant: "destructive" 
+        variant: "destructive"
       });
       return;
     }
@@ -113,12 +113,12 @@ export default function CreateShot() {
     if (videoRef.current) {
       const duration = videoRef.current.duration;
       setVideoDuration(duration);
-      
+
       if (duration > MAX_DURATION) {
-        toast({ 
-          title: "Video too long", 
+        toast({
+          title: "Video too long",
           description: `Maximum duration is ${MAX_DURATION} seconds. Your video is ${Math.round(duration)} seconds.`,
-          variant: "destructive" 
+          variant: "destructive"
         });
       }
     }
@@ -186,18 +186,18 @@ export default function CreateShot() {
 
             const result = JSON.parse(xhr.responseText);
             console.log('[UPLOAD] Upload result1:', xhr.responseText);
-            console.log('[UPLOAD] Upload result2:',result);
+            console.log('[UPLOAD] Upload result2:', result);
 
             const url = result.rawUrl || result.data?.rawUrl || result.fileUrl || '';
             const id = result.mediaId || result.data?.mediaId || '';
-            
+
             setUploadProgress(prev => ({
               ...prev,
               status: 'completing',
               percent: 95,
               estimatedTime: 'Creating shot...',
             }));
-            
+
             if (url) {
               resolve({ success: true, url, id });
             } else {
@@ -211,7 +211,7 @@ export default function CreateShot() {
           try {
             const errorData = JSON.parse(xhr.responseText);
             errorMsg = errorData.error || errorData.message || errorMsg;
-          } catch {}
+          } catch { }
           reject(new Error(errorMsg));
         }
       });
@@ -252,7 +252,7 @@ export default function CreateShot() {
   const uploadMutation = useMutation({
     mutationFn: async () => {
       if (!selectedFile) throw new Error("No file selected");
-      
+
       setIsUploading(true);
       setUploadProgress({
         status: 'uploading',
@@ -262,23 +262,23 @@ export default function CreateShot() {
         transferRate: 'Starting...',
         estimatedTime: 'Calculating...',
       });
-      
+
       // Upload video with progress tracking
       console.log('[UPLOAD] Starting upload with progress tracking...');
       const uploadResult = await uploadWithProgress(selectedFile);
       console.log('[UPLOAD] Upload result:', uploadResult);
-      
+
       if (!uploadResult.success || !uploadResult.url) {
         throw new Error("Failed to upload video  issue ");
       }
-      
+
       setUploadProgress(prev => ({
         ...prev,
         status: 'completing',
         percent: 98,
         estimatedTime: 'Creating shot...',
       }));
-      
+
       // Create shot record in database
       // Prefer mediaId over videoUrl for better URL resolution
       const shotData = {
@@ -289,24 +289,23 @@ export default function CreateShot() {
         duration: Math.round(videoDuration),
         visibility: visibility,
       };
-      
+
       console.log('[UPLOAD] Creating shot with data:', shotData);
-      
+
       const result = await shotsApi.createShot(shotData);
       console.log('[UPLOAD] Shot created:', result);
-      
+
       setUploadProgress(prev => ({
         ...prev,
         status: 'success',
         percent: 100,
         estimatedTime: 'Done!',
       }));
-      
+
       return result;
     },
     onSuccess: (result) => {
       console.log('[UPLOAD] Success:', result);
-      toast({ title: "Shot uploaded successfully!" });
       setTimeout(() => setLocation('/shots'), 500);
     },
     onError: (error: Error) => {
@@ -316,10 +315,10 @@ export default function CreateShot() {
         status: 'error',
         error: error.message,
       }));
-      toast({ 
-        title: "Upload failed", 
+      toast({
+        title: "Upload failed",
         description: error.message,
-        variant: "destructive" 
+        variant: "destructive"
       });
       setIsUploading(false);
     },
@@ -409,7 +408,7 @@ export default function CreateShot() {
               <ArrowLeft className="w-6 h-6 text-white" />
             </button>
             <h1 className="text-lg font-bold text-white">Preview</h1>
-            <button 
+            <button
               onClick={() => setStep('details')}
               disabled={videoDuration > MAX_DURATION}
               className="text-primary font-semibold disabled:opacity-50"
@@ -434,7 +433,7 @@ export default function CreateShot() {
                 onPause={() => setIsPlaying(false)}
               />
             )}
-            
+
             {/* Play/Pause overlay */}
             <button
               onClick={togglePlay}
@@ -533,7 +532,7 @@ export default function CreateShot() {
               />
             )}
           </div>
-          
+
           {/* Caption */}
           <div className="flex-1">
             <Textarea
@@ -593,29 +592,29 @@ export default function CreateShot() {
                 )}
                 <span className="text-sm font-medium">
                   {uploadProgress.status === 'error' ? 'Upload failed' :
-                   uploadProgress.status === 'success' ? 'Upload complete!' :
-                   uploadProgress.status === 'completing' ? 'Creating shot...' :
-                   'Uploading video...'}
+                    uploadProgress.status === 'success' ? 'Upload complete!' :
+                      uploadProgress.status === 'completing' ? 'Creating shot...' :
+                        'Uploading video...'}
                 </span>
               </div>
               <span className="text-sm font-bold text-primary">{uploadProgress.percent}%</span>
             </div>
-            
+
             {/* Progress bar */}
             <div className="w-full h-3 bg-muted rounded-full overflow-hidden">
-              <div 
+              <div
                 className={cn(
                   "h-full transition-all duration-300 rounded-full",
-                  uploadProgress.status === 'error' 
-                    ? "bg-red-500" 
+                  uploadProgress.status === 'error'
+                    ? "bg-red-500"
                     : uploadProgress.status === 'success'
-                    ? "bg-green-500"
-                    : "bg-gradient-to-r from-rose-500 to-purple-600"
+                      ? "bg-green-500"
+                      : "bg-gradient-to-r from-rose-500 to-purple-600"
                 )}
                 style={{ width: `${uploadProgress.percent}%` }}
               />
             </div>
-            
+
             {/* Progress details */}
             {uploadProgress.status !== 'error' && uploadProgress.status !== 'success' && (
               <div className="flex items-center justify-between text-xs text-muted-foreground">
@@ -624,7 +623,7 @@ export default function CreateShot() {
                 <span>ETA: {uploadProgress.estimatedTime}</span>
               </div>
             )}
-            
+
             {/* Error message */}
             {uploadProgress.status === 'error' && uploadProgress.error && (
               <p className="text-sm text-red-500">{uploadProgress.error}</p>

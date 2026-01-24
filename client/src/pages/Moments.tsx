@@ -1055,7 +1055,6 @@ export default function Moments() {
     if (selectedMoment) {
       const shareUrl = `${window.location.origin}/moment/${selectedMoment.id}`;
       await navigator.clipboard.writeText(shareUrl);
-      toast({ title: "Link copied!" });
       setShowShareDialog(false);
     }
   };
@@ -1076,7 +1075,6 @@ export default function Moments() {
       refetchComments();
       // Invalidate queries to refresh data
       queryClient.invalidateQueries({ queryKey: ["moments"] });
-      toast({ title: "Comment posted!" });
     },
     onError: () => {
       toast({ title: "Failed to post comment", variant: "destructive" });

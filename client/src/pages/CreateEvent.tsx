@@ -494,8 +494,8 @@ export default function CreateEvent() {
                     >
                       <div
                         className={`flex items-start gap-3 p-4 rounded-lg border-2 cursor-pointer ${field.value === "Public"
-                            ? "border-primary bg-primary/5"
-                            : "border-border"
+                          ? "border-primary bg-primary/5"
+                          : "border-border"
                           }`}
                         onClick={() => field.onChange("Public")}
                         data-testid="radio-visibility-public"
@@ -513,8 +513,8 @@ export default function CreateEvent() {
 
                       <div
                         className={`flex items-start gap-3 p-4 rounded-lg border-2 cursor-pointer ${field.value === "Private"
-                            ? "border-primary bg-primary/5"
-                            : "border-border"
+                          ? "border-primary bg-primary/5"
+                          : "border-border"
                           }`}
                         onClick={() => field.onChange("Private")}
                         data-testid="radio-visibility-private"
@@ -532,8 +532,8 @@ export default function CreateEvent() {
 
                       <div
                         className={`flex items-start gap-3 p-4 rounded-lg border-2 cursor-pointer ${field.value === "Invite Only"
-                            ? "border-primary bg-primary/5"
-                            : "border-border"
+                          ? "border-primary bg-primary/5"
+                          : "border-border"
                           }`}
                         onClick={() => field.onChange("Invite Only")}
                         data-testid="radio-visibility-invite"

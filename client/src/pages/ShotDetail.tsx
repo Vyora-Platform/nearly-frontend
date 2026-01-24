@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useLocation, useParams } from "wouter";
-import { 
-  ArrowLeft, Heart, Send, Volume2, VolumeX, 
+import {
+  ArrowLeft, Heart, Send, Volume2, VolumeX,
   Play, Pause, MessageCircle, Share2, X,
   MoreHorizontal, Bookmark, Flag, Trash2,
   ChevronUp, ChevronDown, Music2, Loader2
@@ -111,7 +111,7 @@ export default function ShotDetail() {
   const [newComment, setNewComment] = useState("");
   const [replyingTo, setReplyingTo] = useState<{ commentId: string; userName: string } | null>(null);
   const [expandedReplies, setExpandedReplies] = useState<Set<string>>(new Set());
-  
+
   const videoRef = useRef<HTMLVideoElement>(null);
   const commentInputRef = useRef<HTMLInputElement>(null);
 
@@ -121,7 +121,7 @@ export default function ShotDetail() {
     queryFn: async () => {
       if (!id) throw new Error("No shot ID");
       const shotData = await shotsApi.getShot(id);
-      
+
       // Fetch user data
       let shotUser: ShotUser | undefined;
       try {
@@ -141,11 +141,11 @@ export default function ShotDetail() {
           avatarUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${shotData.userId}`,
         };
       }
-      
+
       // Check local storage for liked/saved state
       const likedShots = JSON.parse(localStorage.getItem('nearly_liked_shots') || '[]');
       const savedShots = JSON.parse(localStorage.getItem('nearly_saved_shots') || '[]');
-      
+
       return {
         ...shotData,
         user: shotUser,
@@ -162,9 +162,9 @@ export default function ShotDetail() {
       setIsLiked(shot.isLiked || false);
       setLikesCount(shot.likesCount || 0);
       setIsSaved(shot.isSaved || false);
-      
+
       // Track view
-      shotsApi.viewShot(shot.id).catch(() => {});
+      shotsApi.viewShot(shot.id).catch(() => { });
     }
   }, [shot]);
 
@@ -176,15 +176,15 @@ export default function ShotDetail() {
           fetchedComments.map(async (c: any) => {
             let userName = c.userName || 'User';
             let userAvatar = c.userAvatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${c.userId}`;
-            
+
             if (!c.userName) {
               try {
                 const userData = await userApi.getUser(c.userId);
                 userName = userData.name || userData.username || 'User';
                 userAvatar = userData.avatarUrl || userAvatar;
-              } catch {}
+              } catch { }
             }
-            
+
             return {
               id: c.id,
               userId: c.userId,
@@ -208,7 +208,7 @@ export default function ShotDetail() {
     mutationFn: async () => {
       if (!shot) return;
       await shotsApi.likeShot(shot.id);
-      
+
       if (shot.userId !== userId) {
         await notificationApi.createNotification({
           userId: shot.userId,
@@ -228,7 +228,7 @@ export default function ShotDetail() {
     mutationFn: async ({ content, parentCommentId }: { content: string; parentCommentId?: string }) => {
       if (!shot) throw new Error("No shot");
       const result = await shotsApi.addComment(shot.id, content, parentCommentId);
-      
+
       if (shot.userId !== userId) {
         await notificationApi.createNotification({
           userId: shot.userId,
@@ -240,7 +240,7 @@ export default function ShotDetail() {
           actionUrl: `/shot/${shot.id}`,
         });
       }
-      
+
       return result;
     },
     onSuccess: (result) => {
@@ -259,7 +259,6 @@ export default function ShotDetail() {
       }
       setNewComment("");
       setReplyingTo(null);
-      toast({ title: "Comment posted!" });
     },
     onError: () => {
       toast({ title: "Failed to post comment", variant: "destructive" });
@@ -296,7 +295,6 @@ export default function ShotDetail() {
         savedShots.push(shot?.id);
         localStorage.setItem('nearly_saved_shots', JSON.stringify(savedShots));
       }
-      toast({ title: "Shot saved!" });
     }
   };
 
@@ -338,9 +336,8 @@ export default function ShotDetail() {
   const copyShareLink = async () => {
     if (shot) {
       await navigator.clipboard.writeText(`${window.location.origin}/shot/${shot.id}`);
-      toast({ title: "Link copied!" });
       setShowShare(false);
-      shotsApi.shareShot(shot.id).catch(() => {});
+      shotsApi.shareShot(shot.id).catch(() => { });
     }
   };
 
@@ -385,7 +382,7 @@ export default function ShotDetail() {
       {/* Header */}
       <div className="absolute top-0 left-0 right-0 z-30 p-4 bg-gradient-to-b from-black/80 to-transparent">
         <div className="flex items-center justify-between">
-          <button 
+          <button
             onClick={() => setLocation('/shots')}
             className="w-10 h-10 rounded-full bg-black/50 flex items-center justify-center"
           >
@@ -512,7 +509,7 @@ export default function ShotDetail() {
         {/* Bottom Content */}
         <div className="absolute bottom-6 left-0 right-20 p-4 z-20">
           {/* User Info */}
-          <button 
+          <button
             onClick={() => setLocation(`/profile/${shot.user?.username || shot.userId}`)}
             className="flex items-center gap-3 mb-3"
           >
@@ -570,7 +567,7 @@ export default function ShotDetail() {
               </button>
             </div>
           </DialogHeader>
-          
+
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
             {parentComments.length === 0 ? (
               <div className="text-center py-12">
@@ -582,11 +579,11 @@ export default function ShotDetail() {
               parentComments.map((comment) => {
                 const replies = repliesMap[comment.id] || [];
                 const isExpanded = expandedReplies.has(comment.id);
-                
+
                 return (
                   <div key={comment.id} className="space-y-3">
                     <div className="flex gap-3">
-                      <Avatar 
+                      <Avatar
                         className="w-10 h-10 flex-shrink-0 cursor-pointer"
                         onClick={() => setLocation(`/profile/${comment.userId}`)}
                       >
@@ -604,7 +601,7 @@ export default function ShotDetail() {
                             <Heart className="w-4 h-4" />
                             {comment.likesCount > 0 && comment.likesCount}
                           </button>
-                          <button 
+                          <button
                             className="text-xs font-medium text-muted-foreground"
                             onClick={() => handleReply(comment.id, comment.userName)}
                           >
@@ -645,7 +642,7 @@ export default function ShotDetail() {
                                   <Heart className="w-3 h-3" />
                                   {reply.likesCount > 0 && reply.likesCount}
                                 </button>
-                                <button 
+                                <button
                                   className="text-xs font-medium text-muted-foreground"
                                   onClick={() => handleReply(comment.id, reply.userName)}
                                 >
@@ -712,7 +709,7 @@ export default function ShotDetail() {
             <DialogTitle className="text-center">Share Shot</DialogTitle>
           </DialogHeader>
           <div className="grid grid-cols-4 gap-4 py-4">
-            <button 
+            <button
               onClick={() => {
                 window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(`${shot.caption || 'Check out this shot!'} ${window.location.origin}/shot/${shot.id}`)}`, '_blank');
                 setShowShare(false);
@@ -724,7 +721,7 @@ export default function ShotDetail() {
               </div>
               <span className="text-xs">WhatsApp</span>
             </button>
-            <button 
+            <button
               onClick={() => {
                 window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(`${window.location.origin}/shot/${shot.id}`)}&text=${encodeURIComponent(shot.caption || '')}`, '_blank');
                 setShowShare(false);
@@ -736,7 +733,7 @@ export default function ShotDetail() {
               </div>
               <span className="text-xs">Twitter</span>
             </button>
-            <button 
+            <button
               onClick={() => {
                 window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`${window.location.origin}/shot/${shot.id}`)}`, '_blank');
                 setShowShare(false);
@@ -748,7 +745,7 @@ export default function ShotDetail() {
               </div>
               <span className="text-xs">Facebook</span>
             </button>
-            <button 
+            <button
               onClick={copyShareLink}
               className="flex flex-col items-center gap-2"
             >

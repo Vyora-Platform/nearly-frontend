@@ -160,7 +160,6 @@ export default function NewsDetail() {
         localStorage.setItem('nearly_liked_news', JSON.stringify(likedNews));
         setHasLiked(true);
         queryClient.invalidateQueries({ queryKey: ["news", newsId] });
-        toast({ title: "Liked!" });
       }
     },
   });
@@ -185,7 +184,6 @@ export default function NewsDetail() {
           setHasVotedFake(true);
         }
         queryClient.invalidateQueries({ queryKey: ["news", newsId] });
-        toast({ title: `Marked as ${voteType === 'true' ? 'True' : 'Fake'}` });
       }
     },
   });
@@ -200,7 +198,6 @@ export default function NewsDetail() {
       setReplyingTo(null);
       queryClient.invalidateQueries({ queryKey: ["news-comments", newsId] });
       queryClient.invalidateQueries({ queryKey: ["news", newsId] });
-      toast({ title: replyingTo ? "Reply added!" : "Comment added!" });
     },
     onError: () => {
       toast({ title: "Failed to post comment", variant: "destructive" });
@@ -240,12 +237,10 @@ export default function NewsDetail() {
       const filtered = savedNews.filter((id: string) => id !== newsId);
       localStorage.setItem('nearly_saved_news', JSON.stringify(filtered));
       setHasSaved(false);
-      toast({ title: "Removed from saved" });
     } else {
       savedNews.push(newsId);
       localStorage.setItem('nearly_saved_news', JSON.stringify(savedNews));
       setHasSaved(true);
-      toast({ title: "Saved!" });
     }
   };
 
@@ -256,11 +251,9 @@ export default function NewsDetail() {
         await navigator.share({ title: news?.headline, url: shareUrl });
       } catch {
         navigator.clipboard.writeText(shareUrl);
-        toast({ title: "Link copied!" });
       }
     } else {
       navigator.clipboard.writeText(shareUrl);
-      toast({ title: "Link copied!" });
     }
   };
 

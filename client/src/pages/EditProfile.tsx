@@ -12,7 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 
 // Available interests for selection
 const AVAILABLE_INTERESTS = [
-  "Sports", "Music", "Art", "Technology", "Gaming", "Travel", 
+  "Sports", "Music", "Art", "Technology", "Gaming", "Travel",
   "Food", "Fitness", "Photography", "Reading", "Movies", "Fashion",
   "Nature", "Cooking", "Dancing", "Writing", "Yoga", "Meditation",
   "Business", "Science", "Politics", "History", "Languages", "Volunteering"
@@ -36,7 +36,6 @@ export default function EditProfile() {
     username: "",
     bio: "",
     location: "",
-    website: "",
   });
 
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
@@ -51,7 +50,6 @@ export default function EditProfile() {
         username: user.username || "",
         bio: user.bio || "",
         location: user.location || "",
-        website: user.website || "",
       });
       setSelectedInterests(user.interests || []);
     }
@@ -113,7 +111,7 @@ export default function EditProfile() {
     }
 
     setIsUploading(true);
-    
+
     // Show preview immediately
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -152,7 +150,7 @@ export default function EditProfile() {
   };
 
   const toggleInterest = (interest: string) => {
-    setSelectedInterests(prev => 
+    setSelectedInterests(prev =>
       prev.includes(interest)
         ? prev.filter(i => i !== interest)
         : [...prev, interest]
@@ -180,7 +178,7 @@ export default function EditProfile() {
             <X className="w-6 h-6 text-foreground" />
           </button>
           <h1 className="text-lg font-semibold text-foreground">Edit profile</h1>
-          <button 
+          <button
             onClick={handleSaveProfile}
             disabled={updateUserMutation.isPending}
             className="text-primary font-semibold disabled:opacity-50"
@@ -222,7 +220,7 @@ export default function EditProfile() {
             onChange={handleFileChange}
             className="hidden"
           />
-          <button 
+          <button
             onClick={handleAvatarClick}
             className="mt-3 text-primary font-semibold text-sm"
           >
@@ -285,17 +283,7 @@ export default function EditProfile() {
             />
           </div>
 
-          <div>
-            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider block mb-2">
-              Website
-            </label>
-            <Input
-              value={formData.website}
-              onChange={(e) => setFormData(prev => ({ ...prev, website: e.target.value }))}
-              placeholder="Add your website"
-              className="border-0 border-b border-border rounded-none px-0 focus-visible:ring-0 focus-visible:border-primary"
-            />
-          </div>
+
         </div>
 
         {/* Interests Section */}
@@ -311,11 +299,10 @@ export default function EditProfile() {
               <button
                 key={interest}
                 onClick={() => toggleInterest(interest)}
-                className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
-                  selectedInterests.includes(interest)
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted text-muted-foreground hover:bg-muted/80"
-                }`}
+                className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${selectedInterests.includes(interest)
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground hover:bg-muted/80"
+                  }`}
               >
                 {interest}
               </button>
@@ -323,18 +310,7 @@ export default function EditProfile() {
           </div>
         </div>
 
-        {/* Professional Dashboard Link */}
-        <div className="pt-4 border-t border-border">
-          <button className="w-full text-left py-3 text-primary font-medium">
-            Switch to professional account
-          </button>
-          <button 
-            className="w-full text-left py-3 text-primary font-medium"
-            onClick={() => setLocation("/profile-settings")}
-          >
-            Personal information settings
-          </button>
-        </div>
+
       </div>
     </div>
   );

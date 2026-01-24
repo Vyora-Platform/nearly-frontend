@@ -42,7 +42,7 @@ const discussSubTabs = [
 export default function Home() {
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState<HomeTab>("discussions");
+  const [activeTab, setActiveTab] = useState<HomeTab>("activities");
   const [discussSubTab, setDiscussSubTab] = useState<DiscussSubTab>("news");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -210,8 +210,8 @@ export default function Home() {
     : [];
 
   const tabs = [
-    { id: "discussions" as HomeTab, icon: MessageSquare, label: "Discuss" },
     { id: "activities" as HomeTab, icon: Target, label: "Activities" },
+    { id: "discussions" as HomeTab, icon: MessageSquare, label: "Discuss" },
     { id: "events" as HomeTab, icon: CalendarDays, label: "Events" },
   ];
 
@@ -340,11 +340,11 @@ export default function Home() {
                   }}
                   className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg transition-all text-sm font-medium
                     ${isActive
-                      ? "bg-background text-foreground shadow-sm relative z-10"
+                      ? "bg-gradient-primary text-white shadow-sm relative z-10"
                       : "text-muted-foreground hover:text-foreground/80 hover:bg-background/30"}`}
                   data-testid={`tab-${tab.id}`}
                 >
-                  <Icon className={`w-4 h-4 ${isActive ? "text-primary" : ""}`} />
+                  <Icon className="w-4 h-4" />
                   <span>{tab.label}</span>
                 </button>
               );
@@ -391,11 +391,8 @@ export default function Home() {
                 placeholder={`Search ${activeTab === "discussions" ? discussSubTab : activeTab}...`}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-10 h-11 rounded-full bg-muted border-0"
+                className="pl-10 pr-4 h-11 rounded-full bg-muted border-0"
               />
-              <button className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-background/50 rounded-full transition-colors">
-                <Filter className="w-4 h-4 text-muted-foreground" />
-              </button>
             </div>
             <Button
               onClick={() => setLocation(getCreatePath())}

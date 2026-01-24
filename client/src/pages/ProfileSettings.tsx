@@ -199,49 +199,7 @@ export default function ProfileSettings() {
     }
   };
 
-  const handleDownloadData = async () => {
-    try {
-      const [userData, activities, events, groups, news] = await Promise.all([
-        api.getUser(user?.id || ""),
-        api.getUserActivities(user?.id || ""),
-        api.getUserEvents(user?.id || ""),
-        api.getUserGroupsData(user?.id || ""),
-        api.getUserNews(user?.id || ""),
-      ]);
 
-      const exportData = {
-        user: userData,
-        activities,
-        events,
-        groups,
-        news,
-        exportDate: new Date().toISOString(),
-      };
-
-      const blob = new Blob([JSON.stringify(exportData, null, 2)], {
-        type: "application/json",
-      });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `my-data-${user?.username || "user"}-${new Date().toISOString().split("T")[0]}.json`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-
-      toast({
-        title: "Data downloaded",
-        description: "Your data has been downloaded successfully.",
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to download data. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
 
   const settingsSections = [
     {
@@ -266,18 +224,7 @@ export default function ProfileSettings() {
           onClick: () => setEditMode("saved"),
           badge: savedPosts.length > 0 ? savedPosts.length : undefined,
         },
-        {
-          id: "login-activity",
-          label: "Login Activity",
-          icon: Shield,
-          onClick: () => setLocation("/login-activity"),
-        },
-        {
-          id: "download-data",
-          label: "Download Your Data",
-          icon: Download,
-          onClick: handleDownloadData,
-        },
+
       ],
     },
     {
@@ -309,26 +256,7 @@ export default function ProfileSettings() {
             savePrivacySettingsMutation.mutate(newSettings);
           },
         },
-        {
-          id: "story-sharing",
-          label: "Allow Story Sharing",
-          description: "Let others share your stories",
-          icon: Globe,
-          type: "toggle",
-          value: privacySettings.storySharing,
-          onToggle: (checked: boolean) => {
-            const newSettings = { ...privacySettings, storySharing: checked };
-            setPrivacySettings(newSettings);
-            savePrivacySettingsMutation.mutate(newSettings);
-          },
-        },
-        {
-          id: "messages",
-          label: "Messages",
-          description: "Control who can message you",
-          icon: Mail,
-          onClick: () => setEditMode("messages"),
-        },
+
       ],
     },
     {
@@ -493,94 +421,7 @@ export default function ProfileSettings() {
           </div>
         )}
 
-        {/* Messages Settings Modal */}
-        {editMode === "messages" && (
-          <div className="fixed inset-0 bg-black/50 z-50 flex items-end">
-            <div className="bg-background rounded-t-3xl w-full max-h-[90vh] overflow-y-auto">
-              <div className="sticky top-0 bg-background border-b border-border p-4 flex items-center justify-between">
-                <h2 className="text-lg font-semibold">Messages</h2>
-                <Button variant="ghost" size="sm" onClick={() => setEditMode(null)}>
-                  <X className="w-4 h-4" />
-                </Button>
-              </div>
 
-              <div className="p-4 space-y-6">
-                <p className="text-sm text-muted-foreground">
-                  Choose who can send you messages. You can change this at any time.
-                </p>
-
-                <div className="space-y-4">
-                  {[
-                    {
-                      key: "allowFromEveryone",
-                      label: "Everyone",
-                      description: "Anyone can send you messages",
-                    },
-                    {
-                      key: "allowFromFollowing",
-                      label: "People you follow",
-                      description: "Only people you follow can message you",
-                    },
-                    {
-                      key: "allowFromFollowers",
-                      label: "Your followers",
-                      description: "Only your followers can message you",
-                    },
-                    {
-                      key: "allowFromNoOne",
-                      label: "No one",
-                      description: "No one can send you messages",
-                    },
-                  ].map((option) => (
-                    <div
-                      key={option.key}
-                      className="flex items-center justify-between"
-                    >
-                      <div>
-                        <p className="text-sm font-medium">{option.label}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {option.description}
-                        </p>
-                      </div>
-                      <Switch
-                        checked={
-                          messageSettings[
-                            option.key as keyof typeof messageSettings
-                          ]
-                        }
-                        onCheckedChange={(checked) => {
-                          if (checked) {
-                            setMessageSettings({
-                              allowFromEveryone: option.key === "allowFromEveryone",
-                              allowFromFollowers:
-                                option.key === "allowFromFollowers",
-                              allowFromFollowing:
-                                option.key === "allowFromFollowing",
-                              allowFromNoOne: option.key === "allowFromNoOne",
-                            });
-                          }
-                        }}
-                      />
-                    </div>
-                  ))}
-                </div>
-
-                <Button
-                  className="w-full"
-                  onClick={() => {
-                    savePrivacySettingsMutation.mutate(privacySettings);
-                    setEditMode(null);
-                  }}
-                  disabled={savePrivacySettingsMutation.isPending}
-                >
-                  {savePrivacySettingsMutation.isPending
-                    ? "Saving..."
-                    : "Save Settings"}
-                </Button>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Saved Posts Modal */}
         {editMode === "saved" && (
@@ -645,6 +486,7 @@ export default function ProfileSettings() {
                 const isLast = itemIndex === section.items.length - 1;
 
                 if (
+                  "type" in item &&
                   item.type === "toggle" &&
                   "value" in item &&
                   "onToggle" in item
@@ -652,9 +494,8 @@ export default function ProfileSettings() {
                   return (
                     <div
                       key={item.id}
-                      className={`w-full flex items-center gap-4 px-4 py-4 ${
-                        !isLast ? "border-b border-border" : ""
-                      }`}
+                      className={`w-full flex items-center gap-4 px-4 py-4 ${!isLast ? "border-b border-border" : ""
+                        }`}
                     >
                       <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
                         <IconComponent className="w-5 h-5 text-muted-foreground" />
@@ -677,24 +518,25 @@ export default function ProfileSettings() {
                   );
                 }
 
+                if (!("onClick" in item)) return null;
+
                 return (
                   <button
                     key={item.id}
                     onClick={item.onClick}
-                    className={`w-full flex items-center gap-4 px-4 py-4 hover:bg-muted/50 transition-colors ${
-                      !isLast ? "border-b border-border" : ""
-                    }`}
+                    className={`w-full flex items-center gap-4 px-4 py-4 hover:bg-muted/50 transition-colors ${!isLast ? "border-b border-border" : ""
+                      }`}
                   >
                     <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
                       <IconComponent className="w-5 h-5 text-muted-foreground" />
                     </div>
                     <div className="flex-1 text-left">
                       <p className="text-sm font-medium text-foreground">
-                        {item.label}
+                        {(item as any).label}
                       </p>
-                      {"description" in item && item.description && (
+                      {"description" in item && (item as any).description && (
                         <p className="text-xs text-muted-foreground">
-                          {item.description}
+                          {(item as any).description}
                         </p>
                       )}
                     </div>
