@@ -44,6 +44,27 @@ const popularEmojis = [
   "🔥", "⭐", "✨", "💫", "🌟", "💥", "💯", "🎉", "🎊", "🎈"
 ];
 
+// Lazy-loaded Reactions Component
+function MessageReactions({ messageId, isMe }: { messageId: string, isMe: boolean }) {
+  const { data: reactions = [] } = useQuery({
+    queryKey: ["messageReactions", messageId],
+    queryFn: () => messagingApi.getReactions(messageId),
+    staleTime: 1000 * 60 * 5 // 5 minutes
+  });
+
+  if (!reactions || reactions.length === 0) return null;
+
+  return (
+    <div className={`flex gap-0.5 mt-1 ${isMe ? "mr-2" : "ml-2"}`}>
+      {reactions.map((r: any, i: number) => (
+        <span key={i} className="text-sm bg-muted rounded-full px-1.5 py-0.5 animate-in zoom-in duration-200">
+          {r.emoji}
+        </span>
+      ))}
+    </div>
+  );
+}
+
 export default function DirectChat() {
   const [, params] = useRoute("/chat/:username");
   const [, setLocation] = useLocation();
@@ -110,9 +131,9 @@ export default function DirectChat() {
     enabled: !!user?.id,
   });
 
-  // WebSocket Connection for Direct Messages
+  // WebSocket Connection for Direct Messages and Reactions
   useEffect(() => {
-    if (!currentUserId) return;
+    if (!currentUserId || !user?.id) return;
 
     // Use relative URL to leverage Vite proxy
     const socketUrl = 'https://api.nearlyapp.in/ws/messaging';
@@ -124,7 +145,7 @@ export default function DirectChat() {
     const client = new Client({
       webSocketFactory: () => socket,
       debug: (str) => {
-        console.log('[WS Debug]:', str);
+        // console.log('[WS Debug]:', str);
       },
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
@@ -139,8 +160,14 @@ export default function DirectChat() {
         try {
           const payload = JSON.parse(message.body);
 
+          // Handle reaction updates for real-time changes
+          if (payload.type === "REACTION_UPDATE" || payload.type === "REACTION_REMOVED") {
+            queryClient.invalidateQueries({ queryKey: ["messageReactions", payload.messageId] });
+            return;
+          }
+
+          // Message Logic
           // Check if message belongs to current focused chat
-          // Either sent by 'user.id' (friend) OR sent by 'currentUserId' (me from another tab/device) to 'user.id'
           const belongToChat =
             (payload.senderId === user?.id) ||
             (payload.senderId === currentUserId && payload.recipientId === user?.id);
@@ -293,11 +320,17 @@ export default function DirectChat() {
 
   const handleReaction = async (messageId: string, emoji: string) => {
     try {
-      await authFetch(`/api/messages/${messageId}/react`, {
-        method: "POST",
-        body: JSON.stringify({ userId: currentUserId, emoji }),
-      });
-      queryClient.invalidateQueries({ queryKey: ["directMessages", user?.id] });
+      // Check current cache for reactions for optimistic update or just toggle logic
+      const currentReactions = queryClient.getQueryData<any[]>(["messageReactions", messageId]) || [];
+      const myReaction = currentReactions.find((r: any) => r.userId === currentUserId);
+
+      if (myReaction && myReaction.emoji === emoji) {
+        await messagingApi.removeReaction(messageId);
+      } else {
+        await messagingApi.reactToMessage(messageId, emoji);
+      }
+
+      queryClient.invalidateQueries({ queryKey: ["messageReactions", messageId] });
     } catch (error) {
       console.error("Failed to add reaction:", error);
     }
@@ -487,16 +520,11 @@ export default function DirectChat() {
                         )}
                       </div>
 
-                      {/* Reactions Display */}
-                      {msg.reactions && msg.reactions.length > 0 && (
-                        <div className={`flex gap-0.5 mt-1 ${isMe ? "mr-2" : "ml-2"}`}>
-                          {msg.reactions.map((r, i) => (
-                            <span key={i} className="text-sm bg-muted rounded-full px-1.5 py-0.5">
-                              {r.emoji}
-                            </span>
-                          ))}
-                        </div>
-                      )}
+                      {/* Reactions Display (Lazy Loaded) */}
+                      <MessageReactions
+                        messageId={msg.id}
+                        isMe={isMe}
+                      />
 
                       {/* Time and Status */}
                       <div className={`flex items-center gap-1 mt-1 ${isMe ? "mr-1" : "ml-1"}`}>

@@ -63,6 +63,27 @@ const popularEmojis = [
   "🔥", "⭐", "✨", "💫", "🌟", "💥", "💯", "🎉", "🎊", "🎈"
 ];
 
+// Lazy-loaded Reactions Component
+function MessageReactions({ messageId, isMe }: { messageId: string, isMe: boolean }) {
+  const { data: reactions = [] } = useQuery({
+    queryKey: ["messageReactions", messageId],
+    queryFn: () => messagingApi.getReactions(messageId),
+    staleTime: 1000 * 60 * 5 // 5 minutes
+  });
+
+  if (!reactions || reactions.length === 0) return null;
+
+  return (
+    <div className={`flex gap-0.5 mt-1 ${isMe ? "mr-2" : "ml-2"}`}>
+      {reactions.map((r: any, i: number) => (
+        <span key={i} className="text-sm bg-muted rounded-full px-1.5 py-0.5 animate-in zoom-in duration-200">
+          {r.emoji}
+        </span>
+      ))}
+    </div>
+  );
+}
+
 export default function GroupChat() {
   const [, params] = useRoute("/group/:id/chat");
   const [, setLocation] = useLocation();
@@ -149,31 +170,9 @@ export default function GroupChat() {
             const currentMessages = oldData || [];
 
             // Handle different event types
-            if (payload.type === "REACTION_UPDATE") {
-              return currentMessages.map(msg => {
-                if (msg.id === payload.messageId) {
-                  const reactions = msg.reactions || [];
-                  const existingIdx = reactions.findIndex(r => r.userId === payload.reaction.userId);
-                  let newReactions = [...reactions];
-                  if (existingIdx >= 0) {
-                    newReactions[existingIdx] = payload.reaction;
-                  } else {
-                    newReactions.push(payload.reaction);
-                  }
-                  return { ...msg, reactions: newReactions };
-                }
-                return msg;
-              });
-            } else if (payload.type === "REACTION_REMOVED") {
-              return currentMessages.map(msg => {
-                if (msg.id === payload.messageId) {
-                  return {
-                    ...msg,
-                    reactions: (msg.reactions || []).filter(r => r.userId !== payload.userId)
-                  };
-                }
-                return msg;
-              });
+            if (payload.type === "REACTION_UPDATE" || payload.type === "REACTION_REMOVED") {
+              queryClient.invalidateQueries({ queryKey: ["messageReactions", payload.messageId] });
+              return currentMessages;
             } else if (payload.type === "POLL_VOTE_UPDATE") {
               return currentMessages.map(msg => {
                 if (msg.id === payload.messageId && msg.poll) {
@@ -384,13 +383,20 @@ export default function GroupChat() {
 
   const handleReaction = async (messageId: string, emoji: string) => {
     try {
-      await authFetch(`/api/messages/${messageId}/react`, {
-        method: "POST",
-        body: JSON.stringify({ userId: currentUserId, emoji }),
-      });
-      queryClient.invalidateQueries({ queryKey: ["groupMessages", groupId] });
+      // Check current cache for reactions
+      const currentReactions = queryClient.getQueryData<any[]>(["messageReactions", messageId]) || [];
+      const myReaction = currentReactions.find(r => r.userId === currentUserId);
+
+      // If I already reacted with this emoji, remove it. Otherwise add/update it.
+      if (myReaction && myReaction.emoji === emoji) {
+        await messagingApi.removeReaction(messageId);
+      } else {
+        await messagingApi.reactToMessage(messageId, emoji);
+      }
+
+      queryClient.invalidateQueries({ queryKey: ["messageReactions", messageId] });
     } catch (error) {
-      console.error("Failed to add reaction:", error);
+      console.error("Failed to update reaction:", error);
     }
     setSelectedMessageId(null);
   };
@@ -670,16 +676,11 @@ export default function GroupChat() {
                         )}
                       </div>
 
-                      {/* Reactions */}
-                      {msg.reactions && msg.reactions.length > 0 && (
-                        <div className={`flex gap-0.5 mt-1 ${isMe ? "mr-2" : "ml-2"}`}>
-                          {msg.reactions.map((r, i) => (
-                            <span key={i} className="text-sm bg-muted rounded-full px-1.5 py-0.5">
-                              {r.emoji}
-                            </span>
-                          ))}
-                        </div>
-                      )}
+                      {/* Reactions - Lazy Loaded */}
+                      <MessageReactions
+                        messageId={msg.id}
+                        isMe={isMe}
+                      />
 
                       {/* Time and Status */}
                       <div className={`flex items-center gap-1 mt-1 ${isMe ? "mr-1" : "ml-1"}`}>

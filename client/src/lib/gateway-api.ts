@@ -411,6 +411,15 @@ export const messagingApi = {
 
   markAsRead: (recipientId: string) =>
     gatewayRequest<void>("POST", `/api/messages/read/${recipientId}`),
+
+  getReactions: (messageId: string) =>
+    gatewayRequest<any[]>("GET", `/api/messages/${messageId}/reactions`),
+
+  reactToMessage: (messageId: string, emoji: string) =>
+    gatewayRequest<any>("POST", `/api/messages/${messageId}/react`, { emoji }),
+
+  removeReaction: (messageId: string) =>
+    gatewayRequest<any>("DELETE", `/api/messages/${messageId}/react`),
 };
 
 // =====================

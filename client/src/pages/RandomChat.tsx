@@ -158,7 +158,19 @@ export default function RandomChat({ onFullScreenChange, onChatStateChange }: Ra
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
     const port = "9016"; // video-chat-service handles both modes
     const wsPath = "/ws/video";
-    const wsUrl = `wss://api.nearlyapp.in/ws/video`;
+
+    const storedUserId = localStorage.getItem("nearly_user_id") || "";
+    const storedUsername = localStorage.getItem("nearly_username") || "";
+    console.log("User ID:", storedUserId);
+    console.log("Username:", storedUsername);
+
+    // NOTE: To satisfy "Request Header" requirements in a browser environment, we use Cookies.
+    // The Standard WebSocket API does not support custom headers, but it DOES send cookies.
+    // Backend VideoWebSocketHandler is configured to extract these values from the "Cookie" header.
+    // IMPORTANT: This requires Same-Origin or proper Cross-Origin cookie configuration.
+
+
+    const wsUrl = `wss://api.nearlyapp.in/ws/video?X-Session-Id=${encodeURIComponent(sessionId)}&X-User-Id=${storedUserId}&X-Username=${encodeURIComponent(storedUsername)}`;
 
     console.log(`🔌 WebSocket Connecting: ${wsUrl}`, {
       url: wsUrl,
