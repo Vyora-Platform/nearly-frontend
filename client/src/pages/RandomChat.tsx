@@ -1042,6 +1042,7 @@ export default function RandomChat({ onFullScreenChange, onChatStateChange }: Ra
             autoPlay
             muted
             playsInline
+            style={{ transform: "scaleX(-1)" }}
             className="w-full h-full object-cover"
           />
           <div className="absolute bottom-2 left-2 text-xs text-white bg-black/50 px-2 py-1 rounded">
@@ -1109,6 +1110,7 @@ export default function RandomChat({ onFullScreenChange, onChatStateChange }: Ra
             autoPlay
             muted
             playsInline
+            style={{ transform: "scaleX(-1)" }}
             className={`w-full h-full object-cover ${!isCameraOn ? "hidden" : ""}`}
           />
           {!isCameraOn && (
