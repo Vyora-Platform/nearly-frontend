@@ -175,7 +175,7 @@ const ShotReel = memo(function ShotReel({
 
   // Video player state
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isMuted, setIsMuted] = useState(true);
+  const [isMuted, setIsMuted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [progress, setProgress] = useState(0);
