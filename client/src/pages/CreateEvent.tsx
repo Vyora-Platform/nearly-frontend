@@ -292,8 +292,8 @@ export default function CreateEvent() {
                 <FormItem>
                   <FormLabel className="text-sm font-medium">Category (Optional)</FormLabel>
                   <Select
-                    value={field.value?.[0] || ""}
-                    onValueChange={(value) => field.onChange(value ? [value] : [])}
+                    value={field.value || ""}
+                    onValueChange={(value) => field.onChange(value)}
                   >
                     <FormControl>
                       <SelectTrigger data-testid="select-category">
